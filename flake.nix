@@ -10,10 +10,15 @@
 			url = "github:nix-community/nixvim";
 			inputs.nixpkgs.follows = "nixpkgs";
 		};
-		
+		plasma-manager = {
+                     url = "github:nix-community/plasma-manager";
+                     inputs.nixpkgs.follows = "nixpkgs";
+                     inputs.home-manager.follows = "home-manager";
+		};
+	
 };
 	
-	outputs = { nixpkgs, home-manager, nixvim,... }:
+	outputs = { nixpkgs, home-manager, nixvim, plasma-manager, ... }:
 		let
 			lib = nixpkgs.lib;
 			system = "x86_64-linux";
@@ -29,6 +34,7 @@
 							home-manager.useGlobalPkgs = true;
 							home-manager.useUserPackages = true;
 							home-manager.users.ianh.imports = [
+								 plasma-manager.homeManagerModules.plasma-manager 
 								nixvim.homeManagerModules.nixvim
 								./home.nix
 							];
