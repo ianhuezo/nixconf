@@ -80,9 +80,6 @@
   #add nix settings
   nix.settings = {
 	experimental-features = [ "nix-command" "flakes" ];
-	allowed-users = [
-	  "*"
-	];
   };
   
   # Define a user account. Don't forget to set a password with ‘passwd’.

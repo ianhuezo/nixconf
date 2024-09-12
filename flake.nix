@@ -25,17 +25,17 @@
 					modules = [
 						./hardware-configuration.nix
 						./configuration.nix
+						home-manager.nixosModules.home-manager
+						{
+							home-manager.useGlobalPkgs = true;
+							home-manager.useUserPackages = true;
+							home-manager.users.ianh = import [
+								./home.nix 
+                                                                nixvim.homeManagerModules.nixvim
+							];
+						}
 					];
 				};
 			};
-			homeConfigurations = {
-				ianh = home-manager.lib.homeManagerConfiguration {
-					inherit pkgs;
-					modules = [ 
-						./home.nix 
-						nixvim.homeManagerModules.nixvim
-					];
-				};
-			};
-		};
+	};
 }

@@ -71,6 +71,38 @@
     	plugins.lualine.enable = true;
 	plugins.telescope.enable = true;
   };
+  programs.zsh = {
+	enable = true;
+	enableCompletion = true;
+	autosuggestion.enable = true;
+	syntaxHighlighting.enable = true;
+
+	shellAliases = {
+	  ll = "ls -l";
+	  update = "sudo nixos-rebuild switch";
+	};
+	history = {
+		size = 10000;
+		path = "$XDG_DATA_HOME/zsh/history";
+	};
+
+	oh-my-zsh = {
+		enable = true;
+		plugins = [ "git" ];
+		theme = "robbyrussell";
+	};
+	plugins = [
+		{
+			name = "zsh-autosuggestions";
+			src = pkgs.fetchFromGitHub {
+				owner = "zsh-users";
+				repo = "zsh-autosuggestions";
+				rev  "v0.4.0";
+				sha256 = "0z6i9wjjklb4lvr7zjhbphibsyx51psv50gm07mbb0kj9058j6kc";
+			};
+		}
+	];
+  }
 
   nixpkgs.config.allowUnfree = true; 
   # Home Manager can also manage your environment variables through
