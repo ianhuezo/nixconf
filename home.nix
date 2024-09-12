@@ -123,6 +123,7 @@
     XDG_CONFIG_HOME = "$HOME/.config";
     XDG_DATA_HOME = "$HOME/var/share";
     XDG_STATE_HOME = "$HOME/var/state";
+    QT_QPA_PLATFORM="wayland";
   };
 
   # Let Home Manager install and manage itself.

@@ -96,66 +96,6 @@
   programs.zsh.enable = true;
 
 
-#  #Home manager settings
-#  home-manager.users.ianh = { pkgs, ... }: {
-#  	home.packages = with pkgs; [ 
-#		zoxide
-#		thefuck
-#		zsh #home manager can't set zsh as a shell directly because of root permissions for shell
-#		discord
-#		spotify
-#		vesktop
-#	];
-#
-#
-#	home.sessionVariables = {
-#		    XDG_CACHE_HOME = "$HOME/var/.cache";
-#                    XDG_CONFIG_HOME = "$HOME/.config";
-#                    XDG_DATA_HOME = "$HOME/var/share";
-#                    XDG_STATE_HOME = "$HOME/var/state";	
-#	};
-#	home.stateVersion = "24.05";
-#	home.homeDirectory = "/home/ianh";
-#	
-#	programs.home-manager = {
-#		enable = true;
-#	};
-#	programs.zsh = {
-#	 	enable = true;
-#	 	enableCompletion = true;
-#                 autosuggestion.enable = true;
-#                 syntaxHighlighting.enable = true;
-#
-#                 shellAliases = {
-#                   ll = "ls -l";
-#                   update = "sudo nixos-rebuild switch";
-#                 };
-#                 history = {
-#                   size = 10000;
-#                   path = "$XDG_DATA_HOME/zsh/history";
-#                 };
-#
-#                 oh-my-zsh = {
-#                     enable = true;
-#                     plugins = [ "git" ];
-#                     theme = "robbyrussell";
-#                 };
-#	 	plugins = [
-#	 	   {
-#                      name = "zsh-autosuggestions";
-#                      src = pkgs.fetchFromGitHub {
-#                        owner = "zsh-users";
-#                        repo = "zsh-autosuggestions";
-#                        rev = "v0.4.0";
-#                        sha256 = "0z6i9wjjklb4lvr7zjhbphibsyx51psv50gm07mbb0kj9058j6kc";
-#                      };
-#                    }
-#	 	];
-#	 };
-#  };
-#  home-manager.useUserPackages = true;
-#  home-manager.useGlobalPkgs = true;
-
   # Install firefox.
   programs.firefox.enable = true;
   # Allow unfree packages
