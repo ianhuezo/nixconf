@@ -23,15 +23,14 @@
 				joyboy = lib.nixosSystem {
 					inherit system;
 					modules = [
-						./hardware-configuration.nix
 						./configuration.nix
 						home-manager.nixosModules.home-manager
 						{
 							home-manager.useGlobalPkgs = true;
 							home-manager.useUserPackages = true;
-							home-manager.users.ianh = import [
-								./home.nix 
-                                                                nixvim.homeManagerModules.nixvim
+							home-manager.users.ianh.imports = [
+								nixvim.homeManagerModules.nixvim
+								./home.nix
 							];
 						}
 					];

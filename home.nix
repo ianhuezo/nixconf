@@ -1,4 +1,4 @@
-{ config, pkgs, nixvim, ... }:
+{ config, pkgs, ... }:
 
 {
   # Import additional packages
@@ -6,9 +6,6 @@
 #   [
 # 	./plasma.nix
 #   ];
-#    imports = [
-#	./modules/home-programs/zsh	
-#    ]
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
   home.username = "ianh";
@@ -85,7 +82,6 @@
 		size = 10000;
 		path = "$XDG_DATA_HOME/zsh/history";
 	};
-
 	oh-my-zsh = {
 		enable = true;
 		plugins = [ "git" ];
@@ -93,16 +89,17 @@
 	};
 	plugins = [
 		{
-			name = "zsh-autosuggestions";
-			src = pkgs.fetchFromGitHub {
-				owner = "zsh-users";
-				repo = "zsh-autosuggestions";
-				rev  "v0.4.0";
-				sha256 = "0z6i9wjjklb4lvr7zjhbphibsyx51psv50gm07mbb0kj9058j6kc";
-			};
+                   # will source zsh-autosuggestions.plugin.zsh
+                   name = "zsh-autosuggestions";
+                   src = pkgs.fetchFromGitHub {
+                     owner = "zsh-users";
+                     repo = "zsh-autosuggestions";
+                     rev = "v0.4.0";
+                     sha256 = "0z6i9wjjklb4lvr7zjhbphibsyx51psv50gm07mbb0kj9058j6kc";
+                   };
 		}
 	];
-  }
+  };
 
   nixpkgs.config.allowUnfree = true; 
   # Home Manager can also manage your environment variables through
