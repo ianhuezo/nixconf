@@ -19,16 +19,23 @@
 			system = "x86_64-linux";
 			pkgs = import nixpkgs { inherit system; };
 		in {
+			nixosConfigurations = {
+				joyboy = lib.nixosSystem {
+					inherit system;
+					modules = [
+						./hardware-configuration.nix
+						./configuration.nix
+					];
+				};
+			};
 			homeConfigurations = {
 				ianh = home-manager.lib.homeManagerConfiguration {
 					inherit pkgs;
 					modules = [ 
-						./hardware-configuration.nix
-						./configuration.nix
 						./home.nix 
 						nixvim.homeManagerModules.nixvim
 					];
 				};
-							};
+			};
 		};
 }
