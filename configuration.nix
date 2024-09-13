@@ -49,6 +49,11 @@
   services.displayManager.sddm.enable = true;
   services.desktopManager.plasma6.enable = true;
 
+  # Enable hyprland
+  programs.hyprland.enable = true;
+  programs.hyprlock.enable = true;
+
+
   # Configure keymap in X11
   services.xserver.xkb = {
     layout = "us";
