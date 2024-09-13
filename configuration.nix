@@ -54,23 +54,28 @@
   programs.hyprlock.enable = true;
 
   #Enable NVIDIA drivers
-  hardware.opengl = {
-	enable = true;
-	driSupport = true;
-	driSupport32Bit = true;
-  };
-  services.xserver.videoDrivers = ["nvidia"];
-  hardware.nvidia.modesettings.enable = true;
-
+	#  hardware.opengl = {
+	# enable = true;
+	#  };
+	#  services.xserver.videoDrivers = ["nvidia"];
+	#  hardware.nvidia = {
+	# modesetting.enable = true;
+	# powerManagement.enable = true;
+	# powerManagement.finegrained = false;
+	# open = false;
+	# nvidiaSettings = true;
+	# package = config.boot.kernelPackages.nvidiaPackages.stable;
+	#  };
+	#
   # Enable steam
-  programs.steam = {
-	enable = true;
-	remotePlay.openFirewall = true;
-	localNetworkGameTransfers.openFirewall = true;
-  };
-  programs.steam.gamescopeSession.enable = true;
-  programs.gamemode.enable = true;
-
+	#  programs.steam = {
+	# enable = true;
+	# remotePlay.openFirewall = true;
+	# localNetworkGameTransfers.openFirewall = true;
+	#  };
+	#  programs.steam.gamescopeSession.enable = true;
+	#  programs.gamemode.enable = true;
+	#
 
   # Configure keymap in X11
   services.xserver.xkb = {
