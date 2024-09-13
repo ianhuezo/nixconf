@@ -125,6 +125,6 @@
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
-  programs.plasma = import ./plasma.nix;
+  programs.plasma = import ./modules/plasma/plasma.nix;
  
 }
