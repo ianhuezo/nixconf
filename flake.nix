@@ -28,7 +28,6 @@
 					inherit system;
 					modules = [
 						./configuration.nix
-						modules/plasma/default.nix
 						home-manager.nixosModules.home-manager
 						{
 							home-manager.useGlobalPkgs = true;
