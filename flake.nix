@@ -15,10 +15,13 @@
                      inputs.nixpkgs.follows = "nixpkgs";
                      inputs.home-manager.follows = "home-manager";
 		};
-	
+                nixos-cosmic = {
+                  url = "github:lilyinstarlight/nixos-cosmic";
+                  inputs.nixpkgs.follows = "nixpkgs";
+                };	
 };
 	
-	outputs = { nixpkgs, home-manager, nixvim, plasma-manager, ... }:
+	outputs = { nixpkgs, home-manager, nixvim, plasma-manager, nixos-cosmic, ... }:
 		let
 			lib = nixpkgs.lib;
 			system = "x86_64-linux";
@@ -28,6 +31,13 @@
 				joyboy = lib.nixosSystem {
 					inherit system;
 					modules = [
+						{
+						   				   		nix.settings = {
+						     					substituters = [ "https://cosmic.cachix.org/" ];
+						   				     			trusted-public-keys = [ "cosmic.cachix.org-1:Dya9IyXD4xdBehWjrkPv6rtxpmMdRel02smYzA85dPE=" ];
+						   				   		};
+						   				 	}
+						    					nixos-cosmic.nixosModules.default
 						./configuration.nix
 						home-manager.nixosModules.home-manager
 						{

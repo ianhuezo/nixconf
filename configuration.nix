@@ -48,6 +48,11 @@
   # Enable the KDE Plasma Desktop Environment.
   services.displayManager.sddm.enable = true;
   services.desktopManager.plasma6.enable = true;
+  #cosmic instead of kde lul
+  services.desktopManager.cosmic.enable = false;
+  services.displayManager.cosmic-greeter.enable = false;
+
+
 
   # Configure keymap in X11
   services.xserver.xkb = {
