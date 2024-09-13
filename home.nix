@@ -3,7 +3,7 @@
 {
   
   imports = [
-	./core/plasma/plasma.nix
+	./core/plasma/default.nix
   ];
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
