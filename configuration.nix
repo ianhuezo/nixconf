@@ -75,6 +75,8 @@
     # no need to redefine it in your config for now)
     #media-session.enable = true;
   };
+  services.libinput.mouse.accelPointsMotioon = 0.0;
+  services.libinput.mouse.accelPointsFallback = 0.0;
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
