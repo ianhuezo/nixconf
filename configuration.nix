@@ -53,6 +53,24 @@
   programs.hyprland.enable = true;
   programs.hyprlock.enable = true;
 
+  #Enable NVIDIA drivers
+  hardware.opengl = {
+	enable = true;
+	driSupport = true;
+	driSupport32Bit = true;
+  };
+  services.xserver.videoDrivers = ["nvidia"];
+  hardware.nvidia.modesettings.enable = true;
+
+  # Enable steam
+  programs.steam = {
+	enable = true;
+	remotePlay.openFirewall = true;
+	localNetworkGameTransfers.openFirewall = true;
+  };
+  programs.steam.gamescopeSession.enable = true;
+  programs.gamemode.enable = true;
+
 
   # Configure keymap in X11
   services.xserver.xkb = {
@@ -125,6 +143,7 @@
      gnumake
      gcc
      noisetorch
+     protonup
   ];
   programs.noisetorch.enable = true;
   # Some programs need SUID wrappers, can be configured further or are
