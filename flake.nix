@@ -28,11 +28,13 @@
 					inherit system;
 					modules = [
 						./configuration.nix
+						./modules/plasma/default.nix
 						home-manager.nixosModules.home-manager
 						{
 							home-manager.useGlobalPkgs = true;
 							home-manager.useUserPackages = true;
 							home-manager.users.ianh.imports = [
+								./modules/plasma/default.nix
 								 plasma-manager.homeManagerModules.plasma-manager 
 								nixvim.homeManagerModules.nixvim
 								./home.nix
