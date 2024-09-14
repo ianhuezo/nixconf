@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, hyprland-direct, ... }:
 
 {
   imports = [
@@ -51,12 +51,11 @@
 
   # Enable hyprland
   programs.hyprland.enable = true;
+  programs.hyprland.package = hyprland-direct.packages."${pkgs.system}".hyprland;
   programs.hyprlock.enable = true;
 
   #Enable NVIDIA drivers
-  hardware.opengl = {
-    enable = true;
-  };
+  hardware.graphics.enable = true;
   services.xserver.videoDrivers = [ "nvidia" ];
   hardware.nvidia = {
     modesetting.enable = true;
