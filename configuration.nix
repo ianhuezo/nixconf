@@ -5,10 +5,10 @@
 { config, pkgs, ... }:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-    ];
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+  ];
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
@@ -54,28 +54,27 @@
   programs.hyprlock.enable = true;
 
   #Enable NVIDIA drivers
-	 hardware.opengl = {
-	enable = true;
-	 };
-	 services.xserver.videoDrivers = ["nvidia"];
-	 hardware.nvidia = {
-	modesetting.enable = true;
-	powerManagement.enable = true;
-	powerManagement.finegrained = false;
-	open = false;
-	nvidiaSettings = true;
-	package = config.boot.kernelPackages.nvidiaPackages.stable;
-	 };
+  hardware.opengl = {
+    enable = true;
+  };
+  services.xserver.videoDrivers = [ "nvidia" ];
+  hardware.nvidia = {
+    modesetting.enable = true;
+    powerManagement.enable = true;
+    powerManagement.finegrained = false;
+    open = false;
+    nvidiaSettings = true;
+    package = config.boot.kernelPackages.nvidiaPackages.stable;
+  };
 
   # Enable steam
-	 programs.steam = {
-	enable = true;
-	remotePlay.openFirewall = true;
-	localNetworkGameTransfers.openFirewall = true;
-	 };
-	 programs.steam.gamescopeSession.enable = true;
-	 programs.gamemode.enable = true;
-
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true;
+    localNetworkGameTransfers.openFirewall = true;
+  };
+  programs.steam.gamescopeSession.enable = true;
+  programs.gamemode.enable = true;
 
   # Configure keymap in X11
   services.xserver.xkb = {
@@ -111,22 +110,27 @@
 
   #add nix settings
   nix.settings = {
-	experimental-features = [ "nix-command" "flakes" ];
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
   };
-  
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.ianh = {
     isNormalUser = true;
     description = "Ian Huezo";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+    ];
     packages = with pkgs; [
       kdePackages.kate
-    #  thunderbird
+      #  thunderbird
     ];
     shell = pkgs.zsh;
   };
   programs.zsh.enable = true;
-
 
   # Install firefox.
   programs.firefox.enable = true;
@@ -134,21 +138,21 @@
   nixpkgs.config.allowUnfree = true;
 
   #set the default shells
-  environment.shells = with pkgs; [zsh];
+  environment.shells = with pkgs; [ zsh ];
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-  #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-  #  wget
-     git
-     zsh
-     nixfmt-rfc-style
-     home-manager
-     vesktop
-     gnumake
-     gcc
-     noisetorch
-     protonup
+    #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    #  wget
+    git
+    zsh
+    nixfmt-rfc-style
+    home-manager
+    vesktop
+    gnumake
+    gcc
+    noisetorch
+    protonup
   ];
   programs.noisetorch.enable = true;
   # Some programs need SUID wrappers, can be configured further or are

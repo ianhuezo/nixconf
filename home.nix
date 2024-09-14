@@ -1,9 +1,9 @@
 { config, pkgs, ... }:
 
 {
-  
+
   imports = [
-	./core/plasma/default.nix
+    ./core/plasma/default.nix
   ];
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
@@ -62,45 +62,45 @@
   };
 
   programs.nixvim = {
-	enable = true;
-	colorschemes.catppuccin.enable = true;
-    	plugins.lualine.enable = true;
-	plugins.telescope.enable = true;
+    enable = true;
+    colorschemes.catppuccin.enable = true;
+    plugins.lualine.enable = true;
+    plugins.telescope.enable = true;
   };
   programs.zsh = {
-	enable = true;
-	enableCompletion = true;
-	autosuggestion.enable = true;
-	syntaxHighlighting.enable = true;
+    enable = true;
+    enableCompletion = true;
+    autosuggestion.enable = true;
+    syntaxHighlighting.enable = true;
 
-	shellAliases = {
-	  ll = "ls -l";
-	  update = "sudo nixos-rebuild switch";
-	};
-	history = {
-		size = 10000;
-		path = "$XDG_DATA_HOME/zsh/history";
-	};
-	oh-my-zsh = {
-		enable = true;
-		plugins = [ "git" ];
-		theme = "robbyrussell";
-	};
-	plugins = [
-		{
-                   # will source zsh-autosuggestions.plugin.zsh
-                   name = "zsh-autosuggestions";
-                   src = pkgs.fetchFromGitHub {
-                     owner = "zsh-users";
-                     repo = "zsh-autosuggestions";
-                     rev = "v0.4.0";
-                     sha256 = "0z6i9wjjklb4lvr7zjhbphibsyx51psv50gm07mbb0kj9058j6kc";
-                   };
-		}
-	];
+    shellAliases = {
+      ll = "ls -l";
+      update = "sudo nixos-rebuild switch";
+    };
+    history = {
+      size = 10000;
+      path = "$XDG_DATA_HOME/zsh/history";
+    };
+    oh-my-zsh = {
+      enable = true;
+      plugins = [ "git" ];
+      theme = "robbyrussell";
+    };
+    plugins = [
+      {
+        # will source zsh-autosuggestions.plugin.zsh
+        name = "zsh-autosuggestions";
+        src = pkgs.fetchFromGitHub {
+          owner = "zsh-users";
+          repo = "zsh-autosuggestions";
+          rev = "v0.4.0";
+          sha256 = "0z6i9wjjklb4lvr7zjhbphibsyx51psv50gm07mbb0kj9058j6kc";
+        };
+      }
+    ];
   };
 
-  nixpkgs.config.allowUnfree = true; 
+  nixpkgs.config.allowUnfree = true;
   # Home Manager can also manage your environment variables through
   # 'home.sessionVariables'. These will be explicitly sourced when using a
   # shell provided by Home Manager. If you don't want to manage your shell
@@ -122,7 +122,7 @@
     XDG_CONFIG_HOME = "$HOME/.config";
     XDG_DATA_HOME = "$HOME/var/share";
     XDG_STATE_HOME = "$HOME/var/state";
-    QT_QPA_PLATFORM="wayland";
+    QT_QPA_PLATFORM = "wayland";
     STEAM_EXTRA_COMPAT_TOOLS_PATHS = "\${HOME}/.steam/root/compatibilitytools.d";
   };
 
