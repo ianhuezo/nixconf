@@ -64,7 +64,6 @@ in
   ];
   #all the wayland stuff on three
   programs.waybar.enable = true;
-  services.hyprpaper.enable = true;
   programs.wofi.enable = true;
   wayland.windowManager.hyprland = {
     enable = true;
