@@ -1,9 +1,14 @@
 { config, pkgs, hyprland-direct, ... }:
+let
+	startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
+	   waybar &
 
+	   sleep 1
+	'';
 {
 
   imports = [
-    ./core/plasma/default.nix
+    # ./core/plasma/default.nix
   ];
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
@@ -44,7 +49,14 @@
     kitty
     vesktop
     spotify
+    waybar
   ];
+  wayland.windowManager.hyprland = {
+  	enable = true;
+	settings = {
+		exec-once = ''${startupScript}/bin/start'';
+	};
+  }'
   programs.kitty.enable = true;
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.
@@ -124,6 +136,7 @@
     XDG_STATE_HOME = "$HOME/var/state";
     QT_QPA_PLATFORM = "wayland";
     STEAM_EXTRA_COMPAT_TOOLS_PATHS = "\${HOME}/.steam/root/compatibilitytools.d";
+    NIXOS_OZONE_WL = "1";
   };
 
   # Let Home Manager install and manage itself.

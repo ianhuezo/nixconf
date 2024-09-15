@@ -18,6 +18,10 @@
     hyprland-direct = {
 	url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
     };
+    hyprland-plugins = {
+	url = "github:hyprwm/hyprland-plugins";
+	inputs.hyprland-direct.follows = "hyprland";
+    };
   };
 
   outputs =
@@ -46,7 +50,7 @@
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
               home-manager.users.ianh.imports = [
-                plasma-manager.homeManagerModules.plasma-manager
+                # plasma-manager.homeManagerModules.plasma-manager
                 nixvim.homeManagerModules.nixvim
                 ./home.nix
               ];

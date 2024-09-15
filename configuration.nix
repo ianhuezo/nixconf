@@ -47,7 +47,7 @@
 
   # Enable the KDE Plasma Desktop Environment.
   services.displayManager.sddm.enable = true;
-  services.desktopManager.plasma6.enable = true;
+  services.desktopManager.plasma6.enable = false;
 
   # Enable hyprland
   programs.hyprland.enable = true;
@@ -152,7 +152,12 @@
     gcc
     noisetorch
     protonup
+    kitty
   ];
+  environment.sessionVariables = {
+	WLR_M__HARDWARE_CUROS = "1";
+	NIXOS_OZONE_WL = "1";
+  };
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
