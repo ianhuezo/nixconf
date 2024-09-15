@@ -1,10 +1,15 @@
-{ config, pkgs, hyprland-direct, ... }:
+{
+  config,
+  pkgs,
+  hyprland-direct,
+  ...
+}:
 let
-	startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
-	   waybar &
+  startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
+    waybar &
 
-	   sleep 1
-	'';
+    sleep 1
+  '';
 in
 {
 
@@ -52,11 +57,62 @@ in
     spotify
     waybar
   ];
+  #all the wayland stuff on three
   wayland.windowManager.hyprland = {
-  	enable = true;
-	settings = {
-		exec-once = ''${startupScript}/bin/start'';
-	};
+    enable = true;
+    xwayland.enable = true;
+    settings = {
+      exec-once = ''${startupScript}/bin/start'';
+      "$mod" = "SUPER";
+      bind =
+        [
+          "$mod, F, exec, firefox"
+          "$mod, K, exec, kitty"
+          ", Print, exec, grimblast copy area"
+        ]
+        ++ (
+          # workspaces
+          # binds $mod + [shift +] {Q,W,E,R,T,Y,U,I,O} to [move to] workspace {1..9}
+          builtins.concatLists (
+            builtins.genList (
+              i:
+              let
+                ws = i + 1;
+              in
+              [
+                "$mod, code:${toString (65 + i)}, workspace, ${toString ws}"
+                "$mod SHIFT, code:${toString (65 + i)}, movetoworkspace, ${toString ws}"
+              ]
+            ) 9
+          )
+        );
+    };
+  };
+  home.pointerCursor = {
+    gtk.enable = true;
+    # x11.enable = true;
+    package = pkgs.bibata-cursors;
+    name = "Bibata-Modern-Classic";
+    size = 16;
+  };
+
+  gtk = {
+    enable = true;
+
+    theme = {
+      package = pkgs.flat-remix-gtk;
+      name = "Flat-Remix-GTK-Grey-Darkest";
+    };
+
+    iconTheme = {
+      package = pkgs.gnome.adwaita-icon-theme;
+      name = "Adwaita";
+    };
+
+    font = {
+      name = "Sans";
+      size = 11;
+    };
   };
   programs.kitty.enable = true;
   # Home Manager is pretty good at managing dotfiles. The primary way to manage

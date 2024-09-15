@@ -16,12 +16,12 @@
       inputs.home-manager.follows = "home-manager";
     };
     hyprland-direct = {
-	url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
+      url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
     };
-	#    hyprland-plugins = {
-	# url = "github:hyprwm/hyprland-plugins";
-	# inputs.hyprland-direct.follows = "hyprland";
-	#    };
+    #    hyprland-plugins = {
+    # url = "github:hyprwm/hyprland-plugins";
+    # inputs.hyprland-direct.follows = "hyprland";
+    #    };
   };
 
   outputs =
@@ -42,7 +42,9 @@
       nixosConfigurations = {
         joyboy = lib.nixosSystem {
           inherit system;
-	  specialArgs = { inherit hyprland-direct;};
+          specialArgs = {
+            inherit hyprland-direct;
+          };
           modules = [
             ./configuration.nix
             home-manager.nixosModules.home-manager
