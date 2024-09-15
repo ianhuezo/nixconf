@@ -68,6 +68,7 @@ in
         [
           "$mod, F, exec, firefox"
           "$mod, K, exec, kitty"
+	  "$mod, S, exec, spotify"
           ", Print, exec, grimblast copy area"
         ]
         ++ (
