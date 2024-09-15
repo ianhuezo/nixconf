@@ -9,7 +9,7 @@ let
     waybar &
 
     sleep 1
-    kitty
+    kitty &
   '';
 in
 {
@@ -64,9 +64,8 @@ in
   ];
   #all the wayland stuff on three
   waybar.enable = true;
-  hyprpaper.enable = true;
+  services.hyprpaper.enable = true;
   wofi.enable = true;
-  hyprland.enable = true;
   wayland.windowManager.hyprland = {
     enable = true;
     xwayland.enable = true;
