@@ -9,6 +9,7 @@ let
     waybar &
 
     sleep 1
+    kitty
   '';
 in
 {
@@ -56,8 +57,16 @@ in
     vesktop
     spotify
     waybar
+    hyprpaper
+    dunst
+    swaylock-effects
+    wofi
   ];
   #all the wayland stuff on three
+  waybar.enable = true;
+  hyprpaper.enable = true;
+  wofi.enable = true;
+  hyprland.enable = true;
   wayland.windowManager.hyprland = {
     enable = true;
     xwayland.enable = true;
@@ -89,6 +98,7 @@ in
         );
     };
   };
+  wayland.windowManager.hyprland.systemd.variables = ["--all"];
   # home.pointerCursor = {
   #   gtk.enable = true;
   #   # x11.enable = true;

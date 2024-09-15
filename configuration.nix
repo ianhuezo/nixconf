@@ -57,7 +57,7 @@
   # Enable hyprland
   programs.hyprland.enable = true;
   programs.hyprland.package = hyprland-direct.packages."${pkgs.system}".hyprland;
-  programs.hyprlock.enable = true;
+  
 
   #Enable NVIDIA drivers
   hardware.graphics.enable = true;
@@ -129,7 +129,6 @@
       "wheel"
     ];
     packages = with pkgs; [
-      kdePackages.kate
       #  thunderbird
     ];
     shell = pkgs.zsh;
@@ -158,6 +157,10 @@
     noisetorch
     protonup
     kitty
+    hyprpaper
+    dunst
+    swaylock-effects
+    wofi
   ];
   environment.sessionVariables = {
     WLR_M__HARDWARE_CUROS = "1";
