@@ -63,7 +63,7 @@ in
     wofi
   ];
   #all the wayland stuff on three
-  waybar.enable = true;
+  programs.waybar.enable = true;
   services.hyprpaper.enable = true;
   wofi.enable = true;
   wayland.windowManager.hyprland = {
