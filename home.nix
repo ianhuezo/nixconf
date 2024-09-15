@@ -5,6 +5,7 @@ let
 
 	   sleep 1
 	'';
+in
 {
 
   imports = [
