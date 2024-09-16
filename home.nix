@@ -6,6 +6,8 @@
 }:
 let
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
+    nm-applet --indicator & disown 
+    sleep 1
     waybar &
 
     sleep 1
