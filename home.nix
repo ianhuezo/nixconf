@@ -5,6 +5,7 @@
   ...
 }:
 let
+  nix-colors = import inputs.nix-colors { };
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
     nm-applet --indicator & disown 
     env = ELECTRON_OZONE_PLATFORM_HINT,x11
@@ -18,11 +19,15 @@ in
 
   imports = [
     # ./core/plasma/default.nix
+    nix-colors.homeManagerModules.default
   ];
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
   home.username = "ianh";
   home.homeDirectory = "/home/ianh";
+
+  #import the preferred color scheme
+  colorScheme = nix-colors.colorSchemes.tokyodark;
 
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
@@ -117,6 +122,7 @@ in
             ) 9
           )
         );
+      #tokyodark theme applied
       general = {
         gaps_in = 5;
         gaps_out = 20;
@@ -124,6 +130,23 @@ in
         # "col.active_border" = "rgba(${config.colorScheme.palette.base08}ee) rgba(${config.colorScheme.palette.base0A}ee) 45deg";
         # "col.inactive_border" = "rgba(${config.colorScheme.palette.base03}aa)";
         layout = "master";
+      };
+      decoration = {
+        rounding = 10;
+        blur = {
+          enabled = true;
+          brightness = 0.5;
+          contrast = 1.0;
+          noise = 0.2;
+          size = 5;
+          passes = 3;
+        };
+        drop_shadow = true;
+        shadow_ignore_window = true;
+        shadow_offset = "0 2";
+        shadow_range = 10;
+        shadow_render_power = 2;
+        # "col.shadow" = "rgba(${config.colorScheme.palette.base0D}dd)";
       };
     };
   };
