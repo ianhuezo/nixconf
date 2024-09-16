@@ -5,7 +5,7 @@
 {
   config,
   pkgs,
-  hyprland-direct,
+  hyprland,
   ...
 }:
 
@@ -169,6 +169,7 @@
     dunst
     swaylock-effects
     wofi
+    hyprshot
   ];
   environment.sessionVariables = {
     WLR_M__HARDWARE_CUROS = "1";

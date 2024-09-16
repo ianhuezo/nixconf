@@ -15,13 +15,18 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
     };
-    hyprland-direct = {
+    hyprland = {
       url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
     };
-    #    hyprland-plugins = {
-    # url = "github:hyprwm/hyprland-plugins";
-    # inputs.hyprland-direct.follows = "hyprland";
-    #    };
+    hyprland-plugins = {
+    	url = "github:hyprwm/hyprland-plugins";
+	inputs.hyprland.follows = "hyprland";
+    };
+    Hyprspace = {
+      url = "github:KZDKM/Hyprspace";
+      # Hyprspace uses latest Hyprland. We declare this to keep them in sync.
+      inputs.hyprland.follows = "hyprland";
+    };
   };
 
   outputs =
@@ -30,9 +35,8 @@
       home-manager,
       nixvim,
       plasma-manager,
-      hyprland-direct,
       ...
-    }:
+    }@inputs:
     let
       lib = nixpkgs.lib;
       system = "x86_64-linux";
@@ -43,7 +47,7 @@
         joyboy = lib.nixosSystem {
           inherit system;
           specialArgs = {
-            inherit hyprland-direct;
+            inherit inputs;
           };
           modules = [
             ./configuration.nix
@@ -51,6 +55,7 @@
             {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
+	      home-manager.extraSpecialArgs = {inherit inputs;};
               home-manager.users.ianh.imports = [
                 # plasma-manager.homeManagerModules.plasma-manager
                 nixvim.homeManagerModules.nixvim

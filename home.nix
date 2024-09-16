@@ -1,7 +1,7 @@
 {
+  inputs,
   config,
   pkgs,
-  hyprland-direct,
   ...
 }:
 let
@@ -68,6 +68,7 @@ in
     settings = {
       exec-once = ''${startupScript}/bin/start'';
       "$mod" = "SUPER";
+      binds.allow_workspace_cycles = true;
       bind =
         [
           "$mod, F, exec, firefox"
@@ -78,6 +79,7 @@ in
           "$mod SHIFT, R, movecurrentworkspacetomonitor, r"
 	  "$mod SHIFT, N, cyclenext"
 	  "$mod SHIFT, P, cyclenext, prev"
+	  "CTRL, TAB, overview:toggle"
           "$mod, Q, killactive"
           ", Print, exec, grimblast copy area"
         ]
@@ -99,6 +101,12 @@ in
     };
   };
   wayland.windowManager.hyprland.systemd.variables = [ "--all" ];
+  #hyprland plugins
+  wayland.windowManager.hyprland.plugins = [
+	inputs.Hyprspace.packages.${pkgs.system}.Hyprspace
+  ];
+
+
   # home.pointerCursor = {
   #   gtk.enable = true;
   #   # x11.enable = true;
@@ -202,6 +210,7 @@ in
     XDG_CONFIG_HOME = "$HOME/.config";
     XDG_DATA_HOME = "$HOME/var/share";
     XDG_STATE_HOME = "$HOME/var/state";
+    XDG_PICTURES_DIR = "$HOME/pictures";
     QT_QPA_PLATFORM = "wayland";
     STEAM_EXTRA_COMPAT_TOOLS_PATHS = "\${HOME}/.steam/root/compatibilitytools.d";
     NIXOS_OZONE_WL = "1";
