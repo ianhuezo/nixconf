@@ -82,7 +82,7 @@ in
 	  "SHIFT, TAB, workspace, previous"
 	  "CTRL, TAB, overview:toggle"
           "$mod, Q, killactive"
-	  "$mod SHIFT, Q, loginctl terminate-user $USER"
+	  "$mod SHIFT, Q, exec,loginctl terminate-user $USER"
           ", Print, exec, grimblast copy area"
         ]
         ++ (
