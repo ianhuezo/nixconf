@@ -9,10 +9,13 @@ let
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
     nm-applet --indicator & disown 
     env = ELECTRON_OZONE_PLATFORM_HINT,x11
+    hyprpaper &
     sleep 1
     waybar &
 
     sleep 1
+    "[workspace 1 silent] firefox"
+    "[workspace 6 silent] vesktop"
   '';
 in
 {
@@ -57,6 +60,7 @@ in
     # (pkgs.writeShellScriptBin "my-hello" ''
     #   echo "Hello, ${config.home.username}!"
     # '')
+    inputs.hyprpaper.packages.${pkgs.system}.hyprpaper
     zoxide
     zsh
     discord
@@ -67,6 +71,14 @@ in
   #all the wayland stuff on three
   programs.waybar.enable = true;
   programs.wofi.enable = true;
+  services.dunst = {
+    enable = true;
+    settings = {
+      global = {
+        monitor = 1;
+      };
+    };
+  };
   wayland.windowManager.hyprland = {
     enable = true;
     xwayland.enable = true;
@@ -153,6 +165,16 @@ in
       };
       misc = {
         background_color = "rgb(${config.colorScheme.palette.base01})";
+      };
+      group = {
+        "col.border_active" = "rgba(${config.colorScheme.palette.base07}ee) rgba(${config.colorScheme.palette.base0F}ee) 45deg";
+        "col.border_inactive" = "rgba(${config.colorScheme.palette.base0E}aa)";
+        groupbar = {
+          height = 2;
+          render_titles = false;
+          "col.active" = "rgba(${config.colorScheme.palette.base0F}ee) rgba(${config.colorScheme.palette.base07}ee) 45deg";
+          "col.inactive" = "rgba(aaaaaaee)";
+        };
       };
     };
   };
