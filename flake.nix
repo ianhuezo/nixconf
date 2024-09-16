@@ -27,6 +27,7 @@
       # Hyprspace uses latest Hyprland. We declare this to keep them in sync.
       inputs.hyprland.follows = "hyprland";
     };
+    nix-colors.url = "github:misterio77/nix-colors";
   };
 
   outputs =
