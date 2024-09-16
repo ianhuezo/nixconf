@@ -19,8 +19,8 @@
       url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
     };
     hyprland-plugins = {
-    	url = "github:hyprwm/hyprland-plugins";
-	inputs.hyprland.follows = "hyprland";
+      url = "github:hyprwm/hyprland-plugins";
+      inputs.hyprland.follows = "hyprland";
     };
     Hyprspace = {
       url = "github:KZDKM/Hyprspace";
@@ -55,7 +55,9 @@
             {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
-	      home-manager.extraSpecialArgs = {inherit inputs;};
+              home-manager.extraSpecialArgs = {
+                inherit inputs;
+              };
               home-manager.users.ianh.imports = [
                 # plasma-manager.homeManagerModules.plasma-manager
                 nixvim.homeManagerModules.nixvim

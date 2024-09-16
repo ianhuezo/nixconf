@@ -66,6 +66,23 @@ in
     xwayland.enable = true;
     settings = {
       exec-once = ''${startupScript}/bin/start'';
+      monitor = [
+        "HDMI-A-1, preferred, auto, 1"
+        "DP-2, preferred, auto-left, 1"
+      ];
+      workspace = [
+        "1,monitor:HDMI-A-1,default:true"
+        "2,monitor:HDMI-A-1"
+        "3,monitor:HDMI-A-1"
+        "4,monitor:HDMI-A-1"
+        "5,monitor:HDMI-A-1"
+
+        "6,monitor:DP-2,default:true"
+        "7,monitor:DP-2"
+        "8,monitor:DP-2"
+        "9,monitor:DP-2"
+        "10,monitor:DP-2"
+      ];
       "$mod" = "SUPER";
       binds.allow_workspace_cycles = true;
       bind =
@@ -76,13 +93,12 @@ in
           "$mod, D, exec, vesktop"
           "$mod SHIFT, h, movecurrentworkspacetomonitor, l"
           "$mod SHIFT, l, movecurrentworkspacetomonitor, r"
-	  "$mod SHIFT, N, cyclenext"
-	  "$mod SHIFT, P, cyclenext, prev"
-	  "$mod SHIFT, S, exec, hyprshot -m region --clipboard-only"
-	  "SHIFT, TAB, workspace, previous"
-	  "CTRL, TAB, overview:toggle"
+          "$mod SHIFT, N, cyclenext"
+          "$mod SHIFT, P, cyclenext, prev"
+          "$mod SHIFT, S, exec, hyprshot -m region --clipboard-only"
+          "CTRL, TAB, overview:toggle"
           "$mod, Q, killactive"
-	  "$mod SHIFT, Q, exec,loginctl terminate-user $USER"
+          "$mod SHIFT, Q, exec,loginctl terminate-user $USER"
           ", Print, exec, grimblast copy area"
         ]
         ++ (
@@ -105,9 +121,8 @@ in
   wayland.windowManager.hyprland.systemd.variables = [ "--all" ];
   #hyprland plugins
   wayland.windowManager.hyprland.plugins = [
-	inputs.Hyprspace.packages.${pkgs.system}.Hyprspace
+    inputs.Hyprspace.packages.${pkgs.system}.Hyprspace
   ];
-
 
   # home.pointerCursor = {
   #   gtk.enable = true;
