@@ -7,6 +7,7 @@
 let
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
     nm-applet --indicator & disown 
+    env = ELECTRON_OZONE_PLATFORM_HINT,x11
     sleep 1
     waybar &
 
