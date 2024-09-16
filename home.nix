@@ -73,13 +73,15 @@ in
           "$mod, F, exec, firefox"
           "$mod, K, exec, kitty"
           "$mod, S, exec, spotify"
-	  "$mod, D, exec, vesktop"
-	  "$mod, SHIFT, L, movecurrentworkspacemonitor, l"
-	  "$mod, SHIFT, R, movecurrentworkspacemonitor, r"
+          "$mod, D, exec, vesktop"
+          "$mod SHIFT, L, movecurrentworkspacetomonitor, l"
+          "$mod SHIFT, R, movecurrentworkspacetomonitor, r"
+	  "$mod SHIFT, N, cyclenext"
+	  "$mod SHIFT, P, cyclenext, prev"
+          "$mod, Q, killactive"
           ", Print, exec, grimblast copy area"
         ]
         ++ (
-          # workspaces
           # binds $mod + [shift +] {Q,W,E,R,T,Y,U,I,O} to [move to] workspace {1..9}
           builtins.concatLists (
             builtins.genList (
@@ -88,8 +90,8 @@ in
                 ws = i + 1;
               in
               [
-                "$mod, code:${toString (65 + i)}, workspace, ${toString ws}"
-                "$mod SHIFT, code:${toString (65 + i)}, movetoworkspace, ${toString ws}"
+                "$mod, code:1${toString i}, workspace, ${toString ws}"
+                "$mod SHIFT, code:1${toString i}, movetoworkspace, ${toString ws}"
               ]
             ) 9
           )
