@@ -77,11 +77,12 @@ in
           "$mod SHIFT, h, movecurrentworkspacetomonitor, l"
           "$mod SHIFT, l, movecurrentworkspacetomonitor, r"
 	  "$mod SHIFT, N, cyclenext"
-	  "SHIFT, `, cyclenext"
 	  "$mod SHIFT, P, cyclenext, prev"
+	  "$mod SHIFT, S, exec, hyprshot -m region --clipboard-only"
 	  "SHIFT, TAB, workspace, previous"
 	  "CTRL, TAB, overview:toggle"
           "$mod, Q, killactive"
+	  "$mod SHIFT, Q, loginctl terminate-user $USER"
           ", Print, exec, grimblast copy area"
         ]
         ++ (
