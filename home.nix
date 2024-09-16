@@ -73,6 +73,9 @@ in
           "$mod, F, exec, firefox"
           "$mod, K, exec, kitty"
           "$mod, S, exec, spotify"
+	  "$mod, D, exec, vesktop"
+	  "$mod, SHIFT, L, movecurrentworkspacemonitor, l"
+	  "$mod, SHIFT, R, movecurrentworkspacemonitor, r"
           ", Print, exec, grimblast copy area"
         ]
         ++ (
