@@ -127,8 +127,8 @@ in
         gaps_in = 5;
         gaps_out = 20;
         border_size = 2;
-        # "col.active_border" = "rgba(${config.colorScheme.palette.base08}ee) rgba(${config.colorScheme.palette.base0A}ee) 45deg";
-        # "col.inactive_border" = "rgba(${config.colorScheme.palette.base03}aa)";
+        "col.active_border" = "rgba(${config.colorScheme.palette.base08}ee) rgba(${config.colorScheme.palette.base0A}ee) 45deg";
+        "col.inactive_border" = "rgba(${config.colorScheme.palette.base03}aa)";
         layout = "master";
       };
       decoration = {
@@ -146,7 +146,13 @@ in
         shadow_offset = "0 2";
         shadow_range = 10;
         shadow_render_power = 2;
-        # "col.shadow" = "rgba(${config.colorScheme.palette.base0D}dd)";
+        "col.shadow" = "rgba(${config.colorScheme.palette.base0D}dd)";
+      };
+      animations = {
+        enabled = true;
+      };
+      misc = {
+        background_color = "rgb(${config.colorScheme.palette.base01})";
       };
     };
   };
