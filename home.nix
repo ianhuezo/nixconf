@@ -8,8 +8,6 @@ let
   nix-colors = import inputs.nix-colors { };
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
     nm-applet --indicator & disown 
-    env = ELECTRON_OZONE_PLATFORM_HINT,x11
-    hyprpaper &
     sleep 1
     waybar &
 
@@ -160,22 +158,22 @@ in
         shadow_render_power = 2;
         "col.shadow" = "rgba(${config.colorScheme.palette.base0D}dd)";
       };
-      animations = {
-        enabled = true;
-      };
-      misc = {
-        background_color = "rgb(${config.colorScheme.palette.base01})";
-      };
-      group = {
-        "col.border_active" = "rgba(${config.colorScheme.palette.base07}ee) rgba(${config.colorScheme.palette.base0F}ee) 45deg";
-        "col.border_inactive" = "rgba(${config.colorScheme.palette.base0E}aa)";
-        groupbar = {
-          height = 2;
-          render_titles = false;
-          "col.active" = "rgba(${config.colorScheme.palette.base0F}ee) rgba(${config.colorScheme.palette.base07}ee) 45deg";
-          "col.inactive" = "rgba(aaaaaaee)";
-        };
-      };
+      # animations = {
+      #   enabled = true;
+      # };
+      # misc = {
+      #   background_color = "rgb(${config.colorScheme.palette.base01})";
+      # };
+      # group = {
+      #   "col.border_active" = "rgba(${config.colorScheme.palette.base07}ee) rgba(${config.colorScheme.palette.base0F}ee) 45deg";
+      #   "col.border_inactive" = "rgba(${config.colorScheme.palette.base0E}aa)";
+      #   groupbar = {
+      #     height = 2;
+      #     render_titles = false;
+      #     "col.active" = "rgba(${config.colorScheme.palette.base0F}ee) rgba(${config.colorScheme.palette.base07}ee) 45deg";
+      #     "col.inactive" = "rgba(aaaaaaee)";
+      #   };
+      # };
     };
   };
   wayland.windowManager.hyprland.systemd.variables = [ "--all" ];
