@@ -8,12 +8,12 @@ let
   nix-colors = import inputs.nix-colors { };
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
     nm-applet --indicator & disown 
+    systemctl --user import-environment XDG_CURRENT_DESKTOP XDG_SESSION_TYPE
+    dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
     sleep 1
     waybar &
 
     sleep 1
-    "[workspace 1 silent] firefox"
-    "[workspace 6 silent] vesktop"
   '';
 in
 {
@@ -137,26 +137,12 @@ in
         gaps_in = 5;
         gaps_out = 20;
         border_size = 2;
-        "col.active_border" = "rgba(${config.colorScheme.palette.base08}ee) rgba(${config.colorScheme.palette.base0A}ee) 45deg";
+        "col.active_border" = "${config.colorScheme.palette.base08} rgba(${config.colorScheme.palette.base0A}ee) 45deg";
         "col.inactive_border" = "rgba(${config.colorScheme.palette.base03}aa)";
         layout = "master";
       };
       decoration = {
         rounding = 10;
-        blur = {
-          enabled = true;
-          brightness = 0.5;
-          contrast = 1.0;
-          noise = 0.2;
-          size = 5;
-          passes = 3;
-        };
-        drop_shadow = true;
-        shadow_ignore_window = true;
-        shadow_offset = "0 2";
-        shadow_range = 10;
-        shadow_render_power = 2;
-        "col.shadow" = "rgba(${config.colorScheme.palette.base0D}dd)";
       };
       # animations = {
       #   enabled = true;
