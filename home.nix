@@ -11,7 +11,6 @@ let
     waybar &
 
     sleep 1
-    kitty &
   '';
 in
 {
@@ -75,10 +74,12 @@ in
           "$mod, K, exec, kitty"
           "$mod, S, exec, spotify"
           "$mod, D, exec, vesktop"
-          "$mod SHIFT, L, movecurrentworkspacetomonitor, l"
-          "$mod SHIFT, R, movecurrentworkspacetomonitor, r"
+          "$mod SHIFT, h, movecurrentworkspacetomonitor, l"
+          "$mod SHIFT, l, movecurrentworkspacetomonitor, r"
 	  "$mod SHIFT, N, cyclenext"
+	  "SHIFT, `, cyclenext"
 	  "$mod SHIFT, P, cyclenext, prev"
+	  "SHIFT, TAB, workspace, previous"
 	  "CTRL, TAB, overview:toggle"
           "$mod, Q, killactive"
           ", Print, exec, grimblast copy area"
