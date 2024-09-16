@@ -56,11 +56,6 @@ in
     kitty
     vesktop
     spotify
-    waybar
-    hyprpaper
-    dunst
-    swaylock-effects
-    wofi
   ];
   #all the wayland stuff on three
   programs.waybar.enable = true;
@@ -75,7 +70,7 @@ in
         [
           "$mod, F, exec, firefox"
           "$mod, K, exec, kitty"
-	  "$mod, S, exec, spotify"
+          "$mod, S, exec, spotify"
           ", Print, exec, grimblast copy area"
         ]
         ++ (
@@ -96,7 +91,7 @@ in
         );
     };
   };
-  wayland.windowManager.hyprland.systemd.variables = ["--all"];
+  wayland.windowManager.hyprland.systemd.variables = [ "--all" ];
   # home.pointerCursor = {
   #   gtk.enable = true;
   #   # x11.enable = true;

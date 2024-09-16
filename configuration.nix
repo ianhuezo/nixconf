@@ -55,9 +55,11 @@
   services.desktopManager.plasma6.enable = false;
 
   # Enable hyprland
-  programs.hyprland.enable = true;
-  programs.hyprland.package = hyprland-direct.packages."${pkgs.system}".hyprland;
-  
+  programs.hyprland = {
+    # we use this instead of putting it in systemPackages/users
+    enable = true;
+    xwayland.enable = true;
+  };
 
   #Enable NVIDIA drivers
   hardware.graphics.enable = true;
@@ -70,6 +72,11 @@
     nvidiaSettings = true;
     package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
+
+  fonts.packages = with pkgs; [
+    nerdfonts
+    meslo-lgs-nf
+  ];
 
   # Enable steam
   programs.steam = {
@@ -147,6 +154,7 @@
   environment.systemPackages = with pkgs; [
     #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     #  wget
+    networkmanagerapplet
     git
     zsh
     nixfmt-rfc-style
