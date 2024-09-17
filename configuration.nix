@@ -6,6 +6,7 @@
   config,
   pkgs,
   hyprland,
+  inputs,
   ...
 }:
 
@@ -70,7 +71,7 @@
     powerManagement.finegrained = false;
     open = false;
     nvidiaSettings = true;
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
+    package = config.boot.kernelPackages.nvidiaPackages.beta;
   };
 
   fonts.packages = with pkgs; [
@@ -169,6 +170,8 @@
     swaylock-effects
     wofi
     hyprshot
+    inputs.hyprpaper.packages.${pkgs.system}.hyprpaper
+    inputs.swww.packages.${pkgs.system}.swww
   ];
   environment.sessionVariables = {
     WLR_M__HARDWARE_CUROS = "1";

@@ -10,11 +10,11 @@ let
     nm-applet --indicator & disown 
     systemctl --user import-environment XDG_CURRENT_DESKTOP XDG_SESSION_TYPE
     dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
-    hyprpaper
     sleep 1
     waybar &
-
+    swww-daemon &
     sleep 1
+    swww img ${config.home.homeDirectory}/Pictures/frieren.png &
   '';
 in
 {
