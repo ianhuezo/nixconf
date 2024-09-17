@@ -81,7 +81,18 @@ in
     };
   };
   programs.waybar.enable = true;
+  programs.waybar.settings = {
+	
+  };
   programs.wofi.enable = true;
+  programs.wofi.settings = {
+	width= 500;
+	height = 300;
+	always_parse_args = true;
+	show_all = false;
+	print_command = true;
+	insensitive = true;
+  };
   services.dunst = {
     enable = true;
     settings = {
@@ -114,13 +125,18 @@ in
         "10,monitor:DP-2"
       ];
       "$mod" = "SUPER";
+      "$menu" = "wofi --show drun";
       binds.allow_workspace_cycles = true;
       bind =
         [
+	  #search with wofi
+	  "ALT_L, SPACE, exec, $menu"
+	  #mod key opens general applications
           "$mod, F, exec, firefox"
           "$mod, K, exec, kitty"
           "$mod, S, exec, spotify"
           "$mod, D, exec, vesktop"
+	  #mod shift does things to workspaces, monitors, etc
           "$mod SHIFT, h, movecurrentworkspacetomonitor, l"
           "$mod SHIFT, l, movecurrentworkspacetomonitor, r"
           "$mod SHIFT, N, cyclenext"
@@ -286,7 +302,7 @@ in
     XDG_CONFIG_DIRS = "$HOME/etc/xdg";
     XDG_DATA_HOME = "$HOME/var/share";
     XDG_STATE_HOME = "$HOME/var/state";
-    XDG_DATA_DIRS = "/usr/local/share/:/usr/share/";
+    XDG_DATA_DIRS = "/usr/local/share/:/usr/share/:/etc/profiles/per-user/$USER/share/";
     XDG_PICTURES_DIR = "$HOME/pictures";
     QT_QPA_PLATFORM = "wayland";
     STEAM_EXTRA_COMPAT_TOOLS_PATHS = "\${HOME}/.steam/root/compatibilitytools.d";

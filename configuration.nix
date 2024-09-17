@@ -71,12 +71,13 @@
     powerManagement.finegrained = false;
     open = false;
     nvidiaSettings = true;
-    package = config.boot.kernelPackages.nvidiaPackages.beta;
+    package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
 
   fonts.packages = with pkgs; [
     nerdfonts
     meslo-lgs-nf
+    jetbrains-mono
   ];
 
   # Enable steam
@@ -166,8 +167,10 @@
     noisetorch
     protonup
     kitty
+    pavucontrol
     dunst
     swaylock-effects
+    btop
     wofi
     hyprshot
     inputs.hyprpaper.packages.${pkgs.system}.hyprpaper
