@@ -10,6 +10,7 @@ let
     nm-applet --indicator & disown 
     systemctl --user import-environment XDG_CURRENT_DESKTOP XDG_SESSION_TYPE
     dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+    hyprpaper
     sleep 1
     waybar &
 
@@ -58,15 +59,27 @@ in
     # (pkgs.writeShellScriptBin "my-hello" ''
     #   echo "Hello, ${config.home.username}!"
     # '')
-    inputs.hyprpaper.packages.${pkgs.system}.hyprpaper
     zoxide
     zsh
     discord
     kitty
     vesktop
+    bash
     spotify
   ];
   #all the wayland stuff on three
+  services.hyprpaper = {
+    enable = true;
+    settings = {
+      preload = [
+        "~/Pictures/walpapers/wallpaper.jpg"
+      ];
+      wallpaper = [
+        "HDMI-A-1,~/Pictures/walpapers/wallpaper.jpg"
+        "DP-2,~/Pictures/walpapers/wallpaper.jpg"
+      ];
+    };
+  };
   programs.waybar.enable = true;
   programs.wofi.enable = true;
   services.dunst = {
@@ -77,6 +90,7 @@ in
       };
     };
   };
+
   wayland.windowManager.hyprland = {
     enable = true;
     xwayland.enable = true;
@@ -269,8 +283,10 @@ in
   home.sessionVariables = {
     XDG_CACHE_HOME = "$HOME/var/.cache";
     XDG_CONFIG_HOME = "$HOME/.config";
+    XDG_CONFIG_DIRS = "$HOME/etc/xdg";
     XDG_DATA_HOME = "$HOME/var/share";
     XDG_STATE_HOME = "$HOME/var/state";
+    XDG_DATA_DIRS = "/usr/local/share/:/usr/share/";
     XDG_PICTURES_DIR = "$HOME/pictures";
     QT_QPA_PLATFORM = "wayland";
     STEAM_EXTRA_COMPAT_TOOLS_PATHS = "\${HOME}/.steam/root/compatibilitytools.d";

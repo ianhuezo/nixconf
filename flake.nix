@@ -28,10 +28,10 @@
       inputs.hyprland.follows = "hyprland";
     };
     nix-colors.url = "github:misterio77/nix-colors";
-    hyprpaper = {
-      url = "github:hyprwm/hyprpaper";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # hyprpaper = {
+    #   url = "github:hyprwm/hyprpaper";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
   };
 
   outputs =

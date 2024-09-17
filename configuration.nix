@@ -165,7 +165,6 @@
     noisetorch
     protonup
     kitty
-    hyprpaper
     dunst
     swaylock-effects
     wofi
