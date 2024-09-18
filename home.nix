@@ -110,6 +110,7 @@ in
   programs.wofi.style = ''
     #window {
        border-radius: 15px;
+       background-color: rgba(0.4,0.4,0.4,0.9);
     }
     #img {
 	margin-left: 16px;
@@ -126,8 +127,16 @@ in
 	margin-left: 10px;
     }
     #entry:selected {
+      all: unset;
       background-color: pink;
       border-radius: 15px;
+    }
+    #entry {
+	border-radius: 15px;
+    }
+    #entry:focus {
+        background: rgba(255, 0, 0, 0.9);
+	border: 1px solid rgba(255, 0, 0, 1);
     }
     *{
       font-family: monospace;
