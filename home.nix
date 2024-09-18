@@ -31,7 +31,7 @@ in
   #import the preferred color scheme
   colorScheme = nix-colors.colorSchemes.tokyodark;
 
-  # This value determines the Home Manager release that your configuration is
+  # This value determines the Home Manager release that your config.home.ration is
   # compatible with. This helps avoid breakage when a new Home Manager release
   # introduces backwards incompatible changes.
   #
@@ -54,10 +54,10 @@ in
     # (pkgs.nerdfonts.override { fonts = [ "FantasqueSansMono" ]; })
 
     # # You can also create simple shell scripts directly inside your
-    # # configuration. For example, this adds a command 'my-hello' to your
+    # # config.home.ration. For example, this adds a command 'my-hello' to your
     # # environment:
     # (pkgs.writeShellScriptBin "my-hello" ''
-    #   echo "Hello, ${config.home.username}!"
+    #   echo "Hello, ${config.home.home.username}!"
     # '')
     zoxide
     zsh
@@ -66,7 +66,21 @@ in
     vesktop
     bash
     spotify
+    gh
   ];
+  xdg.enable = true;
+  xdg.cacheHome = "${config.home.homeDirectory}/var/.cache";
+  xdg.dataHome = "${config.home.homeDirectory}/var/share";
+  xdg.stateHome = "${config.home.homeDirectory}/var/state";
+  xdg.portal = {
+    xdgOpenUsePortal = true;
+    extraPortals = with pkgs; [
+      xdg-desktop-portal-wlr
+      xdg-desktop-portal-gtk
+      xdg-desktop-portal-kde
+      xdg-desktop-portal-hyprland
+    ];
+  };
   #all the wayland stuff on three
   services.hyprpaper = {
     enable = true;
@@ -82,17 +96,38 @@ in
   };
   programs.waybar.enable = true;
   programs.waybar.settings = {
-	
+
   };
   programs.wofi.enable = true;
   programs.wofi.settings = {
-	width= 500;
-	height = 300;
-	always_parse_args = true;
-	show_all = false;
-	print_command = true;
-	insensitive = true;
+    width = 500;
+    height = 300;
+    always_parse_args = true;
+    show_all = false;
+    print_command = true;
+    insensitive = true;
   };
+  programs.wofi.style = ''
+    #window {
+       border-radius: 15px;
+    }
+    # #inner-box {
+    #    background-color: brown;
+    # }
+    # #scroll {
+    #    background-color: yellow;
+    # }
+    # #outer-box {
+    #    border-radius: 15px;
+    #    background-color: transparent;
+    # }
+    # #input {
+    #    background-color: green;
+    # }
+    # #inner-box {
+    #    background-color: pink;
+    # }
+  '';
   services.dunst = {
     enable = true;
     settings = {
@@ -125,18 +160,18 @@ in
         "10,monitor:DP-2"
       ];
       "$mod" = "SUPER";
-      "$menu" = "wofi --show drun";
+      "$menu" = "wofi -a --allow-images --show drun";
       binds.allow_workspace_cycles = true;
       bind =
         [
-	  #search with wofi
-	  "ALT_L, SPACE, exec, $menu"
-	  #mod key opens general applications
+          #search with wofi
+          "ALT_L, SPACE, exec, $menu"
+          #mod key opens general applications
           "$mod, F, exec, firefox"
           "$mod, K, exec, kitty"
           "$mod, S, exec, spotify"
           "$mod, D, exec, vesktop"
-	  #mod shift does things to workspaces, monitors, etc
+          #mod shift does things to workspaces, monitors, etc
           "$mod SHIFT, h, movecurrentworkspacetomonitor, l"
           "$mod SHIFT, l, movecurrentworkspacetomonitor, r"
           "$mod SHIFT, N, cyclenext"
@@ -178,15 +213,15 @@ in
       #   enabled = true;
       # };
       # misc = {
-      #   background_color = "rgb(${config.colorScheme.palette.base01})";
+      #   background_color = "rgb(${config.home.colorScheme.palette.base01})";
       # };
       # group = {
-      #   "col.border_active" = "rgba(${config.colorScheme.palette.base07}ee) rgba(${config.colorScheme.palette.base0F}ee) 45deg";
-      #   "col.border_inactive" = "rgba(${config.colorScheme.palette.base0E}aa)";
+      #   "col.border_active" = "rgba(${config.home.colorScheme.palette.base07}ee) rgba(${config.colorScheme.palette.base0F}ee) 45deg";
+      #   "col.border_inactive" = "rgba(${config.home.colorScheme.palette.base0E}aa)";
       #   groupbar = {
       #     height = 2;
       #     render_titles = false;
-      #     "col.active" = "rgba(${config.colorScheme.palette.base0F}ee) rgba(${config.colorScheme.palette.base07}ee) 45deg";
+      #     "col.active" = "rgba(${config.home.colorScheme.palette.base0F}ee) rgba(${config.colorScheme.palette.base07}ee) 45deg";
       #     "col.inactive" = "rgba(aaaaaaee)";
       #   };
       # };
@@ -197,6 +232,15 @@ in
   wayland.windowManager.hyprland.plugins = [
     inputs.Hyprspace.packages.${pkgs.system}.Hyprspace
   ];
+  # qt.enable = true;
+  qt.platformTheme = "gtk3";
+  gtk = {
+    enable = true;
+    theme = {
+      name = "Tokyonight-Dark-BL";
+      package = pkgs.tokyo-night-gtk;
+    };
+  };
 
   # home.pointerCursor = {
   #   gtk.enable = true;
@@ -228,8 +272,8 @@ in
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.
   home.file = {
-    # # Building this configuration will create a copy of 'dotfiles/screenrc' in
-    # # the Nix store. Activating the configuration will then make '~/.screenrc' a
+    # # Building this config.home.ration will create a copy of 'dotfiles/screenrc' in
+    # # the Nix store. Activating the config.home.ration will then make '~/.screenrc' a
     # # symlink to the Nix store copy.
     # ".screenrc".source = dotfiles/screenrc;
 
@@ -279,7 +323,7 @@ in
     ];
   };
 
-  nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.home.allowUnfree = true;
   # Home Manager can also manage your environment variables through
   # 'home.sessionVariables'. These will be explicitly sourced when using a
   # shell provided by Home Manager. If you don't want to manage your shell
@@ -297,13 +341,14 @@ in
   #  /etc/profiles/per-user/ianh/etc/profile.d/hm-session-vars.sh
   #
   home.sessionVariables = {
-    XDG_CACHE_HOME = "$HOME/var/.cache";
-    XDG_CONFIG_HOME = "$HOME/.config";
-    XDG_CONFIG_DIRS = "$HOME/etc/xdg";
-    XDG_DATA_HOME = "$HOME/var/share";
-    XDG_STATE_HOME = "$HOME/var/state";
-    XDG_DATA_DIRS = "/usr/local/share/:/usr/share/:/etc/profiles/per-user/$USER/share/";
-    XDG_PICTURES_DIR = "$HOME/pictures";
+    XDG_CACHE_HOME = "${config.home.homeDirectory}/var/.cache";
+    XDG_CONFIG_HOME = "${config.home.homeDirectory}/.config";
+    XDG_CONFIG_DIRS = "${config.home.homeDirectory}/etc/xdg";
+    XDG_DATA_HOME = "${config.home.homeDirectory}/var/share";
+    XDG_STATE_HOME = "${config.home.homeDirectory}/var/state";
+    XDG_DATA_DIRS = "/usr/local/share/:/usr/share/:/etc/profiles/per-user/$USER/share/:/run/current-system/sw/share/";
+    XDG_PICTURES_DIR = "${config.home.homeDirectory}/pictures";
+    NIXOS_XDG_OPEN_USE_PORTAL = "1";
     QT_QPA_PLATFORM = "wayland";
     STEAM_EXTRA_COMPAT_TOOLS_PATHS = "\${HOME}/.steam/root/compatibilitytools.d";
     NIXOS_OZONE_WL = "1";
