@@ -115,7 +115,12 @@ in
 	margin-left: 16px;
     }
     #input{
-	margin-bottom: 4px;
+    	margin: 15px;
+	box-shadow: none;
+	border: none;
+    }
+    #input:focus{
+	border-image: none;
     }
     #text {
 	margin-left: 10px;
