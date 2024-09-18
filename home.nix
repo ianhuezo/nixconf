@@ -196,6 +196,9 @@ in
       "$mod" = "SUPER";
       "$menu" = "wofi -a --allow-images --show drun";
       binds.allow_workspace_cycles = true;
+      bindm = [
+	"ALT, mouse:272, movewindow"
+      ];
       bind =
         [
           #search with wofi
@@ -214,6 +217,7 @@ in
           "CTRL, TAB, overview:toggle"
           "$mod, Q, killactive"
           "$mod SHIFT, Q, exec,loginctl terminate-user $USER"
+	  #mod with left mouse moves windows
           ", Print, exec, grimblast copy area"
         ]
         ++ (
