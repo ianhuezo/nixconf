@@ -114,11 +114,15 @@ in
     #img {
 	margin-left: 16px;
     }
+    #input{
+	margin-bottom: 4px;
+    }
     #text {
 	margin-left: 10px;
     }
     #entry:selected {
-      background-color: #5291e2;
+      background-color: pink;
+      border-radius: 15px;
     }
     *{
       font-family: monospace;
