@@ -111,22 +111,19 @@ in
     #window {
        border-radius: 15px;
     }
-    # #inner-box {
-    #    background-color: brown;
-    # }
-    # #scroll {
-    #    background-color: yellow;
-    # }
-    # #outer-box {
-    #    border-radius: 15px;
-    #    background-color: transparent;
-    # }
-    # #input {
-    #    background-color: green;
-    # }
-    # #inner-box {
-    #    background-color: pink;
-    # }
+    #img {
+	margin-left: 16px;
+    }
+    #text {
+	margin-left: 10px;
+    }
+    #entry:selected {
+      background-color: #5291e2;
+    }
+    *{
+      font-family: monospace;
+      font-size: 1.04em;
+    }
   '';
   services.dunst = {
     enable = true;
