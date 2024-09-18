@@ -29,7 +29,7 @@ in
   home.homeDirectory = "/home/ianh";
 
   #import the preferred color scheme
-  colorScheme = nix-colors.colorSchemes.tokyodark;
+  colorScheme = nix-colors.colorSchemes.tokyo-city-dark;
 
   # This value determines the Home Manager release that your config.home.ration is
   # compatible with. This helps avoid breakage when a new Home Manager release
@@ -100,18 +100,22 @@ in
   };
   programs.wofi.enable = true;
   programs.wofi.settings = {
-    width = 500;
-    height = 300;
+    width = 300;
+    height = 350;
     always_parse_args = true;
+    hide_scroll = true;
     show_all = false;
-    print_command = true;
     insensitive = true;
   };
   programs.wofi.style = ''
     #window {
        border-radius: 15px;
-       # background-color: #${config.colorScheme.palette.base00};
-       opacity: 0.9;
+       background-color: #${config.colorScheme.palette.base00};
+       padding: 5px;
+    }
+    #outer-box {
+	border: 1px solid #${config.colorScheme.palette.base0E};
+	border-radius:15px;
     }
     #img {
 	margin-left: 16px;
@@ -120,31 +124,42 @@ in
     	margin: 15px;
 	box-shadow: none;
 	border: none;
-	# background-color: rgba(0.7, 0.7, 0.7, 0.9);
+	opacity: 0.9;
+	background-color: #${config.colorScheme.palette.base00};
     }
     #input:focus{
 	border-image: none;
-	#can also transparent background color... but later
     }
     #text {
 	margin-left: 10px;
     }
     #entry:selected {
       all: unset;
-      # background-color: pink;
-      border-radius: 15px;
+      background-color: #${config.colorScheme.palette.base0D};
+      border-radius: 5px;
+      font-size: 0.8em;
+    }
+    #entry:selected:last-child {
+	border-bottom-right-radius: 15px;
+	border-bottom-left-radius: 15px;
     }
     #entry {
-	border-radius: 15px;
+      border-radius: 5px;
+      font-size: 0.8em;
+    }
+    #scroll {
+        all: unset;
+	border: none;
     }
     #entry:focus {
-        # background: ${config.colorScheme.palette.base04};
-	opacity: 0.9;
+        background: #${config.colorScheme.palette.base0D};
+	font-size: 0.8em;
     }
     *{
       font-family: monospace;
       font-size: 1.04em;
-      # color: #${config.colorScheme.palette.base08}
+      font-weight: bold;
+      color: #${config.colorScheme.palette.base07};
     }
   '';
   services.dunst = {
@@ -252,22 +267,22 @@ in
     inputs.Hyprspace.packages.${pkgs.system}.Hyprspace
   ];
   # qt.enable = true;
-  qt.platformTheme = "gtk3";
+  qt.platformTheme = "gtk";
   gtk = {
     enable = true;
-    theme = {
-      name = "Tokyonight-Dark-BL";
-      package = pkgs.tokyo-night-gtk;
-    };
+    # theme = {
+    #   name = "Tokyonight-Dark-BL";
+    #   package = pkgs.tokyo-night-gtk;
+    # };
   };
 
-  # home.pointerCursor = {
-  #   gtk.enable = true;
-  #   # x11.enable = true;
-  #   package = pkgs.bibata-cursors;
-  #   name = "Bibata-Modern-Classic";
-  #   size = 16;
-  # };
+  home.pointerCursor = {
+    gtk.enable = true;
+    # x11.enable = true;
+    package = pkgs.bibata-cursors;
+    name = "Bibata-Modern-Classic";
+    size = 16;
+  };
   #
   # gtk = {
   #   enable = true;
