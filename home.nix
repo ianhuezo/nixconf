@@ -110,7 +110,8 @@ in
   programs.wofi.style = ''
     #window {
        border-radius: 15px;
-       background-color: rgba(0.4,0.4,0.4,0.9);
+       # background-color: #${config.colorScheme.palette.base00};
+       opacity: 0.9;
     }
     #img {
 	margin-left: 16px;
@@ -119,28 +120,31 @@ in
     	margin: 15px;
 	box-shadow: none;
 	border: none;
+	# background-color: rgba(0.7, 0.7, 0.7, 0.9);
     }
     #input:focus{
 	border-image: none;
+	#can also transparent background color... but later
     }
     #text {
 	margin-left: 10px;
     }
     #entry:selected {
       all: unset;
-      background-color: pink;
+      # background-color: pink;
       border-radius: 15px;
     }
     #entry {
 	border-radius: 15px;
     }
     #entry:focus {
-        background: rgba(255, 0, 0, 0.9);
-	border: 1px solid rgba(255, 0, 0, 1);
+        # background: ${config.colorScheme.palette.base04};
+	opacity: 0.9;
     }
     *{
       font-family: monospace;
       font-size: 1.04em;
+      # color: #${config.colorScheme.palette.base08}
     }
   '';
   services.dunst = {
