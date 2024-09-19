@@ -33,6 +33,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     swww.url = "github:LGFae/swww";
+    eww = {
+	url = "github:elkowar/eww";
+	inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =

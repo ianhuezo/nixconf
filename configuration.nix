@@ -80,6 +80,7 @@
     nerdfonts
     meslo-lgs-nf
     jetbrains-mono
+    font-awesome
   ];
 
   # Enable steam
@@ -145,7 +146,6 @@
     shell = pkgs.zsh;
   };
   programs.zsh.enable = true;
-
   # Install firefox.
   programs.firefox.enable = true;
   # Allow unfree packages

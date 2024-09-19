@@ -10,8 +10,8 @@ let
     nm-applet --indicator & disown 
     systemctl --user import-environment XDG_CURRENT_DESKTOP XDG_SESSION_TYPE
     dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+    ${pkgs.eww}/bin/eww daemon
     sleep 1
-    waybar &
     swww-daemon &
     sleep 1
     swww img ${config.home.homeDirectory}/Pictures/frieren.png &
@@ -95,9 +95,28 @@ in
     };
   };
   programs.waybar.enable = true;
-  programs.waybar.settings = {
-
+  programs.waybar = {
+    systemd.enable = true;
   };
+  programs.waybar.settings = {
+    mainBar = {
+      layer = "top";
+      position = "top";
+      height = 30;
+      output = [
+        "HDMI-A-1"
+        "DP-2"
+      ];
+      modules-left = [ "hyprland/workspaces" ];
+      modules-center = [ ];
+      modules-right = [ ];
+    };
+  };
+  programs.waybar.style = ''
+
+  '';
+
+	
   programs.wofi.enable = true;
   programs.wofi.settings = {
     width = 300;
@@ -108,59 +127,59 @@ in
     insensitive = true;
   };
   programs.wofi.style = ''
-    #window {
-       border-radius: 15px;
-       background-color: #${config.colorScheme.palette.base00};
-       padding: 5px;
-    }
-    #outer-box {
-	border: 1px solid #${config.colorScheme.palette.base0E};
-	border-radius:15px;
-    }
-    #img {
-	margin-left: 16px;
-    }
-    #input{
-    	margin: 15px;
-	box-shadow: none;
-	border: none;
-	opacity: 0.9;
-	background-color: #${config.colorScheme.palette.base00};
-    }
-    #input:focus{
-	border-image: none;
-    }
-    #text {
-	margin-left: 10px;
-    }
-    #entry:selected {
-      all: unset;
-      background-color: #${config.colorScheme.palette.base0D};
-      border-radius: 5px;
-      font-size: 0.8em;
-    }
-    #entry:selected:last-child {
-	border-bottom-right-radius: 15px;
-	border-bottom-left-radius: 15px;
-    }
-    #entry {
-      border-radius: 5px;
-      font-size: 0.8em;
-    }
-    #scroll {
-        all: unset;
-	border: none;
-    }
-    #entry:focus {
-        background: #${config.colorScheme.palette.base0D};
-	font-size: 0.8em;
-    }
-    *{
-      font-family: monospace;
-      font-size: 1.04em;
-      font-weight: bold;
-      color: #${config.colorScheme.palette.base07};
-    }
+        #window {
+           border-radius: 15px;
+           background-color: #${config.colorScheme.palette.base00};
+           padding: 5px;
+        }
+        #outer-box {
+    	border: 1px solid #${config.colorScheme.palette.base0E};
+    	border-radius:15px;
+        }
+        #img {
+    	margin-left: 16px;
+        }
+        #input{
+        	margin: 15px;
+    	box-shadow: none;
+    	border: none;
+    	opacity: 0.9;
+    	background-color: #${config.colorScheme.palette.base00};
+        }
+        #input:focus{
+    	border-image: none;
+        }
+        #text {
+    	margin-left: 10px;
+        }
+        #entry:selected {
+          all: unset;
+          background-color: #${config.colorScheme.palette.base0D};
+          border-radius: 5px;
+          font-size: 0.8em;
+        }
+        #entry:selected:last-child {
+    	border-bottom-right-radius: 15px;
+    	border-bottom-left-radius: 15px;
+        }
+        #entry {
+          border-radius: 5px;
+          font-size: 0.8em;
+        }
+        #scroll {
+            all: unset;
+    	border: none;
+        }
+        #entry:focus {
+            background: #${config.colorScheme.palette.base0D};
+    	font-size: 0.8em;
+        }
+        *{
+          font-family: monospace;
+          font-size: 1.04em;
+          font-weight: bold;
+          color: #${config.colorScheme.palette.base07};
+        }
   '';
   services.dunst = {
     enable = true;
@@ -197,7 +216,7 @@ in
       "$menu" = "wofi -a --allow-images --show drun";
       binds.allow_workspace_cycles = true;
       bindm = [
-	"ALT, mouse:272, movewindow"
+        "ALT, mouse:272, movewindow"
       ];
       bind =
         [
@@ -217,7 +236,7 @@ in
           "CTRL, TAB, overview:toggle"
           "$mod, Q, killactive"
           "$mod SHIFT, Q, exec,loginctl terminate-user $USER"
-	  #mod with left mouse moves windows
+          #mod with left mouse moves windows
           ", Print, exec, grimblast copy area"
         ]
         ++ (
