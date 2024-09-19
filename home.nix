@@ -10,7 +10,7 @@ let
     nm-applet --indicator & disown 
     systemctl --user import-environment XDG_CURRENT_DESKTOP XDG_SESSION_TYPE
     dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
-    ${pkgs.eww}/bin/eww daemon
+    # ${pkgs.eww}/bin/eww daemon
     sleep 1
     swww-daemon &
     sleep 1
@@ -326,6 +326,13 @@ in
   #   };
   # };
   programs.kitty.enable = true;
+  programs.eww.enable = true;
+  programs.eww.configDir = "${config.xdg.configHome}";
+  home.file."${config.xdg.configHome}" = {
+	source = ./dotfiles;
+	recursive = true;
+  };
+  home.file."${config.xdg.configHome}/eww/eww.yuck".text = "";
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.
   home.file = {
@@ -333,7 +340,6 @@ in
     # # the Nix store. Activating the config.home.ration will then make '~/.screenrc' a
     # # symlink to the Nix store copy.
     # ".screenrc".source = dotfiles/screenrc;
-
     # # You can also set the file content immediately.
     # ".gradle/gradle.properties".text = ''
     #   org.gradle.console=verbose
