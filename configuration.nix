@@ -177,6 +177,7 @@
     hyprshot
     inputs.hyprpaper.packages.${pkgs.system}.hyprpaper
     inputs.swww.packages.${pkgs.system}.swww
+    inputs.eww.packages.${pkgs.system}.eww
   ];
   environment.sessionVariables = {
     WLR_M__HARDWARE_CUROS = "1";
