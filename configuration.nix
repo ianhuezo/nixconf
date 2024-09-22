@@ -158,6 +158,7 @@
   environment.systemPackages = with pkgs; [
     #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     #  wget
+    sysstat
     networkmanagerapplet
     git
     zsh
@@ -175,6 +176,7 @@
     btop
     wofi
     hyprshot
+    playerctl
     inputs.hyprpaper.packages.${pkgs.system}.hyprpaper
     inputs.swww.packages.${pkgs.system}.swww
     inputs.eww.packages.${pkgs.system}.eww

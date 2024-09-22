@@ -22,6 +22,7 @@ in
   imports = [
     # ./core/plasma/default.nix
     nix-colors.homeManagerModules.default
+    inputs.ags.homeManagerModules.default
   ];
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
@@ -82,39 +83,137 @@ in
     ];
   };
   #all the wayland stuff on three
-  services.hyprpaper = {
-    enable = true;
-    settings = {
-      preload = [
-        "~/Pictures/walpapers/wallpaper.jpg"
-      ];
-      wallpaper = [
-        "HDMI-A-1,~/Pictures/walpapers/wallpaper.jpg"
-        "DP-2,~/Pictures/walpapers/wallpaper.jpg"
-      ];
-    };
-  };
   programs.waybar.enable = true;
   programs.waybar = {
     systemd.enable = true;
   };
   programs.waybar.settings = {
-    mainBar = {
+    leftBar = {
+      margin-top= 10;
+      margin-right=10;
+      margin-left=10;
       layer = "top";
       position = "top";
-      height = 30;
+      height = 34;
       output = [
         "HDMI-A-1"
         "DP-2"
       ];
       modules-left = [ "hyprland/workspaces" ];
       modules-center = [ ];
-      modules-right = [ ];
+      modules-right = [ "group/right" ];
+      "custom/hardware"= {
+          interval= 3;
+          format= "  {}%";
+          max-length= 8;
+	  min-length = 8;
+	  exec="sar -u 1 1 | tail -1 | awk '{print int(100 - $8)}'";
+	  exec-if="exit 0";
+      };
+      "group/sound" = {
+	orientation = "horizontal";
+	modules = [
+	  "pulseaudio"
+	  "pulseaudio/slider"
+	];
+      };
+
+      "group/right" = {
+         orientation = "horizontal";
+         modules = [ 
+	 # "pulseaudio"
+	 # "pulseaudio/slider"
+	 "group/sound"
+	 "bluetooth"
+	"custom/hardware"
+         ];
+      };
+      "pulseaudio/slider"= {
+          min= 0;
+          max= 100;
+          orientation= "horizontal";
+      };
+      "pulseaudio" = {
+	format = "{icon}";
+	format-muted = "";
+	format-icons = {
+	   default= [
+	   	"" 
+		""
+	   ];
+	};
+      };
+      "hyprland/workspaces" = {
+	format="{name}: {icon}";
+	format-icons= {
+		"active"= "";
+		"default"= "";
+	};
+      };
     };
   };
   programs.waybar.style = ''
+	* {
+	   color: #${config.colorScheme.palette.base07};
+	}
+	window#waybar {
+	   background-color: #${config.colorScheme.palette.base00};
+	   border-radius: 10px;
+	}
 
+	#pulseaudio-slider,
+	#pulseaudio,
+	#group-sound,
+	#group-sound {
+	  
+	}
+	
+	#pulseaudio {
+	   padding-right: 5px;
+	}
+
+	#pulseaudio-slider {
+	   min-width: 100px;
+	}
+	#pulseaudio-slider slider {
+             min-width: 0px;
+             opacity: 0;
+             background-image: none;
+             border: none;
+             box-shadow: none;
+	}
+        #pulseaudio-slider trough {
+            min-width: 10px;
+	    min-height: 3px;
+            border-radius: 5px;
+            background-color: #${config.colorScheme.palette.base07};
+        }
+	#pulseaudio-slider highlight {
+            min-width: 10px;
+            border-radius: 5px;
+            background-color: #${config.colorScheme.palette.base0D};
+        }
+
+
+	#hyprland-workspaces,
+	#custom-bluetooth,
+	#custom-hardware,
+	#group-right,
+	#group-right {
+	   margin-right: 10px;
+	}
+	#group-right:last-child{
+	   margin-right: 8px
+	}
   '';
+  programs.ags = {
+	enable = true;
+	extraPackages = with pkgs; [
+		gtksourceview
+		webkitgtk
+		accountsservice
+	];
+  };
 
 	
   programs.wofi.enable = true;
@@ -236,6 +335,7 @@ in
           "CTRL, TAB, overview:toggle"
           "$mod, Q, killactive"
           "$mod SHIFT, Q, exec,loginctl terminate-user $USER"
+	  "$mod SHIFT, F, fullscreen"
           #mod with left mouse moves windows
           ", Print, exec, grimblast copy area"
         ]
@@ -257,7 +357,7 @@ in
       #tokyodark theme applied
       general = {
         gaps_in = 5;
-        gaps_out = 20;
+        gaps_out = 5;
         border_size = 2;
         "col.active_border" = "${config.colorScheme.palette.base08} rgba(${config.colorScheme.palette.base0A}ee) 45deg";
         "col.inactive_border" = "rgba(${config.colorScheme.palette.base03}aa)";
@@ -266,22 +366,6 @@ in
       decoration = {
         rounding = 10;
       };
-      # animations = {
-      #   enabled = true;
-      # };
-      # misc = {
-      #   background_color = "rgb(${config.home.colorScheme.palette.base01})";
-      # };
-      # group = {
-      #   "col.border_active" = "rgba(${config.home.colorScheme.palette.base07}ee) rgba(${config.colorScheme.palette.base0F}ee) 45deg";
-      #   "col.border_inactive" = "rgba(${config.home.colorScheme.palette.base0E}aa)";
-      #   groupbar = {
-      #     height = 2;
-      #     render_titles = false;
-      #     "col.active" = "rgba(${config.home.colorScheme.palette.base0F}ee) rgba(${config.colorScheme.palette.base07}ee) 45deg";
-      #     "col.inactive" = "rgba(aaaaaaee)";
-      #   };
-      # };
     };
   };
   wayland.windowManager.hyprland.systemd.variables = [ "--all" ];
@@ -293,10 +377,6 @@ in
   qt.platformTheme = "gtk";
   gtk = {
     enable = true;
-    # theme = {
-    #   name = "Tokyonight-Dark-BL";
-    #   package = pkgs.tokyo-night-gtk;
-    # };
   };
 
   home.pointerCursor = {
@@ -326,8 +406,6 @@ in
   #   };
   # };
   programs.kitty.enable = true;
-  # programs.eww.enable = true;
-  # programs.eww.configDir = "${config.home.homeDirectory}/.config/eww";
   home.file."${config.home.homeDirectory}/.config" = {
 	source = ./dotfiles;
 	recursive = true;
@@ -355,6 +433,18 @@ in
     colorschemes.catppuccin.enable = true;
     plugins.lualine.enable = true;
     plugins.telescope.enable = true;
+    plugins.lsp.servers.biome.enable = true;
+    plugins.lsp.enable = true;
+    plugins.none-ls = {
+	enable = true;
+	enableLspFormat = true;
+	sources.formatting.prettier.enable = true;
+    };
+    plugins.lsp-format.enable = true;
+
+
+    clipboard.register = "unnamedplus";
+    clipboard.providers.wl-copy.enable = true;
   };
   programs.zsh = {
     enable = true;
