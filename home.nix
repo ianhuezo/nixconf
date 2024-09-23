@@ -68,7 +68,11 @@ in
     bash
     spotify
     gh
+    typescript
+    typescript-language-server
   ];
+  programs.zoxide.enable = true;
+  programs.zoxide.enableZshIntegration = true;
   xdg.enable = true;
   xdg.cacheHome = "${config.home.homeDirectory}/var/.cache";
   xdg.dataHome = "${config.home.homeDirectory}/var/share";
@@ -89,9 +93,9 @@ in
   };
   programs.waybar.settings = {
     leftBar = {
-      margin-top= 10;
-      margin-right=10;
-      margin-left=10;
+      margin-top = 10;
+      margin-right = 10;
+      margin-left = 10;
       layer = "top";
       position = "top";
       height = 34;
@@ -102,120 +106,119 @@ in
       modules-left = [ "hyprland/workspaces" ];
       modules-center = [ ];
       modules-right = [ "group/right" ];
-      "custom/hardware"= {
-          interval= 3;
-          format= "  {}%";
-          max-length= 8;
-	  min-length = 8;
-	  exec="sar -u 1 1 | tail -1 | awk '{print int(100 - $8)}'";
-	  exec-if="exit 0";
+      "custom/hardware" = {
+        interval = 3;
+        format = "  {}%";
+        max-length = 8;
+        min-length = 8;
+        exec = "sar -u 1 1 | tail -1 | awk '{print int(100 - $8)}'";
+        exec-if = "exit 0";
       };
       "group/sound" = {
-	orientation = "horizontal";
-	modules = [
-	  "pulseaudio"
-	  "pulseaudio/slider"
-	];
+        orientation = "horizontal";
+        modules = [
+          "pulseaudio"
+          "pulseaudio/slider"
+        ];
       };
 
       "group/right" = {
-         orientation = "horizontal";
-         modules = [ 
-	 # "pulseaudio"
-	 # "pulseaudio/slider"
-	 "group/sound"
-	 "bluetooth"
-	"custom/hardware"
-         ];
+        orientation = "horizontal";
+        modules = [
+          # "pulseaudio"
+          # "pulseaudio/slider"
+          "group/sound"
+          "bluetooth"
+          "custom/hardware"
+        ];
       };
-      "pulseaudio/slider"= {
-          min= 0;
-          max= 100;
-          orientation= "horizontal";
+      "pulseaudio/slider" = {
+        min = 0;
+        max = 100;
+        orientation = "horizontal";
       };
       "pulseaudio" = {
-	format = "{icon}";
-	format-muted = "";
-	format-icons = {
-	   default= [
-	   	"" 
-		""
-	   ];
-	};
+        format = "{icon}";
+        format-muted = "";
+        format-icons = {
+          default = [
+            ""
+            ""
+          ];
+        };
       };
       "hyprland/workspaces" = {
-	format="{name}: {icon}";
-	format-icons= {
-		"active"= "";
-		"default"= "";
-	};
+        format = "{name}: {icon}";
+        format-icons = {
+          "active" = "";
+          "default" = "";
+        };
       };
     };
   };
   programs.waybar.style = ''
-	* {
-	   color: #${config.colorScheme.palette.base07};
-	}
-	window#waybar {
-	   background-color: #${config.colorScheme.palette.base00};
-	   border-radius: 10px;
-	}
+    	* {
+    	   color: #${config.colorScheme.palette.base07};
+    	}
+    	window#waybar {
+    	   background-color: #${config.colorScheme.palette.base00};
+    	   border-radius: 10px;
+    	}
 
-	#pulseaudio-slider,
-	#pulseaudio,
-	#group-sound,
-	#group-sound {
-	  
-	}
-	
-	#pulseaudio {
-	   padding-right: 5px;
-	}
+    	#pulseaudio-slider,
+    	#pulseaudio,
+    	#group-sound,
+    	#group-sound {
+    	  
+    	}
+    	
+    	#pulseaudio {
+    	   padding-right: 5px;
+    	}
 
-	#pulseaudio-slider {
-	   min-width: 100px;
-	}
-	#pulseaudio-slider slider {
-             min-width: 0px;
-             opacity: 0;
-             background-image: none;
-             border: none;
-             box-shadow: none;
-	}
-        #pulseaudio-slider trough {
-            min-width: 10px;
-	    min-height: 3px;
-            border-radius: 5px;
-            background-color: #${config.colorScheme.palette.base07};
-        }
-	#pulseaudio-slider highlight {
-            min-width: 10px;
-            border-radius: 5px;
-            background-color: #${config.colorScheme.palette.base0D};
-        }
+    	#pulseaudio-slider {
+    	   min-width: 100px;
+    	}
+    	#pulseaudio-slider slider {
+                 min-width: 0px;
+                 opacity: 0;
+                 background-image: none;
+                 border: none;
+                 box-shadow: none;
+    	}
+            #pulseaudio-slider trough {
+                min-width: 10px;
+    	    min-height: 3px;
+                border-radius: 5px;
+                background-color: #${config.colorScheme.palette.base07};
+            }
+    	#pulseaudio-slider highlight {
+                min-width: 10px;
+                border-radius: 5px;
+                background-color: #${config.colorScheme.palette.base0D};
+            }
 
 
-	#hyprland-workspaces,
-	#custom-bluetooth,
-	#custom-hardware,
-	#group-right,
-	#group-right {
-	   margin-right: 10px;
-	}
-	#group-right:last-child{
-	   margin-right: 8px
-	}
+    	#hyprland-workspaces,
+    	#custom-bluetooth,
+    	#custom-hardware,
+    	#group-right,
+    	#group-right {
+    	   margin-right: 10px;
+    	}
+    	#group-right:last-child{
+    	   margin-right: 8px
+    	}
   '';
   programs.ags = {
-	enable = true;
-	extraPackages = with pkgs; [
-		gtksourceview
-		webkitgtk
-		accountsservice
-	];
+    enable = true;
+    extraPackages = with pkgs; [
+      gtksourceview
+      webkitgtk
+      accountsservice
+    ];
   };
 
-	
   programs.wofi.enable = true;
   programs.wofi.settings = {
     width = 300;
@@ -335,7 +338,7 @@ in
           "CTRL, TAB, overview:toggle"
           "$mod, Q, killactive"
           "$mod SHIFT, Q, exec,loginctl terminate-user $USER"
-	  "$mod SHIFT, F, fullscreen"
+          "$mod SHIFT, F, fullscreen"
           #mod with left mouse moves windows
           ", Print, exec, grimblast copy area"
         ]
@@ -407,12 +410,12 @@ in
   # };
   programs.kitty.enable = true;
   home.file."${config.home.homeDirectory}/.config" = {
-	source = ./dotfiles;
-	recursive = true;
+    source = ./dotfiles;
+    recursive = true;
   };
   home.file."${config.home.homeDirectory}/Pictures" = {
-	source = ./wallpapers;
-	recursive = true;
+    source = ./wallpapers;
+    recursive = true;
   };
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.
@@ -430,21 +433,55 @@ in
 
   programs.nixvim = {
     enable = true;
+    globals.mapleader = " ";
     colorschemes.catppuccin.enable = true;
     plugins.lualine.enable = true;
-    plugins.telescope.enable = true;
-    plugins.lsp.servers.biome.enable = true;
-    plugins.lsp.enable = true;
-    plugins.none-ls = {
-	enable = true;
-	enableLspFormat = true;
-	sources.formatting.prettier.enable = true;
-    };
-    plugins.lsp-format.enable = true;
-
-
     clipboard.register = "unnamedplus";
     clipboard.providers.wl-copy.enable = true;
+  };
+  programs.nixvim.plugins = {
+    lsp.enable = true;
+    typescript-tools = {
+      enable = true;
+      settings.tsserverPlugins = [ "ags-ts" ];
+    };
+    lsp.servers.tsserver.enable = true;
+    lsp.servers.tsserver.filetypes = [
+      "javascript"
+      "javascriptreact"
+      "javascript.jsx"
+      "typescript"
+      "typescriptreact"
+      "typescript.tsx"
+      "vue"
+    ];
+
+    treesitter = {
+      enable = true;
+      settings = {
+        auto_install = true;
+        highlight = {
+          enable = true;
+          additional_vim_regex_highlighting = true;
+        };
+      };
+    };
+    cmp = {
+      enable = true;
+      settings = {
+        snippet.expand = "function(args) require('luasnip').lsp_expand(args.body) end";
+        window = {
+          completion.__raw = "cmp.config.window.bordered";
+          documentation.__raw = "cmp.config.window.bordered";
+        };
+      };
+    };
+    #    telescope = {
+    # enable = true;
+    # keymaps = {
+    # 	"<leader>fg" = "live_grep";
+    # };
+    #    };
   };
   programs.zsh = {
     enable = true;
@@ -455,6 +492,7 @@ in
     shellAliases = {
       ll = "ls -l";
       update = "sudo nixos-rebuild switch";
+      cd = "z";
     };
     history = {
       size = 10000;
@@ -465,6 +503,7 @@ in
       plugins = [ "git" ];
       theme = "robbyrussell";
     };
+    initExtra = "bindkey '^ ' autosuggest-execute";
     plugins = [
       {
         # will source zsh-autosuggestions.plugin.zsh
