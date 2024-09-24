@@ -10,7 +10,7 @@ let
     nm-applet --indicator & disown 
     systemctl --user import-environment XDG_CURRENT_DESKTOP XDG_SESSION_TYPE
     dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
-    ${pkgs.eww}/bin/eww daemon
+    ags & disown
     sleep 1
     swww-daemon &
     sleep 1
@@ -63,6 +63,7 @@ in
     zoxide
     zsh
     discord
+    webcord
     kitty
     vesktop
     bash
@@ -86,139 +87,6 @@ in
       xdg-desktop-portal-hyprland
     ];
   };
-  #all the wayland stuff on three
-  programs.waybar.enable = true;
-  programs.waybar = {
-    systemd.enable = true;
-  };
-  programs.waybar.settings = {
-    leftBar = {
-      margin-top = 10;
-      margin-right = 10;
-      margin-left = 10;
-      layer = "top";
-      position = "top";
-      height = 34;
-      output = [
-        "HDMI-A-1"
-        "DP-2"
-      ];
-      modules-left = [ "hyprland/workspaces" ];
-      modules-center = [ ];
-      modules-right = [ "group/right" ];
-      "custom/hardware" = {
-        interval = 3;
-        format = "  {}%";
-        max-length = 8;
-        min-length = 8;
-        exec = "sar -u 1 1 | tail -1 | awk '{print int(100 - $8)}'";
-        exec-if = "exit 0";
-      };
-      "group/sound" = {
-        orientation = "horizontal";
-        modules = [
-          "pulseaudio"
-          "pulseaudio/slider"
-        ];
-      };
-
-      "group/right" = {
-        orientation = "horizontal";
-        modules = [
-          # "pulseaudio"
-          # "pulseaudio/slider"
-          "group/sound"
-          "bluetooth"
-          "custom/hardware"
-        ];
-      };
-      "pulseaudio/slider" = {
-        min = 0;
-        max = 100;
-        orientation = "horizontal";
-      };
-      "pulseaudio" = {
-        format = "{icon}";
-        format-muted = "";
-        format-icons = {
-          default = [
-            ""
-            ""
-          ];
-        };
-      };
-      "hyprland/workspaces" = {
-        format = "{name}: {icon}";
-        format-icons = {
-          "active" = "";
-          "default" = "";
-        };
-      };
-    };
-  };
-  programs.waybar.style = ''
-    	* {
-    	   color: #${config.colorScheme.palette.base07};
-    	}
-    	window#waybar {
-    	   background-color: #${config.colorScheme.palette.base00};
-    	   border-radius: 10px;
-    	}
-
-    	#pulseaudio-slider,
-    	#pulseaudio,
-    	#group-sound,
-    	#group-sound {
-    	  
-    	}
-    	
-    	#pulseaudio {
-    	   padding-right: 5px;
-    	}
-
-    	#pulseaudio-slider {
-    	   min-width: 100px;
-    	}
-    	#pulseaudio-slider slider {
-                 min-width: 0px;
-                 opacity: 0;
-                 background-image: none;
-                 border: none;
-                 box-shadow: none;
-    	}
-            #pulseaudio-slider trough {
-                min-width: 10px;
-    	    min-height: 3px;
-                border-radius: 5px;
-                background-color: #${config.colorScheme.palette.base07};
-            }
-    	#pulseaudio-slider highlight {
-                min-width: 10px;
-                border-radius: 5px;
-                background-color: #${config.colorScheme.palette.base0D};
-            }
-
-
-    	#hyprland-workspaces,
-    	#custom-bluetooth,
-    	#custom-hardware,
-    	#group-right,
-    	#group-right {
-    	   margin-right: 10px;
-    	}
-    	#group-right:last-child{
-    	   margin-right: 8px
-    	}
-  '';
-  programs.ags = {
-    enable = true;
-    extraPackages = with pkgs; [
-      gtksourceview
-      webkitgtk
-      accountsservice
-    ];
-  };
-
   programs.wofi.enable = true;
   programs.wofi.settings = {
     width = 300;
@@ -327,8 +195,8 @@ in
           #mod key opens general applications
           "$mod, F, exec, firefox"
           "$mod, K, exec, kitty"
-          "$mod, S, exec, spotify"
-          "$mod, D, exec, vesktop"
+          "$mod, S, exec, spotify --enable-features=UseOzonePlatform --ozone-platform=x11 --uri=%U"
+          "$mod, D, exec, vesktop --enable-features=UseOzonePlatform --ozone-platform=x11 --uri=%U"
           #mod shift does things to workspaces, monitors, etc
           "$mod SHIFT, h, movecurrentworkspacetomonitor, l"
           "$mod SHIFT, l, movecurrentworkspacetomonitor, r"
