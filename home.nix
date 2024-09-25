@@ -245,7 +245,7 @@ in
               in
               [
                 "$mod, code:1${toString i}, workspace, ${toString ws}"
-                # "CTRL SHIFT, code:1${toString i}, movetoworkspace, ${toString ws}"
+                # "$mod, code:1${toString i}, movetoworkspace, ${toString ws}"
               ]
             ) 9
           )
