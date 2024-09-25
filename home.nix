@@ -16,6 +16,7 @@ let
     swww-daemon &
     sleep 1
     swww img ${config.home.homeDirectory}/Pictures/frieren.png &
+    sleep 1
   '';
 in
 {
@@ -169,6 +170,20 @@ in
     ];
   };
 
+  services.hypridle = {
+	enable = true;
+
+	settings = {
+	   listener = [
+		{
+		   timeout = 1200;
+		   on-timeout = "hyprctl dispatch dpms off";
+		   on-resume = "hyprctl dispatch dpms on";
+		}
+	   ];
+	};
+  };
+
   wayland.windowManager.hyprland = {
     enable = true;
     xwayland.enable = true;
@@ -216,6 +231,7 @@ in
           "$mod, Q, killactive"
           "$mod SHIFT, Q, exec,loginctl terminate-user $USER"
           "$mod SHIFT, F, fullscreen"
+	  "$mod, N, exec, hyprctl dispatch togglefloating"
           #mod with left mouse moves windows
           ", Print, exec, grimblast copy area"
         ]
@@ -229,7 +245,7 @@ in
               in
               [
                 "$mod, code:1${toString i}, workspace, ${toString ws}"
-                # " code:1${toString i}, movetoworkspace, ${toString ws}"
+                # "CTRL SHIFT, code:1${toString i}, movetoworkspace, ${toString ws}"
               ]
             ) 9
           )
@@ -272,10 +288,6 @@ in
   ];
   # qt.enable = true;
   qt.platformTheme = "gtk";
-  gtk = {
-    enable = true;
-  };
-
   home.pointerCursor = {
     gtk.enable = true;
     # x11.enable = true;
@@ -284,13 +296,13 @@ in
     size = 16;
   };
   #
-  # gtk = {
-  #   enable = true;
-  #
-  #   theme = {
-  #     package = pkgs.flat-remix-gtk;
-  #     name = "Flat-Remix-GTK-Grey-Darkest";
-  #   };
+  gtk = {
+    enable = true;
+
+    theme = {
+      package = pkgs.tokyonight-gtk-theme;
+      name = "Tokyo-Night-GTK-Theme";
+    };
   #
   #   iconTheme = {
   #     package = pkgs.gnome.adwaita-icon-theme;
@@ -301,7 +313,7 @@ in
   #     name = "Sans";
   #     size = 11;
   #   };
-  # };
+  };
   programs.kitty.enable = true;
   home.file."${config.home.homeDirectory}/.config" = {
     source = ./dotfiles;
