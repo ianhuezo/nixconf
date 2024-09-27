@@ -181,6 +181,9 @@
     wofi
     hyprshot
     playerctl
+    dracula-theme
+    dracula-icon-theme
+    tela-icon-theme
     inputs.hyprpaper.packages.${pkgs.system}.hyprpaper
     inputs.swww.packages.${pkgs.system}.swww
     inputs.eww.packages.${pkgs.system}.eww
