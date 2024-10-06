@@ -9,16 +9,16 @@ let
   nix-colors = import inputs.nix-colors { };
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
     nm-applet --indicator & disown 
+    swww-daemon & disown
+    sleep 1
+    swww img ${config.home.homeDirectory}/Pictures/frieren.png --transition-type any & disown
+    sleep 1
     systemctl --user import-environment XDG_CURRENT_DESKTOP XDG_SESSION_TYPE
     dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
     sleep 1
     ags & disown
     sleep 1
-    swww-daemon & disown
-    sleep 1
-    swww img ${config.home.homeDirectory}/Pictures/frieren.png --transition-type any &
-    sleep 1
-  '';
+    '';
 in
 {
 
@@ -63,6 +63,7 @@ in
     # (pkgs.writeShellScriptBin "my-hello" ''
     #   echo "Hello, ${config.home.home.username}!"
     # '')
+    krabby
     fastfetch
     vlc
     fastfetch
@@ -489,6 +490,7 @@ in
     initExtra = ''
     	bindkey '^ ' autosuggest-execute
 	fastfetch
+	krabby random 1-3 --no-title
     '';
     plugins = [
       {
