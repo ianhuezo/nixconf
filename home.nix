@@ -14,9 +14,9 @@ let
     sleep 1
     ags & disown
     sleep 1
-    swww-daemon &
+    swww-daemon & disown
     sleep 1
-    swww img ${config.home.homeDirectory}/Pictures/frieren.png &
+    swww img ${config.home.homeDirectory}/Pictures/frieren.png --transition-type any &
     sleep 1
   '';
 in
@@ -63,6 +63,9 @@ in
     # (pkgs.writeShellScriptBin "my-hello" ''
     #   echo "Hello, ${config.home.home.username}!"
     # '')
+    vlc
+    fastfetch
+    qbittorrent
     zoxide
     zsh
     discord
@@ -74,9 +77,13 @@ in
     gh
     typescript
     typescript-language-server
+    starship
   ];
   programs.zoxide.enable = true;
   programs.zoxide.enableZshIntegration = true;
+  programs.starship = {
+	enable = true;
+  };
   xdg.enable = true;
   xdg.cacheHome = "${config.home.homeDirectory}/var/.cache";
   xdg.dataHome = "${config.home.homeDirectory}/var/share";
@@ -177,7 +184,7 @@ in
 	settings = {
 	   listener = [
 		{
-		   timeout = 1200;
+		   timeout = 3600;
 		   on-timeout = "hyprctl dispatch dpms off";
 		   on-resume = "hyprctl dispatch dpms on";
 		}
@@ -317,41 +324,68 @@ in
   programs.kitty = {
 	enable = true;
 	    extraConfig = ''
-                foreground #${config.colorScheme.colors.base05}
-                background #${config.colorScheme.colors.base00}
-                color0  #${config.colorScheme.colors.base00}
-                color8  #${config.colorScheme.colors.base01}
-                color1  #${config.colorScheme.colors.base02}
-                color9  #${config.colorScheme.colors.base03}
-                color2  #${config.colorScheme.colors.base04}
-                color10 #${config.colorScheme.colors.base05}
-                color3  #${config.colorScheme.colors.base06}
-                color11 #${config.colorScheme.colors.base07}
-                color4  #${config.colorScheme.colors.base08}
-                color12 #${config.colorScheme.colors.base09}
-                color5  #${config.colorScheme.colors.base0A}
-                color13 #${config.colorScheme.colors.base0B}
-                color6  #${config.colorScheme.colors.base0C}
-                color14 #${config.colorScheme.colors.base0D}
-                color7  #${config.colorScheme.colors.base0E}
-                color15 #${config.colorScheme.colors.base0F}
-                cursor  #${config.colorScheme.colors.base07}
-                cursor_text_color #${config.colorScheme.colors.base00}
-                selection_foreground none
-                selection_background #${config.colorScheme.colors.base08}
-                url_color #${config.colorScheme.colors.base02}
-                active_border_color #${config.colorScheme.colors.base04}
-                inactive_border_color #${config.colorScheme.colors.base00}
-                bell_border_color #${config.colorScheme.colors.base03}
-                tab_bar_style fade
-                tab_fade 1
-                active_tab_foreground   #${config.colorScheme.colors.base04}
-                active_tab_background   #${config.colorScheme.colors.base00}
-                active_tab_font_style   bold
-                inactive_tab_foreground #${config.colorScheme.colors.base07}
-                inactive_tab_background #${config.colorScheme.colors.base08}
-                inactive_tab_font_style bold
-                tab_bar_background #${config.colorScheme.colors.base00}
+	         background_opacity 0.85
+                 foreground #${config.colorScheme.palette.base05} 
+                 background #${config.colorScheme.palette.base00} 
+                 
+                 # grayish
+                 color0 #${config.colorScheme.palette.base03} 
+                 color8 #${config.colorScheme.palette.base03} 
+                 
+                 # Salmon
+                 color1 #${config.colorScheme.palette.base08} 
+                 color9 #${config.colorScheme.palette.base08} 
+                 
+                 # Cyan
+                 color2  #${config.colorScheme.palette.base0C} 
+                 color10 #${config.colorScheme.palette.base0C} 
+                 
+                 # Yellow-brown
+                 color3  #${config.colorScheme.palette.base09} 
+                 color11 #${config.colorScheme.palette.base09} 
+                 
+                 # Blue
+                 color4  #${config.colorScheme.palette.base0D} 
+                 color12 #${config.colorScheme.palette.base0D}
+                 
+                 # Magenta
+                 color5  #${config.colorScheme.palette.base0E} 
+                 color13 #${config.colorScheme.palette.base0E}
+                 
+                 # Cyan
+                 color6  #${config.colorScheme.palette.base0C} 
+                 color14 #${config.colorScheme.palette.base0C} 
+                 
+                 # White
+                 color7  #${config.colorScheme.palette.base05} 
+                 color15 #${config.colorScheme.palette.base05} 
+                 
+                 # Cursor
+                 cursor #${config.colorScheme.palette.base05} 
+                 cursor_text_color #${config.colorScheme.palette.base00} 
+                 
+                 # Selection highlight
+                 selection_foreground none
+                 selection_background #${config.colorScheme.palette.base03}
+                 
+                 # The color for highlighting URLs on mouse-over
+                 url_color #${config.colorScheme.palette.base0B}
+                 
+                 # Window borders
+                 active_border_color #${config.colorScheme.palette.base0D}
+                 inactive_border_color #${config.colorScheme.palette.base00}
+                 bell_border_color #${config.colorScheme.palette.base09}
+                 
+                 # Tab bar
+                 tab_bar_style fade
+                 tab_fade 1
+                 active_tab_foreground   #3d59a1
+                 active_tab_background   #16161e
+                 active_tab_font_style   bold
+                 inactive_tab_foreground #787c99
+                 inactive_tab_background #16161e
+                 inactive_tab_font_style bold
+                 tab_bar_background #101014
           '';
   };
   home.file."${config.home.homeDirectory}/.config" = {
@@ -379,7 +413,10 @@ in
   programs.nixvim = {
     enable = true;
     globals.mapleader = " ";
-    colorschemes.tokyonight.enable = true;
+    colorschemes.tokyonight = {
+    	enable = true;
+	settings.style = "night";
+    };
     plugins.lualine.enable = true;
     clipboard.register = "unnamedplus";
     clipboard.providers.wl-copy.enable = true;
@@ -443,11 +480,11 @@ in
       size = 10000;
       path = "$XDG_DATA_HOME/zsh/history";
     };
-    oh-my-zsh = {
-      enable = true;
-      plugins = [ "git" ];
-      theme = "robbyrussell";
-    };
+    # oh-my-zsh = {
+    #   enable = true;
+    #   plugins = [ "git" ];
+    #   theme = "robbyrussell";
+    # };
     initExtra = "bindkey '^ ' autosuggest-execute";
     plugins = [
       {
