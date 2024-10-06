@@ -57,6 +57,16 @@
   services.displayManager.sddm = {
   	enable = true;
   };
+  #enable greetd instead..
+	#  services.greetd = {
+	# enable = true;
+	# settings = rec {
+	# 	initial_session = {
+	# 	   command = "${pkgs.hyprland}/bin/Hyprland";
+	# 	   user = "ianh";
+	# 	};
+	# };
+	#  };
   services.desktopManager.plasma6.enable = false;
 
   # Enable hyprland
@@ -65,6 +75,7 @@
     enable = true;
     xwayland.enable = true;
   };
+
 
   #Enable NVIDIA drivers
   hardware.graphics.enable = true;
