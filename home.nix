@@ -63,6 +63,7 @@ in
     # (pkgs.writeShellScriptBin "my-hello" ''
     #   echo "Hello, ${config.home.home.username}!"
     # '')
+    neofetch
     vlc
     fastfetch
     qbittorrent
@@ -336,7 +337,7 @@ in
                  color1 #${config.colorScheme.palette.base08} 
                  color9 #${config.colorScheme.palette.base08} 
                  
-                 # Cyan
+                 # Green
                  color2  #${config.colorScheme.palette.base0C} 
                  color10 #${config.colorScheme.palette.base0C} 
                  
@@ -485,7 +486,10 @@ in
     #   plugins = [ "git" ];
     #   theme = "robbyrussell";
     # };
-    initExtra = "bindkey '^ ' autosuggest-execute";
+    initExtra = ''
+    	bindkey '^ ' autosuggest-execute
+	neofetch
+    '';
     plugins = [
       {
         # will source zsh-autosuggestions.plugin.zsh
