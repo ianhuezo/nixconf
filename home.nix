@@ -63,7 +63,7 @@ in
     # (pkgs.writeShellScriptBin "my-hello" ''
     #   echo "Hello, ${config.home.home.username}!"
     # '')
-    neofetch
+    fastfetch
     vlc
     fastfetch
     qbittorrent
@@ -488,7 +488,7 @@ in
     # };
     initExtra = ''
     	bindkey '^ ' autosuggest-execute
-	neofetch
+	fastfetch
     '';
     plugins = [
       {
