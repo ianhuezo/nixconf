@@ -58,15 +58,16 @@
   	enable = true;
   };
   #enable greetd instead..
-	#  services.greetd = {
-	# enable = true;
-	# settings = rec {
-	# 	initial_session = {
-	# 	   command = "${pkgs.hyprland}/bin/Hyprland";
-	# 	   user = "ianh";
-	# 	};
-	# };
-	#  };
+   services.greetd = {
+   enable = true;
+   settings = rec {
+   	initial_session = {
+   	   command = "${pkgs.hyprland}/bin/Hyprland";
+   	   user = "ianh";
+   	};
+	default_session = initial_session;
+   };
+    };
   services.desktopManager.plasma6.enable = false;
 
   # Enable hyprland

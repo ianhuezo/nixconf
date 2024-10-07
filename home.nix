@@ -8,6 +8,7 @@
 let
   nix-colors = import inputs.nix-colors { };
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
+    hyprlock & disown
     nm-applet --indicator & disown 
     swww-daemon & disown
     sleep 1
