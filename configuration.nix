@@ -55,7 +55,7 @@
 
   # Enable the KDE Plasma Desktop Environment.
   services.displayManager.sddm = {
-  	enable = true;
+  	enable = false;
   };
   #enable greetd instead..
    services.greetd = {
