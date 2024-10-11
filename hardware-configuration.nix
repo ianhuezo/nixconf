@@ -23,8 +23,15 @@
     "sd_mod"
   ];
   boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-intel" ];
-  boot.extraModulePackages = [ ];
+  boot.kernelModules = [
+    "kvm-intel"
+  ];
+  # boot.kernelPackages = pkgs.linuxPackages_5_4;
+  # boot.blacklistedKernelModules = [ "rtl8xxxu" ];
+  boot.extraModulePackages = with config.boot.kernelPackages; [
+    rtl8814au
+  ];
+  # boot.extraModulePackages = [];
 
   fileSystems."/" = {
     device = "/dev/disk/by-uuid/0d9f7e67-c79b-4887-83e8-fc94198ea3fa";

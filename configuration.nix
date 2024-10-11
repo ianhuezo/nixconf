@@ -53,7 +53,7 @@
   # You can disable this if you're only using the Wayland session.
   services.xserver.enable = true;
   system.autoUpgrade = {
-    enable = false;
+    enable = true;
     flake = inputs.self.outPath;
     flags = [
       "--update-input"
@@ -66,19 +66,19 @@
   };
   # Enable the KDE Plasma Desktop Environment.
   services.displayManager.sddm = {
-  	enable = false;
+    enable = false;
   };
   #enable greetd instead..
-   services.greetd = {
-   enable = true;
-   settings = rec {
-   	initial_session = {
-   	   command = "${pkgs.hyprland}/bin/Hyprland";
-   	   user = "ianh";
-   	};
-	default_session = initial_session;
-   };
+  services.greetd = {
+    enable = true;
+    settings = rec {
+      initial_session = {
+        command = "${pkgs.hyprland}/bin/Hyprland";
+        user = "ianh";
+      };
+      default_session = initial_session;
     };
+  };
   services.desktopManager.plasma6.enable = false;
 
   # Enable hyprland
@@ -87,7 +87,6 @@
     enable = true;
     xwayland.enable = true;
   };
-
 
   #Enable NVIDIA drivers
   hardware.graphics.enable = true;

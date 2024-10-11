@@ -9,17 +9,17 @@ let
   nix-colors = import inputs.nix-colors { };
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
     hyprlock & disown
+    dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
     nm-applet --indicator & disown 
     swww-daemon & disown
     sleep 1
     swww img ${config.home.homeDirectory}/Pictures/frieren.png --transition-type any & disown
     sleep 1
     systemctl --user import-environment XDG_CURRENT_DESKTOP XDG_SESSION_TYPE
-    dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
     sleep 1
     ags & disown
     sleep 1
-    '';
+  '';
 in
 {
 
@@ -85,7 +85,7 @@ in
   programs.zoxide.enable = true;
   programs.zoxide.enableZshIntegration = true;
   programs.starship = {
-	enable = true;
+    enable = true;
   };
   xdg.enable = true;
   xdg.cacheHome = "${config.home.homeDirectory}/var/.cache";
@@ -261,26 +261,26 @@ in
   };
 
   services.hypridle = {
-	enable = true;
+    enable = true;
 
-	settings = {
-	   general = {
-		ignore_dbus_inhibit = false;
-		after_sleep_cmd = "hyprctl dispatch dpms on";
-		lock_cmd = "hyprlock";
-	   };
-	   listener = [
-	   	{
-			timeout = 2400;
-			on-timeout = "hyprlock";
-		}
-		{
-		   timeout = 3600;
-		   on-timeout = "hyprctl dispatch dpms off";
-		   on-resume = "hyprctl dispatch dpms on";
-		}
-	   ];
-	};
+    settings = {
+      general = {
+        ignore_dbus_inhibit = false;
+        after_sleep_cmd = "hyprctl dispatch dpms on";
+        lock_cmd = "hyprlock";
+      };
+      listener = [
+        {
+          timeout = 2400;
+          on-timeout = "hyprlock";
+        }
+        {
+          timeout = 3600;
+          on-timeout = "hyprctl dispatch dpms off";
+          on-resume = "hyprctl dispatch dpms on";
+        }
+      ];
+    };
   };
 
   wayland.windowManager.hyprland = {
@@ -330,7 +330,7 @@ in
           "$mod, K, exec, kitty"
           "$mod, S, exec, spotify --enable-features=UseOzonePlatform --ozone-platform=x11 --uri=%U"
           "$mod, D, exec, vesktop --enable-features=UseOzonePlatform --ozone-platform=x11 --uri=%U"
-	  "$mod SHIFT, L, exec, hyprlock"
+          "$mod SHIFT, L, exec, hyprlock"
           #mod shift does things to workspaces, monitors, etc
           "$mod SHIFT, N, cyclenext"
           "$mod SHIFT, P, cyclenext, prev"
@@ -339,7 +339,7 @@ in
           "$mod, Q, killactive"
           "$mod SHIFT, Q, exec,loginctl terminate-user $USER"
           "$mod SHIFT, F, fullscreen"
-	  "$mod, N, exec, hyprctl dispatch togglefloating"
+          "$mod, N, exec, hyprctl dispatch togglefloating"
           #mod with left mouse moves windows
           ", Print, exec, grimblast copy area"
         ]
@@ -415,78 +415,78 @@ in
       name = "Tela-dark";
       package = pkgs.tela-icon-theme;
     };
-  #
-  #   font = {
-  #     name = "Sans";
-  #     size = 11;
-  #   };
+    #
+    #   font = {
+    #     name = "Sans";
+    #     size = 11;
+    #   };
   };
   programs.kitty = {
-	enable = true;
-	    extraConfig = ''
-	         background_opacity 0.85
-                 foreground #${config.colorScheme.palette.base05} 
-                 background #${config.colorScheme.palette.base00} 
-                 
-                 # grayish
-                 color0 #${config.colorScheme.palette.base03} 
-                 color8 #${config.colorScheme.palette.base03} 
-                 
-                 # Salmon
-                 color1 #${config.colorScheme.palette.base08} 
-                 color9 #${config.colorScheme.palette.base08} 
-                 
-                 # Green
-                 color2  #${config.colorScheme.palette.base0C} 
-                 color10 #${config.colorScheme.palette.base0C} 
-                 
-                 # Yellow-brown
-                 color3  #${config.colorScheme.palette.base09} 
-                 color11 #${config.colorScheme.palette.base09} 
-                 
-                 # Blue
-                 color4  #${config.colorScheme.palette.base0D} 
-                 color12 #${config.colorScheme.palette.base0D}
-                 
-                 # Magenta
-                 color5  #${config.colorScheme.palette.base0E} 
-                 color13 #${config.colorScheme.palette.base0E}
-                 
-                 # Cyan
-                 color6  #${config.colorScheme.palette.base0C} 
-                 color14 #${config.colorScheme.palette.base0C} 
-                 
-                 # White
-                 color7  #${config.colorScheme.palette.base05} 
-                 color15 #${config.colorScheme.palette.base05} 
-                 
-                 # Cursor
-                 cursor #${config.colorScheme.palette.base05} 
-                 cursor_text_color #${config.colorScheme.palette.base00} 
-                 
-                 # Selection highlight
-                 selection_foreground none
-                 selection_background #${config.colorScheme.palette.base03}
-                 
-                 # The color for highlighting URLs on mouse-over
-                 url_color #${config.colorScheme.palette.base0B}
-                 
-                 # Window borders
-                 active_border_color #${config.colorScheme.palette.base0D}
-                 inactive_border_color #${config.colorScheme.palette.base00}
-                 bell_border_color #${config.colorScheme.palette.base09}
-                 
-                 # Tab bar
-                 tab_bar_style fade
-                 tab_fade 1
-                 active_tab_foreground   #3d59a1
-                 active_tab_background   #16161e
-                 active_tab_font_style   bold
-                 inactive_tab_foreground #787c99
-                 inactive_tab_background #16161e
-                 inactive_tab_font_style bold
-                 tab_bar_background #101014
-          '';
+    enable = true;
+    extraConfig = ''
+      	         background_opacity 0.85
+                       foreground #${config.colorScheme.palette.base05} 
+                       background #${config.colorScheme.palette.base00} 
+                       
+                       # grayish
+                       color0 #${config.colorScheme.palette.base03} 
+                       color8 #${config.colorScheme.palette.base03} 
+                       
+                       # Salmon
+                       color1 #${config.colorScheme.palette.base08} 
+                       color9 #${config.colorScheme.palette.base08} 
+                       
+                       # Green
+                       color2  #${config.colorScheme.palette.base0C} 
+                       color10 #${config.colorScheme.palette.base0C} 
+                       
+                       # Yellow-brown
+                       color3  #${config.colorScheme.palette.base09} 
+                       color11 #${config.colorScheme.palette.base09} 
+                       
+                       # Blue
+                       color4  #${config.colorScheme.palette.base0D} 
+                       color12 #${config.colorScheme.palette.base0D}
+                       
+                       # Magenta
+                       color5  #${config.colorScheme.palette.base0E} 
+                       color13 #${config.colorScheme.palette.base0E}
+                       
+                       # Cyan
+                       color6  #${config.colorScheme.palette.base0C} 
+                       color14 #${config.colorScheme.palette.base0C} 
+                       
+                       # White
+                       color7  #${config.colorScheme.palette.base05} 
+                       color15 #${config.colorScheme.palette.base05} 
+                       
+                       # Cursor
+                       cursor #${config.colorScheme.palette.base05} 
+                       cursor_text_color #${config.colorScheme.palette.base00} 
+                       
+                       # Selection highlight
+                       selection_foreground none
+                       selection_background #${config.colorScheme.palette.base03}
+                       
+                       # The color for highlighting URLs on mouse-over
+                       url_color #${config.colorScheme.palette.base0B}
+                       
+                       # Window borders
+                       active_border_color #${config.colorScheme.palette.base0D}
+                       inactive_border_color #${config.colorScheme.palette.base00}
+                       bell_border_color #${config.colorScheme.palette.base09}
+                       
+                       # Tab bar
+                       tab_bar_style fade
+                       tab_fade 1
+                       active_tab_foreground   #3d59a1
+                       active_tab_background   #16161e
+                       active_tab_font_style   bold
+                       inactive_tab_foreground #787c99
+                       inactive_tab_background #16161e
+                       inactive_tab_font_style bold
+                       tab_bar_background #101014
+    '';
   };
   home.file."${config.home.homeDirectory}/.config" = {
     source = ./dotfiles;
@@ -514,8 +514,8 @@ in
     enable = true;
     globals.mapleader = " ";
     colorschemes.tokyonight = {
-    	enable = true;
-	settings.style = "night";
+      enable = true;
+      settings.style = "night";
     };
     plugins.lualine.enable = true;
     clipboard.register = "unnamedplus";
@@ -586,9 +586,9 @@ in
     #   theme = "robbyrussell";
     # };
     initExtra = ''
-    	bindkey '^ ' autosuggest-execute
-	fastfetch
-	krabby random 1-3 --no-title
+          	bindkey '^ ' autosuggest-execute
+      	fastfetch
+      	krabby random 1-3 --no-title
     '';
     plugins = [
       {

@@ -58,7 +58,7 @@
     in
     {
       nixosConfigurations = {
-        joyboy = lib.nixosSystem {
+        "joyboy" = lib.nixosSystem {
           inherit system;
           specialArgs = {
             inherit inputs;
@@ -72,7 +72,7 @@
               home-manager.backupFileExtension = "hm-backup";
               home-manager.extraSpecialArgs = {
                 inherit inputs;
-		inherit (inputs.nix-colors.lib-contrib { inherit pkgs; }) gtkThemeFromScheme;
+                inherit (inputs.nix-colors.lib-contrib { inherit pkgs; }) gtkThemeFromScheme;
               };
               home-manager.users.ianh.imports = [
                 # plasma-manager.homeManagerModules.plasma-manager
