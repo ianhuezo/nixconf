@@ -287,10 +287,20 @@ in
     enable = true;
     xwayland.enable = true;
     settings = {
-      exec-once = ''${startupScript}/bin/start'';
+      exec-once = [
+        ''${startupScript}/bin/start''
+        # "[workspace 1 silent] firefox & disown"
+        # "[workspace 2 silent] kitty & disown"
+        # "[workspace 3 silent] steam & disown"
+        # "[workspace 6 silent] vesktop --enable-features=UseOzonePlatform --ozone-platform=x11 --uri=%U & disown"
+        # "[workspace 4 silent] spotify --enable-features=UseOzonePlatform --ozone-platform=x11 --uri=%U & disown"
+      ];
       monitor = [
         "HDMI-A-1, preferred, auto, 1"
         "DP-2, preferred, auto-left, 1"
+      ];
+      windowrulev2 = [
+        "idleinhibit fullscreen, class:.*"
       ];
       workspace = [
         "1,monitor:HDMI-A-1,default:true"

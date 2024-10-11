@@ -52,7 +52,18 @@
   # Enable the X11 windowing system.
   # You can disable this if you're only using the Wayland session.
   services.xserver.enable = true;
-
+  system.autoUpgrade = {
+    enable = false;
+    flake = inputs.self.outPath;
+    flags = [
+      "--update-input"
+      "nixpkgs"
+      "--no-write-lock-file"
+      "-L" # print build logs
+    ];
+    dates = "02:00";
+    randomizedDelaySec = "45min";
+  };
   # Enable the KDE Plasma Desktop Environment.
   services.displayManager.sddm = {
   	enable = false;
