@@ -17,9 +17,14 @@
   ];
 
   # Bootloader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  networking.hostName = "joyboy"; # Define your hostname.
+  boot.loader.grub.enable = true;
+  #boot.loader.grub.efiSupport = true;
+  #boot.loader.grub.efiInstallAsRemovable = true;
+  #boot.loader.efi.efiSysMountPoint = "/";
+  # Define on which hard drive you want to install Grub.
+  # boot.loader.grub.device = "/dev/sda"; # or "nodev" for efi only
+  boot.loader.grub.device ="/dev/sda";
+
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Configure network proxy if necessary
@@ -53,7 +58,7 @@
   # You can disable this if you're only using the Wayland session.
   services.xserver.enable = true;
   system.autoUpgrade = {
-    enable = true;
+    enable = false;
     flake = inputs.self.outPath;
     flags = [
       "--update-input"

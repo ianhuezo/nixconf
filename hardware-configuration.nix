@@ -11,8 +11,9 @@
   boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usbhid" "usb_storage" "sd_mod" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-intel" ];
-  boot.extraModulePackages = [ ];
-
+  boot.extraModulePackages = with config.boot.kernelPackages; [
+    rtl8814au
+  ];
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/7e474ba3-c788-4e92-8459-5dd4db40c0db";
       fsType = "ext4";

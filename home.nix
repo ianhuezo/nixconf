@@ -372,6 +372,9 @@ in
       decoration = {
         rounding = 10;
       };
+      cursor = {
+      	no_hardware_cursors = true;
+      };
       animations = {
         enabled = "yes";
 
@@ -573,7 +576,7 @@ in
 
     shellAliases = {
       ll = "ls -l";
-      update = "sudo nixos-rebuild switch";
+      update = "sudo nixos-rebuild switch --flake .#joyboy";
       cd = "z";
     };
     history = {
