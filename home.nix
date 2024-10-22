@@ -530,8 +530,8 @@ in
       enable = true;
       settings.tsserverPlugins = [ "ags-ts" ];
     };
-    lsp.servers.tsserver.enable = true;
-    lsp.servers.tsserver.filetypes = [
+    lsp.servers.ts_ls.enable = true;
+    lsp.servers.ts_ls.filetypes = [
       "javascript"
       "javascriptreact"
       "javascript.jsx"
