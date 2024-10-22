@@ -23,15 +23,7 @@
       inputs.hyprland.follows = "hyprland";
     };
     nix-colors.url = "github:misterio77/nix-colors";
-    hyprpaper = {
-      url = "github:hyprwm/hyprpaper";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     swww.url = "github:LGFae/swww";
-    eww = {
-      url = "github:elkowar/eww";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     ags = {
       url = "github:Aylur/ags";
       inputs.nixpkgs.follows = "nixpkgs";
