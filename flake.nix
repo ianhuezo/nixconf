@@ -10,11 +10,6 @@
       url = "github:nix-community/nixvim";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    plasma-manager = {
-      url = "github:nix-community/plasma-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.home-manager.follows = "home-manager";
-    };
     hyprland = {
       url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
     };
@@ -48,7 +43,6 @@
       nixpkgs,
       home-manager,
       nixvim,
-      plasma-manager,
       ...
     }@inputs:
     let
@@ -75,7 +69,6 @@
                 inherit (inputs.nix-colors.lib-contrib { inherit pkgs; }) gtkThemeFromScheme;
               };
               home-manager.users.ianh.imports = [
-                # plasma-manager.homeManagerModules.plasma-manager
                 nixvim.homeManagerModules.nixvim
                 ./home.nix
               ];
