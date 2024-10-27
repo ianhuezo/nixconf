@@ -335,7 +335,7 @@ in
           "$mod SHIFT, N, cyclenext"
           "$mod SHIFT, P, cyclenext, prev"
           "$mod SHIFT, S, exec, hyprshot -m region --clipboard-only"
-          "CTRL, TAB, overview:toggle"
+          # "CTRL, TAB, overview:toggle"
           "$mod, Q, killactive"
           "$mod SHIFT, Q, exec,loginctl terminate-user $USER"
           "$mod SHIFT, F, fullscreen"
@@ -395,7 +395,7 @@ in
   wayland.windowManager.hyprland.systemd.variables = [ "--all" ];
   #hyprland plugins
   wayland.windowManager.hyprland.plugins = [
-    inputs.Hyprspace.packages.${pkgs.system}.Hyprspace
+    # inputs.Hyprspace.packages.${pkgs.system}.Hyprspace
   ];
   # qt.enable = true;
   qt.platformTheme = "gtk";
@@ -530,8 +530,8 @@ in
       enable = true;
       settings.tsserverPlugins = [ "ags-ts" ];
     };
-    lsp.servers.tsserver.enable = true;
-    lsp.servers.tsserver.filetypes = [
+    lsp.servers.ts_ls.enable = true;
+    lsp.servers.ts_ls.filetypes = [
       "javascript"
       "javascriptreact"
       "javascript.jsx"
