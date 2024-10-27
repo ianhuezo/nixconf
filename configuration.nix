@@ -23,7 +23,7 @@
   #boot.loader.efi.efiSysMountPoint = "/";
   # Define on which hard drive you want to install Grub.
   # boot.loader.grub.device = "/dev/sda"; # or "nodev" for efi only
-  boot.loader.grub.device ="/dev/sda";
+  boot.loader.grub.device = "/dev/sda";
 
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -32,6 +32,13 @@
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   # Enable networking
+  networking.wireless.iwd.enable = true;
+  networking.wireless.iwd.settings = {
+	Settings = {
+		AutoConnect = true;
+	};
+  };
+  networking.networkmanager.wifi.backend = "iwd";
   networking.networkmanager.enable = true;
 
   programs.dconf.enable = true;
@@ -120,6 +127,16 @@
   };
   programs.steam.gamescopeSession.enable = true;
   programs.gamemode.enable = true;
+  #enable VR?
+  services.monado = {
+    enable = true;
+    defaultRuntime = true; # Register as default OpenXR runtime
+  };
+  systemd.user.services.monado.environment = {
+    STEAMVR_LH_ENABLE = "1";
+    XRT_COMPOSITOR_COMPUTE = "1";
+    WMR_HANDTRACKING = "0";
+  };
 
   # Configure keymap in X11
   services.xserver.xkb = {
@@ -214,6 +231,9 @@
     tela-icon-theme
     inputs.swww.packages.${pkgs.system}.swww
   ];
+  #add git-lfs for vr stuff
+  programs.git.enable = true;
+  programs.git.lfs.enable = true;
   environment.sessionVariables = {
     WLR_M__HARDWARE_CUROS = "1";
     NIXOS_OZONE_WL = "1";

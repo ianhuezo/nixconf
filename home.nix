@@ -100,6 +100,37 @@ in
       xdg-desktop-portal-hyprland
     ];
   };
+  #VR config files written in home manager
+  xdg.configFile."openxr/1/active_runtime.json".text = ''
+    {
+      "file_format_version": "1.0.0",
+      "runtime": {
+          "name": "Monado",
+          "library_path": "${pkgs.monado}/lib/libopenxr_monado.so"
+      }
+    }
+  '';
+
+  xdg.configFile."openvr/openvrpaths.vrpath".text = ''
+    {
+      "config" :
+      [
+        "${config.xdg.dataHome}/Steam/config"
+      ],
+      "external_drivers" : null,
+      "jsonid" : "vrpathreg",
+      "log" :
+      [
+        "${config.xdg.dataHome}/Steam/logs"
+      ],
+      "runtime" :
+      [
+        "${pkgs.opencomposite}/lib/opencomposite"
+      ],
+      "version" : 1
+    }
+  '';
+
   programs.wofi.enable = true;
   programs.wofi.settings = {
     width = 300;
@@ -373,7 +404,7 @@ in
         rounding = 10;
       };
       cursor = {
-      	no_hardware_cursors = true;
+        no_hardware_cursors = true;
       };
       animations = {
         enabled = "yes";
