@@ -17,7 +17,7 @@ let
     sleep 1
     systemctl --user import-environment XDG_CURRENT_DESKTOP XDG_SESSION_TYPE
     sleep 1
-    ags & disown
+    # ags & disown
     sleep 1
   '';
 in
@@ -26,7 +26,7 @@ in
   imports = [
     # ./core/plasma/default.nix
     nix-colors.homeManagerModules.default
-    inputs.ags.homeManagerModules.default
+    # inputs.ags.homeManagerModules.default
   ];
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
@@ -203,14 +203,14 @@ in
       };
     };
   };
-  programs.ags = {
-    enable = true;
-    extraPackages = with pkgs; [
-      gtksourceview
-      webkitgtk
-      accountsservice
-    ];
-  };
+  # programs.ags = {
+  #   enable = true;
+  #   extraPackages = with pkgs; [
+  #     gtksourceview
+  #     webkitgtk
+  #     accountsservice
+  #   ];
+  # };
   programs.hyprlock = {
     enable = true;
     extraConfig = ''
