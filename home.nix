@@ -640,6 +640,9 @@ in
         ];
       };
     };
+    conform-nvim = {
+      
+    };
 
   };
   programs.zsh = {
