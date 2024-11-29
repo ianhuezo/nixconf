@@ -552,14 +552,21 @@ in
       settings.style = "night";
     };
     plugins.lualine.enable = true;
+    plugins.web-devicons.enable = true;
+
     clipboard.register = "unnamedplus";
     clipboard.providers.wl-copy.enable = true;
+    extraPackages = with pkgs; [
+      ripgrep # for live_grep
+      fd # for find_files
+    ];
   };
+
   programs.nixvim.plugins = {
     lsp.enable = true;
     typescript-tools = {
       enable = true;
-      settings.tsserverPlugins = [ "ags-ts" ];
+      # settings.tsserverPlugins = [ "ags-ts" ];
     };
     lsp.servers.ts_ls.enable = true;
     lsp.servers.ts_ls.filetypes = [
@@ -592,12 +599,36 @@ in
         };
       };
     };
-    #    telescope = {
-    # enable = true;
-    # keymaps = {
-    # 	"<leader>fg" = "live_grep";
-    # };
-    #    };
+    telescope = {
+      enable = true;
+      # Basic keymaps
+      keymaps = {
+        "<leader>ff" = "find_files";
+        "<leader>fg" = "live_grep";
+        "<leader>fb" = "buffers";
+        "<leader>fh" = "help_tags";
+      };
+
+      # Optional: Configure telescope defaults
+      settings.defaults = {
+        file_ignore_patterns = [
+          "node_modules"
+          ".git"
+          "target"
+        ];
+        # Set to false if you don't have ripgrep installed
+        vimgrep_arguments = [
+          "rg"
+          "--color=never"
+          "--no-heading"
+          "--with-filename"
+          "--line-number"
+          "--column"
+          "--smart-case"
+        ];
+      };
+    };
+
   };
   programs.zsh = {
     enable = true;

@@ -34,9 +34,9 @@
   # Enable networking
   networking.wireless.iwd.enable = true;
   networking.wireless.iwd.settings = {
-	Settings = {
-		AutoConnect = true;
-	};
+    Settings = {
+      AutoConnect = true;
+    };
   };
   networking.networkmanager.wifi.backend = "iwd";
   networking.networkmanager.enable = true;
