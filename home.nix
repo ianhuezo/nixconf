@@ -7,6 +7,7 @@
 }:
 let
   nix-colors = import inputs.nix-colors { };
+  quickshellPath = ./dotfiles/quickshell;
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
     hyprlock & disown
     dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
@@ -81,6 +82,7 @@ in
     typescript
     typescript-language-server
     starship
+    inputs.quickshell.packages.${pkgs.system}.default
   ];
   programs.zoxide.enable = true;
   programs.zoxide.enableZshIntegration = true;
@@ -522,10 +524,11 @@ in
                        tab_bar_background #101014
     '';
   };
-  home.file."${config.home.homeDirectory}/.config" = {
-    source = ./dotfiles;
-    recursive = true;
-  };
+  xdg.configFile."quickshell".source = config.lib.file.mkOutOfStoreSymlink quickshellPath;
+  # home.file."${config.home.homeDirectory}/.config" = {
+  #   source = ./dotfiles;
+  #   recursive = true;
+  # };
   home.file."${config.home.homeDirectory}/Pictures" = {
     source = ./wallpapers;
     recursive = true;
@@ -556,11 +559,11 @@ in
       enable = true;
       settings.style = "night";
       settings.on_highlights = ''
-	function(highlights, colors) 
-           highlights.LineNr = {
-             fg = "#${config.colorScheme.palette.base09}",
-           }
-	end
+        	function(highlights, colors) 
+                   highlights.LineNr = {
+                     fg = "#${config.colorScheme.palette.base09}",
+                   }
+        	end
       '';
     };
     plugins.lualine.enable = true;
@@ -641,7 +644,7 @@ in
       };
     };
     conform-nvim = {
-      
+
     };
 
   };
