@@ -547,9 +547,21 @@ in
   programs.nixvim = {
     enable = true;
     globals.mapleader = " ";
+    opts = {
+      number = true; # Show line numbers
+      relativenumber = true; # Show relative line numbers
+      shiftwidth = 2; # Tab width should be 2
+    };
     colorschemes.tokyonight = {
       enable = true;
       settings.style = "night";
+      settings.on_highlights = ''
+	function(highlights, colors) 
+           highlights.LineNr = {
+             fg = "#${config.colorScheme.palette.base09}",
+           }
+	end
+      '';
     };
     plugins.lualine.enable = true;
     plugins.web-devicons.enable = true;
