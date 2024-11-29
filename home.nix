@@ -213,6 +213,9 @@ in
   #     accountsservice
   #   ];
   # };
+  # quickshell = {
+  #   enable = true;
+  # };
   programs.hyprlock = {
     enable = true;
     extraConfig = ''
@@ -579,6 +582,7 @@ in
 
   programs.nixvim.plugins = {
     lsp.enable = true;
+    # lsp.servers.qmlls.enable = true;
     typescript-tools = {
       enable = true;
       # settings.tsserverPlugins = [ "ags-ts" ];
