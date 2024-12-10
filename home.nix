@@ -7,7 +7,7 @@
 }:
 let
   nix-colors = import inputs.nix-colors { };
-  quickshellPath = ./dotfiles/quickshell;
+  quickshellPath = /etc/nixos/dotfiles/quickshell;
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
     hyprlock & disown
     dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
@@ -103,36 +103,27 @@ in
     ];
   };
   #VR config files written in home manager
-  xdg.configFile."openxr/1/active_runtime.json".text = ''
-    {
-      "file_format_version": "1.0.0",
-      "runtime": {
-          "name": "Monado",
-          "library_path": "${pkgs.monado}/lib/libopenxr_monado.so"
-      }
-    }
-  '';
-
-  xdg.configFile."openvr/openvrpaths.vrpath".text = ''
-    {
-      "config" :
-      [
-        "${config.xdg.dataHome}/Steam/config"
-      ],
-      "external_drivers" : null,
-      "jsonid" : "vrpathreg",
-      "log" :
-      [
-        "${config.xdg.dataHome}/Steam/logs"
-      ],
-      "runtime" :
-      [
-        "${pkgs.opencomposite}/lib/opencomposite"
-      ],
-      "version" : 1
-    }
-  '';
-
+  xdg.configFile."openxr/1/active_runtime.json".source = "${pkgs.monado}/share/openxr/1/openxr_monado.json";
+  # xdg.configFile."openvr/openvrpaths.vrpath".text = ''
+  #   {
+  #     "config" :
+  #     [
+  #       "${config.xdg.dataHome}/Steam/config"
+  #     ],
+  #     "external_drivers" : null,
+  #     "jsonid" : "vrpathreg",
+  #     "log" :
+  #     [
+  #       "${config.xdg.dataHome}/Steam/logs"
+  #     ],
+  #     "runtime" :
+  #     [
+  #       "${pkgs.opencomposite}/lib/opencomposite"
+  #     ],
+  #     "version" : 1
+  #   }
+  # '';
+  #
   programs.wofi.enable = true;
   programs.wofi.settings = {
     width = 300;
@@ -720,6 +711,8 @@ in
     QT_QPA_PLATFORM = "wayland";
     STEAM_EXTRA_COMPAT_TOOLS_PATHS = "\${HOME}/.steam/root/compatibilitytools.d";
     NIXOS_OZONE_WL = "1";
+    STEAMVR_LH_ENABLE = "true";
+    QS_CONFIG_PATH = "${config.home.homeDirectory}/.config/quickshell";
   };
 
   # Let Home Manager install and manage itself.
