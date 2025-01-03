@@ -4,11 +4,9 @@ import Quickshell
 import Quickshell.Io
 import QtQuick
 
-// your singletons should always have Singleton as the type
 Singleton {
   property var date: new Date()
   property string time: date.toLocaleString(Qt.locale())
-
 
   Timer {
     interval: 1000

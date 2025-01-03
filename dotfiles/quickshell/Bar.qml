@@ -1,7 +1,10 @@
 import Quickshell
+import Quickshell.Io
+import QtQuick
+import Quickshell.Widgets
 
 Scope {
-  // no more time object
+  property string time;
 
   Variants {
     model: Quickshell.screens
@@ -18,11 +21,41 @@ Scope {
 
       height: 30
 
-      ClockWidget {
+      Text {
         anchors.centerIn: parent
 
-        // no more time binding
+        // now just time instead of root.time
+        text: time
       }
+      IconImage {
+        source: "nf-md-power"
+	implicitSize: 16
+      }
+
     }
+  }
+
+  Process {
+    id: sysProc
+    running: false
+    command: ["exec", "hyprlock"]
+  }
+
+  Process {
+    id: dateProc
+    command: ["date"]
+    running: true
+
+    stdout: SplitParser {
+      // now just time instead of root.time
+      onRead: data => time = data
+    }
+  }
+
+  Timer {
+    interval: 1000
+    running: true
+    repeat: true
+    onTriggered: dateProc.running = true
   }
 }

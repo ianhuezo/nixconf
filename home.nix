@@ -8,7 +8,10 @@
 let
   nix-colors = import inputs.nix-colors { };
   quickshellPath = /etc/nixos/dotfiles/quickshell;
+  leftMonitor = "HDMI-A-1";
+  rightMonitor = "DP-1";
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
+    xrandr --output DP-1 --primary & disown
     hyprlock & disown
     dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
     nm-applet --indicator & disown 
@@ -19,7 +22,6 @@ let
     systemctl --user import-environment XDG_CURRENT_DESKTOP XDG_SESSION_TYPE
     sleep 1
     # ags & disown
-    sleep 1
   '';
 in
 {
@@ -83,6 +85,7 @@ in
     typescript-language-server
     starship
     inputs.quickshell.packages.${pkgs.system}.default
+    inputs.hyprland-qtutils.packages.${pkgs.system}.default
   ];
   programs.zoxide.enable = true;
   programs.zoxide.enableZshIntegration = true;
@@ -192,7 +195,7 @@ in
     enable = true;
     settings = {
       global = {
-        monitor = 1;
+        monitor = 0;
       };
     };
   };
@@ -323,30 +326,31 @@ in
         # "[workspace 4 silent] spotify --enable-features=UseOzonePlatform --ozone-platform=x11 --uri=%U & disown"
       ];
       monitor = [
-        "HDMI-A-1, preferred, auto, 1"
-        "DP-2, preferred, auto-left, 1"
+        "${rightMonitor}, 1920x1080@119.98, auto-right, 1"
+        "${leftMonitor}, preferred, auto-left, 1"
       ];
       windowrulev2 = [
-        "idleinhibit fullscreen, class:.*"
+        "idleinhibit fullscreen, class:^(vlc)$"
       ];
       workspace = [
-        "1,monitor:HDMI-A-1,default:true"
-        "2,monitor:HDMI-A-1"
-        "3,monitor:HDMI-A-1"
-        "4,monitor:HDMI-A-1"
-        "5,monitor:HDMI-A-1"
+        "1,monitor:${rightMonitor},default:true"
+        "2,monitor:${rightMonitor}"
+        "3,monitor:${rightMonitor}"
+        "4,monitor:${rightMonitor}"
+        "5,monitor:${rightMonitor}"
 
-        "6,monitor:DP-2,default:true"
-        "7,monitor:DP-2"
-        "8,monitor:DP-2"
-        "9,monitor:DP-2"
-        "10,monitor:DP-2"
+        "6,monitor:${leftMonitor},default:true"
+        "7,monitor:${leftMonitor}"
+        "8,monitor:${leftMonitor}"
+        "9,monitor:${leftMonitor}"
+        "10,monitor:${leftMonitor}"
       ];
       "$mod" = "SUPER";
       "$menu" = "wofi -a --allow-images --show drun";
       binds.allow_workspace_cycles = true;
+      # binds.allow_pin_fullscreen = false;
       bindm = [
-        "ALT, mouse:272, movewindow"
+        "$mod, mouse:272, movewindow"
       ];
       bind =
         [
@@ -389,10 +393,10 @@ in
       general = {
         resize_on_border = true;
         hover_icon_on_border = true;
-        gaps_in = 5;
-        gaps_out = 5;
-        border_size = 2;
-        "col.active_border" = "${config.colorScheme.palette.base08} rgba(${config.colorScheme.palette.base0A}ee) 45deg";
+        gaps_in = 3;
+        gaps_out = 3;
+        border_size = 1;
+        "col.active_border" = "rgba(${config.colorScheme.palette.base05}ee) rgba(${config.colorScheme.palette.base01}ee) 45deg";
         "col.inactive_border" = "rgba(${config.colorScheme.palette.base03}aa)";
         layout = "master";
       };
@@ -518,7 +522,7 @@ in
                        tab_bar_background #101014
     '';
   };
-  xdg.configFile."quickshell".source = config.lib.file.mkOutOfStoreSymlink quickshellPath;
+  home.file.".config/quickshell".source = config.lib.file.mkOutOfStoreSymlink quickshellPath;
   # home.file."${config.home.homeDirectory}/.config" = {
   #   source = ./dotfiles;
   #   recursive = true;
@@ -713,6 +717,7 @@ in
     NIXOS_OZONE_WL = "1";
     STEAMVR_LH_ENABLE = "true";
     QS_CONFIG_PATH = "${config.home.homeDirectory}/.config/quickshell";
+    QS_BASE_PATH = "${config.home.homeDirectory}/.config/quickshell";
   };
 
   # Let Home Manager install and manage itself.

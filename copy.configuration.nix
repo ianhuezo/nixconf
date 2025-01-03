@@ -17,15 +17,13 @@
   ];
 
   # Bootloader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  # boot.loader.grub.enable = true;
+  boot.loader.grub.enable = true;
   #boot.loader.grub.efiSupport = true;
   #boot.loader.grub.efiInstallAsRemovable = true;
   #boot.loader.efi.efiSysMountPoint = "/";
   # Define on which hard drive you want to install Grub.
   # boot.loader.grub.device = "/dev/sda"; # or "nodev" for efi only
-  # boot.loader.grub.device = "/dev/nvme0n1p1";
+  boot.loader.grub.device = "/dev/nvme0n1p1";
 
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -115,10 +113,11 @@
   };
 
   fonts.packages = with pkgs; [
+    nerdfonts
     meslo-lgs-nf
     jetbrains-mono
     font-awesome
-  ] ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
+  ];
 
   # Enable steam
   programs.steam = {
@@ -133,12 +132,10 @@
     enable = true;
     defaultRuntime = true; # Register as default OpenXR runtime
   };
-  programs.envision.enable = true;
   systemd.user.services.monado.environment = {
     STEAMVR_LH_ENABLE = "1";
     XRT_COMPOSITOR_COMPUTE = "1";
     WMR_HANDTRACKING = "0";
-    U_PACING_COMP_MIN_TIME_MS = "5";
   };
 
   # Configure keymap in X11
@@ -147,11 +144,10 @@
     variant = "";
   };
   hardware.bluetooth.enable = true;
-  hardware.bluetooth.powerOnBoot = true;
   services.blueman.enable = true;
 
   # Enable CUPS to print documents.
-  # services.printing.enable = true;
+  services.printing.enable = true;
 
   # Enable sound with pipewire.
   hardware.pulseaudio.enable = false;
@@ -208,7 +204,6 @@
   environment.systemPackages = with pkgs; [
     #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     #  wget
-    envision
     ripgrep
     libnotify
     inotify-tools
@@ -269,6 +264,6 @@
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "24.11"; # Did you read the comment?
+  system.stateVersion = "24.05"; # Did you read the comment?
 
 }
