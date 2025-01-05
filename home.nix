@@ -107,7 +107,8 @@ in
     ];
   };
   #VR config files written in home manager
-  xdg.configFile."openxr/1/active_runtime.json".source = "${pkgs.monado}/share/openxr/1/openxr_monado.json";
+  xdg.configFile."openxr/1/active_runtime.json".source =
+    "${pkgs.monado}/share/openxr/1/openxr_monado.json";
   # xdg.configFile."openvr/openvrpaths.vrpath".text = ''
   #   {
   #     "config" :
@@ -197,9 +198,9 @@ in
     settings = {
       global = {
         monitor = 0;
-	transparency = 50;
-	font = "Droid Sans 9";
-	frame_color = "#eceff1";
+        transparency = 50;
+        font = "Droid Sans 9";
+        frame_color = "#eceff1";
       };
       urgency_normal = {
         background = "#37474f";
@@ -218,98 +219,87 @@ in
     borderColor = "#${config.colorScheme.palette.base0C}";
     borderSize = 2;
   };
-  # programs.ags = {
-  #   enable = true;
-  #   extraPackages = with pkgs; [
-  #     gtksourceview
-  #     webkitgtk
-  #     accountsservice
-  #   ];
-  # };
-  # quickshell = {
-  #   enable = true;
-  # };
   programs.hyprlock = {
     enable = true;
     extraConfig = ''
-      # BACKGROUND
-      background {
-          monitor =
-          path = ${config.home.homeDirectory}/Pictures/frieren.png
-          blur_size = 0
-          blur_passes = 1
-          noise = 0.0117
-          contrast = 1.300
-          brightness = 0.600
-          vibrancy = 0.2100
-          vibrancy_darkness = 0.0
-      }
+            # BACKGROUND
+            background {
+                monitor =
+                path = ${config.home.homeDirectory}/Pictures/frieren.png
+                blur_size = 0
+                blur_passes = 1
+                noise = 0.0117
+                contrast = 1.300
+                brightness = 0.600
+                vibrancy = 0.2100
+                vibrancy_darkness = 0.0
+            }
 
-      # GENERAL
-      general {
-          no_fade_in = false
-          grace = 0
-          disable_loading_bar = true
-      }
+            # GENERAL
+            general {
+                no_fade_in = false
+                grace = 0
+                disable_loading_bar = true
+            }
 
-      # INPUT FIELD
-      input-field {
-          monitor =
-          size = 250, 50
-          outline_thickness = 3
-          dots_size = 0.26 # Scale of input-field height, 0.2 - 0.8
-          dots_spacing = 0.64 # Scale of dots' absolute size, 0.0 - 1.0
-          dots_center = true
-          outer_color = rgba(0, 0, 0, 0)
-          inner_color = rgba(0, 0, 0, 0.5)
-          font_color = rgb(200, 200, 200)
-          fade_on_empty = true
-          placeholder_text = <i><span foreground="##cdd6f4">Password...</span></i>
-          hide_input = false
-          position = 0, 80
-          halign = center
-          valign = bottom
-      }
+            # INPUT FIELD
+            input-field {
+                monitor =
+                size = 250, 50
+                outline_thickness = 3
+                dots_size = 0.26 # Scale of input-field height, 0.2 - 0.8
+                dots_spacing = 0.64 # Scale of dots' absolute size, 0.0 - 1.0
+                dots_center = true
+                outer_color = rgba(0, 0, 0, 0)
+                inner_color = rgba(0, 0, 0, 0.5)
+                font_color = rgb(200, 200, 200)
+                fade_on_empty = true
+                placeholder_text = <i><span foreground="##cdd6f4">Password...</span></i>
+                hide_input = false
+                position = 0, 80
+                halign = center
+                valign = bottom
+            }
 
-      # TIME
-      label {
-          monitor =
-          text = cmd[update:1000] echo "<b><big> $(date +"%-H:%M:%S") </big></b>"
-          color = rgba(255, 255, 255, 0.6)
-          font_size = 100
-          font_family = JetBrains Mono Nerd Font
-          position = 0, 16
-          halign = center
-          valign = center
-      }
-      # DATE
-      label {
-        monitor =
-        text = cmd[update:18000000] echo "<b> $(date + "%A, %-d %B %Y") </b>"
-        color = rgba(255,255,255,0.6)
-        font_size = 36
-        font_family = JetBrains Mono Nerd Font
+            # TIME
+            label {
+                monitor =
+                text = cmd[update:1000] echo "<b><big> $(date +"%-H:%M:%S") </big></b>"
+                color = rgba(255, 255, 255, 0.6)
+                font_size = 100
+                font_family = JetBrains Mono Nerd Font
+                position = 0, 16
+                halign = center
+                valign = center
+            }
+            # DATE
+            label {
+              monitor =
+              text = cmd[update:18000000] echo "<b> $(date + "%A, %-d %B %Y") </b>"
+              color = rgba(255,255,255,0.6)
+              font_size = 36
+              font_family = JetBrains Mono Nerd Font
 
-        position = 0, -46
-        halign = center
-        valign = center
-      }
+              position = 0, -46
+              halign = center
+              valign = center
+            }
 
-      # USER
-      label {
-          monitor =
-          text = Greetings, Ian 
-          color = rgba(255, 255, 255, 0.8)
-          font_size = 24
-          font_family = JetBrains Mono Nerd Font Mono
-          position = 0, 30
-	  shadow_passes = 1
-	  shadow_boost = 1.2
-	  shadow_size = 3
-	  shadow_color = rgb(#${config.colorScheme.palette.base00})
-          halign = center
-          valign = bottom
-      }
+            # USER
+            label {
+                monitor =
+                text = Greetings, Ian 
+                color = rgba(255, 255, 255, 0.8)
+                font_size = 24
+                font_family = JetBrains Mono Nerd Font Mono
+                position = 0, 30
+      	  shadow_passes = 1
+      	  shadow_boost = 1.2
+      	  shadow_size = 3
+      	  shadow_color = rgb(#${config.colorScheme.palette.base00})
+                halign = center
+                valign = bottom
+            }
     '';
   };
 
@@ -356,8 +346,8 @@ in
         "idleinhibit fullscreen, class:^(vlc)$"
       ];
       layerrule = [
-	"blur, notifications"
-	"ignorezero, notifications"
+        "blur, notifications"
+        "ignorezero, notifications"
       ];
       workspace = [
         "1,monitor:${rightMonitor},default:true"
@@ -423,7 +413,8 @@ in
         gaps_in = 3;
         gaps_out = 3;
         border_size = 1;
-        "col.active_border" = "rgba(${config.colorScheme.palette.base0C}ee) rgba(${config.colorScheme.palette.base01}ee) 45deg";
+        "col.active_border" =
+          "rgba(${config.colorScheme.palette.base0C}ee) rgba(${config.colorScheme.palette.base01}ee) 45deg";
         "col.inactive_border" = "rgba(${config.colorScheme.palette.base03}aa)";
         layout = "master";
       };
@@ -602,6 +593,37 @@ in
       fd # for find_files
     ];
   };
+  programs.nixvim.keymaps =
+    [
+      {
+        mode = "n";
+        key = "<S-l>"; # Shift + l
+        action = ":BufferLineCycleNext<CR>";
+        options.silent = true;
+      }
+      {
+        mode = "n";
+        key = "<S-h>"; # Shift + h
+        action = ":BufferLineCyclePrev<CR>";
+        options.silent = true;
+      }
+    ]
+    ++ (builtins.concatLists (
+      builtins.genList (
+        i:
+        let
+          ws = i + 1;
+        in
+        [
+          {
+            mode = "n";
+            key = "<leader>${toString ws}";
+            action = ":BufferLineGoToBuffer ${toString ws}<CR>";
+            options.silent = true;
+          }
+        ]
+      ) 9
+    ));
 
   programs.nixvim.plugins = {
     lsp.enable = true;
@@ -673,7 +695,34 @@ in
     conform-nvim = {
 
     };
-
+    bufferline = {
+      enable = true;
+      settings = {
+        options = {
+          numbers = "ordinal";
+          diagnostics = "nvim_lsp";
+          diagnostics_indicator = # Lua
+            ''
+              function(count, level, diagnostics_dict, context)
+                local s = ""
+                for e, n in pairs(diagnostics_dict) do
+                  local sym = e == "error" and " "
+                    or (e == "warning" and " " or "" )
+                  if(sym ~= "") then
+                    s = s .. " " .. n .. sym
+                  end
+                end
+                return s
+              end
+            '';
+          separator_style = "thin";
+          show_buffer_close_icons = true;
+          show_close_icon = true;
+          persist_buffer_sort = true;
+          show_tab_indicators = true;
+        };
+      };
+    };
   };
   programs.zsh = {
     enable = true;
@@ -684,6 +733,7 @@ in
     shellAliases = {
       ll = "ls -l";
       update = "sudo nixos-rebuild switch --flake .#joyboy";
+      nixfmt = "sudo nixfmt";
       cd = "z";
     };
     history = {

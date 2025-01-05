@@ -6,7 +6,7 @@ PROV?=PROV
 update:
 	sudo nixos-rebuild switch
 update-flake:
-	home-manager switch --flake .#joyboy
+	sudo nixos-rebuild switch --flake .#joyboy
 clean:
 	nix-collect-garbage -d
 wifi:

@@ -12,8 +12,8 @@
             # Recreating your existing boot partition
             boot = {
               name = "boot";
-              size = "512M";  # Standard size for EFI partition
-              type = "EF00";  # EFI System Partition type
+              size = "512M"; # Standard size for EFI partition
+              type = "EF00"; # EFI System Partition type
               content = {
                 type = "filesystem";
                 format = "vfat";
@@ -28,7 +28,7 @@
             # Recreating your root partition
             root = {
               name = "root";
-              size = "100%";  # Use remaining space
+              size = "100%"; # Use remaining space
               content = {
                 type = "filesystem";
                 # Keeping ext4 as your filesystem since that's what you're currently using

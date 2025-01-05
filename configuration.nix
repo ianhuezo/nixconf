@@ -114,11 +114,14 @@
     package = config.boot.kernelPackages.nvidiaPackages.beta;
   };
 
-  fonts.packages = with pkgs; [
-    meslo-lgs-nf
-    jetbrains-mono
-    font-awesome
-  ] ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
+  fonts.packages =
+    with pkgs;
+    [
+      meslo-lgs-nf
+      jetbrains-mono
+      font-awesome
+    ]
+    ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
 
   # Enable steam
   programs.steam = {
@@ -189,6 +192,7 @@
     extraGroups = [
       "networkmanager"
       "wheel"
+
     ];
     packages = with pkgs; [
       #  thunderbird
@@ -208,7 +212,6 @@
   environment.systemPackages = with pkgs; [
     #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     #  wget
-    envision
     ripgrep
     libnotify
     inotify-tools
@@ -236,6 +239,8 @@
     dracula-icon-theme
     tela-icon-theme
     inputs.swww.packages.${pkgs.system}.swww
+    treefmt
+    nixfmt-rfc-style
   ];
   #add git-lfs for vr stuff
   programs.git.enable = true;
