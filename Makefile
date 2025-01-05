@@ -11,3 +11,5 @@ clean:
 	nix-collect-garbage -d
 wifi:
 	nmcli d wifi connect $(CONN) password '$(PW)' ifname $(PROV)
+ssh:
+	ssh-keygen -t ed25519 -C "ianhuezo@gmail.com"
