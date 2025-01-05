@@ -8,6 +8,7 @@
 let
   nix-colors = import inputs.nix-colors { };
   quickshellPath = /etc/nixos/dotfiles/quickshell;
+  agsPath = /etc/nixos/dotfiles/ags;
   leftMonitor = "HDMI-A-1";
   rightMonitor = "DP-1";
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
@@ -192,12 +193,30 @@ in
         }
   '';
   services.dunst = {
-    enable = true;
+    enable = false;
     settings = {
       global = {
         monitor = 0;
+	transparency = 50;
+	font = "Droid Sans 9";
+	frame_color = "#eceff1";
+      };
+      urgency_normal = {
+        background = "#37474f";
+        foreground = "#eceff1";
+        timeout = 10;
       };
     };
+  };
+  services.mako = {
+    enable = true;
+    defaultTimeout = 10000;
+    font = "JetBrains Mono Nerd Font Mono";
+    backgroundColor = "#${config.colorScheme.palette.base00}80";
+    borderRadius = 20;
+    padding = "10,5,10,5";
+    borderColor = "#${config.colorScheme.palette.base0C}";
+    borderSize = 2;
   };
   # programs.ags = {
   #   enable = true;
@@ -221,7 +240,7 @@ in
           blur_passes = 1
           noise = 0.0117
           contrast = 1.300
-          brightness = 0.800
+          brightness = 0.600
           vibrancy = 0.2100
           vibrancy_darkness = 0.0
       }
@@ -279,11 +298,15 @@ in
       # USER
       label {
           monitor =
-          text = Hi, $USER
-          color = rgba(255, 255, 255, 0.6)
-          font_size = 18
+          text = Greetings, Ian 
+          color = rgba(255, 255, 255, 0.8)
+          font_size = 24
           font_family = JetBrains Mono Nerd Font Mono
           position = 0, 30
+	  shadow_passes = 1
+	  shadow_boost = 1.2
+	  shadow_size = 3
+	  shadow_color = rgb(#${config.colorScheme.palette.base00})
           halign = center
           valign = bottom
       }
@@ -331,6 +354,10 @@ in
       ];
       windowrulev2 = [
         "idleinhibit fullscreen, class:^(vlc)$"
+      ];
+      layerrule = [
+	"blur, notifications"
+	"ignorezero, notifications"
       ];
       workspace = [
         "1,monitor:${rightMonitor},default:true"
@@ -396,7 +423,7 @@ in
         gaps_in = 3;
         gaps_out = 3;
         border_size = 1;
-        "col.active_border" = "rgba(${config.colorScheme.palette.base05}ee) rgba(${config.colorScheme.palette.base01}ee) 45deg";
+        "col.active_border" = "rgba(${config.colorScheme.palette.base0C}ee) rgba(${config.colorScheme.palette.base01}ee) 45deg";
         "col.inactive_border" = "rgba(${config.colorScheme.palette.base03}aa)";
         layout = "master";
       };
@@ -523,6 +550,7 @@ in
     '';
   };
   home.file.".config/quickshell".source = config.lib.file.mkOutOfStoreSymlink quickshellPath;
+  home.file.".config/ags".source = config.lib.file.mkOutOfStoreSymlink agsPath;
   # home.file."${config.home.homeDirectory}/.config" = {
   #   source = ./dotfiles;
   #   recursive = true;
