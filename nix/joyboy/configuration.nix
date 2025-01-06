@@ -42,6 +42,7 @@
   };
   networking.networkmanager.wifi.backend = "iwd";
   networking.networkmanager.enable = true;
+  networking.hostName = "joyboy";
 
   programs.dconf.enable = true;
 
