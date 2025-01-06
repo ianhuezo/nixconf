@@ -42,7 +42,6 @@
     {
       nixpkgs,
       home-manager,
-      nixvim,
       ...
     }@inputs:
     let
@@ -69,7 +68,6 @@
                 inherit (inputs.nix-colors.lib-contrib { inherit pkgs; }) gtkThemeFromScheme;
               };
               home-manager.users.ianh.imports = [
-                nixvim.homeManagerModules.nixvim
                 ./home.nix
               ];
             }

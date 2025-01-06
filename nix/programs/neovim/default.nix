@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 
@@ -9,12 +10,19 @@ with lib;
 
 let
   cfg = config.modules.neovim;
-  palette = config.colorScheme.palette;
 in
 {
+  imports = [
+    inputs.nixvim.homeManagerModules.nixvim
+  ];
   
   options.modules.neovim = {
     enable = mkEnableOption "neovim configuration";
+    colorScheme = mkOption {
+      type = types.attrs;  # nix-colors uses an attrset for its schemes
+      default = null;
+      description = "Color scheme from nix-colors";
+    };
   };
 
   config = mkIf cfg.enable {
@@ -32,7 +40,7 @@ in
         settings.on_highlights = ''
           	function(highlights, colors) 
                      highlights.LineNr = {
-                       fg = "#${palette.base09}",
+                       fg = "#${cfg.colorScheme.palette.base09}",
                      }
           	end
         '';
