@@ -9,13 +9,15 @@ with lib;
 
 let
   cfg = config.modules.neovim;
+  palette = config.colorScheme.palette;
 in
 {
+  
   options.modules.neovim = {
     enable = mkEnableOption "neovim configuration";
   };
 
-  config = mkif cfg.enable {
+  config = mkIf cfg.enable {
     programs.nixvim = {
       enable = true;
       globals.mapleader = " ";
@@ -30,7 +32,7 @@ in
         settings.on_highlights = ''
           	function(highlights, colors) 
                      highlights.LineNr = {
-                       fg = "#${config.colorScheme.palette.base09}",
+                       fg = "#${palette.base09}",
                      }
           	end
         '';
