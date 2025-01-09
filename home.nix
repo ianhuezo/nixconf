@@ -183,22 +183,6 @@ in
           color: #${config.colorScheme.palette.base07};
         }
   '';
-  services.dunst = {
-    enable = false;
-    settings = {
-      global = {
-        monitor = 0;
-        transparency = 50;
-        font = "Droid Sans 9";
-        frame_color = "#eceff1";
-      };
-      urgency_normal = {
-        background = "#37474f";
-        foreground = "#eceff1";
-        timeout = 10;
-      };
-    };
-  };
   services.mako = {
     enable = true;
     defaultTimeout = 10000;
@@ -322,11 +306,6 @@ in
     settings = {
       exec-once = [
         ''${startupScript}/bin/start''
-        # "[workspace 1 silent] firefox & disown"
-        # "[workspace 2 silent] kitty & disown"
-        # "[workspace 3 silent] steam & disown"
-        # "[workspace 6 silent] vesktop --enable-features=UseOzonePlatform --ozone-platform=x11 --uri=%U & disown"
-        # "[workspace 4 silent] spotify --enable-features=UseOzonePlatform --ozone-platform=x11 --uri=%U & disown"
       ];
       monitor = [
         "${rightMonitor}, 1920x1080@119.98, auto-right, 1"
@@ -391,7 +370,6 @@ in
               in
               [
                 "$mod, code:1${toString i}, workspace, ${toString ws}"
-                # "$mod, code:1${toString i}, movetoworkspace, ${toString ws}"
               ]
             ) 9
           )
@@ -436,11 +414,9 @@ in
   wayland.windowManager.hyprland.plugins = [
     # inputs.Hyprspace.packages.${pkgs.system}.Hyprspace
   ];
-  # qt.enable = true;
   qt.platformTheme = "gtk";
   home.pointerCursor = {
     gtk.enable = true;
-    # x11.enable = true;
     package = pkgs.bibata-cursors;
     name = "Bibata-Modern-Classic";
     size = 16;
@@ -532,28 +508,11 @@ in
   };
   home.file.".config/quickshell".source = config.lib.file.mkOutOfStoreSymlink quickshellPath;
   home.file.".config/ags".source = config.lib.file.mkOutOfStoreSymlink agsPath;
-  # home.file."${config.home.homeDirectory}/.config" = {
-  #   source = ./dotfiles;
-  #   recursive = true;
-  # };
   home.file."${config.home.homeDirectory}/Pictures" = {
     source = ./wallpapers;
     recursive = true;
   };
-  # Home Manager is pretty good at managing dotfiles. The primary way to manage
-  # plain files is through 'home.file'.
-  home.file = {
-    # # Building this config.home.ration will create a copy of 'dotfiles/screenrc' in
-    # # the Nix store. Activating the config.home.ration will then make '~/.screenrc' a
-    # # symlink to the Nix store copy.
-    # ".screenrc".source = dotfiles/screenrc;
-    # # You can also set the file content immediately.
-    # ".gradle/gradle.properties".text = ''
-    #   org.gradle.console=verbose
-    #   org.gradle.daemon.idletimeout=3600000
-    # '';
-  };
-  
+
   programs.zsh = {
     enable = true;
     enableCompletion = true;
@@ -570,11 +529,6 @@ in
       size = 10000;
       path = "$XDG_DATA_HOME/zsh/history";
     };
-    # oh-my-zsh = {
-    #   enable = true;
-    #   plugins = [ "git" ];
-    #   theme = "robbyrussell";
-    # };
     initExtra = ''
           	bindkey '^ ' autosuggest-execute
       	fastfetch
@@ -582,7 +536,6 @@ in
     '';
     plugins = [
       {
-        # will source zsh-autosuggestions.plugin.zsh
         name = "zsh-autosuggestions";
         src = pkgs.fetchFromGitHub {
           owner = "zsh-users";

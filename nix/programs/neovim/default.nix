@@ -15,11 +15,11 @@ in
   imports = [
     inputs.nixvim.homeManagerModules.nixvim
   ];
-  
+
   options.modules.neovim = {
     enable = mkEnableOption "neovim configuration";
     colorScheme = mkOption {
-      type = types.attrs;  # nix-colors uses an attrset for its schemes
+      type = types.attrs; # nix-colors uses an attrset for its schemes
       default = null;
       description = "Color scheme from nix-colors";
     };
@@ -69,6 +69,15 @@ in
           action = ":BufferLineCyclePrev<CR>";
           options.silent = true;
         }
+        {
+          mode = "n";
+          key = "<leader>q"; # or any key combination you prefer
+          action = ":bd<CR>";
+          options = {
+            desc = "Close current buffer";
+            silent = true;
+          };
+        }
       ]
       ++ (builtins.concatLists (
         builtins.genList (
@@ -89,10 +98,35 @@ in
 
     programs.nixvim.plugins = {
       lsp.enable = true;
+      lsp-format = {
+        enable = true;
+        lspServersToEnable = "all";
+      };
+      lsp.keymaps.lspBuf = {
+        "gd" = "definition";
+        # Go-to-references
+        "gr" = "references";
+        # Hover documentation
+        "K" = "hover";
+        # Go to type definition
+        "gy" = "type_definition";
+        # Go to implementation
+        "gi" = "implementation";
+        # Rename symbol
+        "<leader>rn" = "rename";
+        # Show code actions
+        "<leader>ca" = "code_action";
+        # Show signature help
+        "<C-k>" = "signature_help";
+      };
+      none-ls = {
+        enable = true;
+        enableLspFormat = true;
+      };
+      lsp.servers.typos_lsp.enable = true;
       # lsp.servers.qmlls.enable = true;
       typescript-tools = {
         enable = true;
-        # settings.tsserverPlugins = [ "ags-ts" ];
       };
       lsp.servers.ts_ls.enable = true;
       lsp.servers.ts_ls.filetypes = [
@@ -115,13 +149,22 @@ in
           };
         };
       };
+
       cmp = {
         enable = true;
+	autoEnableSources = true;
         settings = {
-          snippet.expand = "function(args) require('luasnip').lsp_expand(args.body) end";
-          window = {
-            completion.__raw = "cmp.config.window.bordered";
-            documentation.__raw = "cmp.config.window.bordered";
+          sources = [
+            {name = "nvim_lsp";}
+            {name = "buffer";}
+            {name = "path";}
+	    {name = "treesitter";}
+	    {name = "luasnip";}
+          ];
+          mapping = {
+            "<S-y>" = "cmp.mapping.confirm({ select = true })";
+            "<C-n>" = "cmp.mapping.select_next_item()";
+            "<C-p>" = "cmp.mapping.select_prev_item()";
           };
         };
       };
