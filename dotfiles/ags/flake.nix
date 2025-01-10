@@ -16,6 +16,12 @@
     pkgs = nixpkgs.legacyPackages.${system};
   in {
     devShells.${system}.default = pkgs.mkShell {
+      buildInputs = [
+        (ags.packages.${system}.default.override { 
+          extraPackages = [
+            # cherry pick packages
+          ]});
+      ];
       packages = with pkgs; [
         # AGS dependencies
         ags.packages.${system}.default

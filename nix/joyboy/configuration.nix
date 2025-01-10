@@ -14,6 +14,7 @@
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
+    ../gaming/proton-ge.nix
   ];
 
   # Bootloader.
@@ -45,6 +46,9 @@
   # networking.hostName = "joyboy";
 
   programs.dconf.enable = true;
+  
+  #enable caching of art urls
+  services.gvfs.enable = true;
 
   # Set your time zone.
   time.timeZone = "America/New_York";

@@ -21,6 +21,7 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
 }
 
 function main() {
+
 	const monitors = App.get_monitors();
 	return Bar(monitors[1]);
 }

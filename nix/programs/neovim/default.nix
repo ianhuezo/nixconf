@@ -184,6 +184,7 @@ in
             "node_modules"
             ".git"
             "target"
+	    "*.lock"
           ];
           # Set to false if you don't have ripgrep installed
           vimgrep_arguments = [
