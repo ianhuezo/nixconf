@@ -19,27 +19,17 @@
       buildInputs = [
         (ags.packages.${system}.default.override { 
           extraPackages = [
-            # cherry pick packages
-          ]});
-      ];
-      packages = with pkgs; [
-        # AGS dependencies
-        ags.packages.${system}.default
-        nodejs
-        nodePackages.typescript
-        wrapGAppsHook
-        gobject-introspection
-        gtk3
-        gtk-layer-shell
-
-        # Astal packages
-        astal.packages.${system}.astal3
-        astal.packages.${system}.io
-        astal.packages.${system}.hyprland
-        astal.packages.${system}.mpris
-        astal.packages.${system}.network
-        astal.packages.${system}.bluetooth
-        astal.packages.${system}.battery
+	    ags.packages.${system}.apps
+            ags.packages.${system}.hyprland
+            ags.packages.${system}.mpris
+            ags.packages.${system}.wireplumber
+            ags.packages.${system}.network
+            ags.packages.${system}.tray
+            ags.packages.${system}.io
+            ags.packages.${system}.battery
+            ags.packages.${system}.notifd
+          ];
+	})
       ];
 
       shellHook = ''
