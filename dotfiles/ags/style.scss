@@ -6,7 +6,8 @@ window.Bar {
     background: $bg-color;
     min-height: 30px;
     color: $fg-color;
-    font-weight: bold;
+    font-weight: 800;
+    font-family: JetBrains Mono Nerd Font Mono; 
 
     >centerbox {
         background: $bg-color;
