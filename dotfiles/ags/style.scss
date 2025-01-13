@@ -4,15 +4,51 @@ $bg-color: #{"@theme_bg_color"};
 
 window.Bar {
     background: $bg-color;
-    min-height: 30px;
+    min-height: 40px;
+    min-width: 40px;
     color: $fg-color;
-    font-weight: 800;
-    font-family: JetBrains Mono Nerd Font Mono; 
+    font-weight: 600;
+    font-size: 16px;
 
     >centerbox {
-        background: $bg-color;
-    }
+        >image {
+          min-height: 40px;
+          min-width: 32px;
+          background-size: cover;
+          background-position: center;
+        };
+        >label {
+          font-family: DejaVuSansM Nerd Font, Noto Sans CJK JP, Noto Sans;
+        };
+
+    };
 
     button {
+    };
+    .music-info {
+      min-width: 80px;
     }
-}
+
+    .music-title {
+      font-size: 16px;
+      margin-left: 0px;
+      margin-right: 0px;
+      margin-top: -12px;
+    }
+    .music-artist {
+      font-size: 12px;
+      margin-left: 0px;
+      margin-right: 0px;
+      margin-bottom: -16px;
+      color: gray;
+    }
+    .music-grid{
+      min-height: 40px;
+      min-width: 40px;
+      border: 1px solid red;
+
+      >label {
+
+      }
+    }
+};

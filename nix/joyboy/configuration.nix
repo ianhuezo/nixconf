@@ -125,6 +125,9 @@
       meslo-lgs-nf
       jetbrains-mono
       font-awesome
+      noto-fonts
+      noto-fonts-cjk-sans
+      noto-fonts-emoji
     ]
     ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
 

@@ -25,10 +25,6 @@
     };
     nix-colors.url = "github:misterio77/nix-colors";
     swww.url = "github:LGFae/swww";
-    ags = {
-      url = "github:Aylur/ags";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     quickshell = {
       url = "git+https://git.outfoxxed.me/outfoxxed/quickshell";
       inputs.nixpkgs.follows = "nixpkgs";

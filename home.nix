@@ -24,7 +24,6 @@ let
     sleep 1
     systemctl --user import-environment XDG_CURRENT_DESKTOP XDG_SESSION_TYPE
     sleep 1
-    # ags & disown
   '';
 in
 {
