@@ -17,32 +17,42 @@ interface MusicInfoProps {
 }
 
 function ArtistWidget(artist: Variable<string>) {
-	return <label
-		cssClasses={["music-artist"]}
-		label={bind(artist).as((value) => {
-			if (value == undefined) return "";
-			return artist.get()
-		})}
-	/>
+	return (
+		<box cssClasses={[]}>
+			<label
+				cssClasses={["music-artist"]}
+				label={bind(artist).as((value) => {
+					if (value == undefined) return "";
+					return artist.get()
+				})}
+			/>
+		</box>
+	)
 }
 
 function TitleWidget(title: Variable<string>) {
-	return <label
-		cssClasses={["music-title"]}
-		label={bind(title).as((value) => {
-			if (value == undefined) return "";
-			return title.get()
-		})}
-		maxWidthChars={20}
-	/>
+	return (
+		<box>
+			<label
+				cssClasses={["music-title"]}
+				label={bind(title).as((value) => {
+					if (value == undefined) return "";
+					return title.get()
+				})}
+				maxWidthChars={20}
+			/>
+		</box>
+	)
 }
 
 function CoverArtWidget(coverArt: Variable<string>) {
 	const coverArtFunc = bind(coverArt).as(value => {
+		if (value == undefined) return ""
 		return value;
 	})
 	return <image
 		visible={bind(coverArt).as(value => {
+			if (!value) return false;
 			return value.length > 0;
 		})}
 		file={coverArtFunc}
@@ -77,7 +87,7 @@ const MusicInfoWidget = () => {
 		allPlayers.get().forEach(player => disconnectPlayerSignals(player));
 		allPlayers.set(Mpris.Mpris.get_default().get_players())
 		if (allPlayers.get().length > 0) {
-			currentPlayer.set(getCurrentPlayer({ players: allPlayers.get() }))
+			currentplayer.set(getcurrentplayer({ players: allplayers.get() }))
 		} else {
 			currentPlayer.set(undefined)
 			for (const [key, value] of Object.entries(musicProps)) {
@@ -99,8 +109,9 @@ const MusicInfoWidget = () => {
 			<box cssClasses={["music-info"]} vexpand={true}>
 				<Grid
 					setup={(self) => {
-						self.attach(ArtistWidget(artist), 0, 0, 1, 1);
-						self.attach(TitleWidget(title), 0, 1, 1, 1);
+						self.set_row_spacing(10)
+						self.attach(TitleWidget(title), 0, 0, 1, 5);
+						self.attach(ArtistWidget(artist), 0, 1, 1, 3);
 					}}
 				/>
 			</box>
@@ -119,6 +130,7 @@ function connectPlayerSignals(player: Mpris.Player, currentPlayer: Variable<Mpri
 	notifiers.forEach(notifier => {
 		player.connect(notifier, (player) => {
 			for (const [key, value] of Object.entries(musicProps)) {
+				//if (currentPlayer.get() != player && currentPlayer.get()?.playbackStatus != Mpris.PlaybackStatus.PLAYING) continue;
 				value.set(player[key])
 			}
 		});
@@ -161,49 +173,6 @@ export type MusicProperties = {
 
 export default function Bar(gdkmonitor: Gdk.Monitor) {
 	const { TOP, LEFT, RIGHT } = Astal.WindowAnchor
-	const mpris = Mpris.Mpris.new()
-	const currentPlayer: Variable<Mpris.Player | undefined> = Variable(undefined)
-	const allPlayers: Variable<Array<Mpris.Player>> = Variable(Mpris.Mpris.new().get_players())
-	const title: Variable<string> = Variable("")
-	const artist: Variable<string> = Variable("")
-	const coverArt: Variable<string> = Variable("")
-	const musicProps = {
-		title: title,
-		artist: artist,
-		coverArt: coverArt
-	};
-	mpris.connect('player-added', (mpris, busName) => {
-		allPlayers.get().forEach(player => disconnectPlayerSignals(player));
-		allPlayers.set(Mpris.Mpris.get_default().get_players())
-		allPlayers.get().forEach(player => connectPlayerSignals(player, currentPlayer, title, musicProps))
-		currentPlayer.set(getCurrentPlayer({ players: allPlayers.get() }))
-		for (const [key, value] of Object.entries(musicProps)) {
-			value.set(currentPlayer.get() ? currentPlayer.get()[key] : "")
-		}
-	});
-
-	mpris.connect('player-closed', (mpris, busName) => {
-		allPlayers.get().forEach(player => disconnectPlayerSignals(player));
-		allPlayers.set(Mpris.Mpris.get_default().get_players())
-		if (allPlayers.get().length > 0) {
-			currentPlayer.set(getCurrentPlayer({ players: allPlayers.get() }))
-		} else {
-			currentPlayer.set(undefined)
-			for (const [key, value] of Object.entries(musicProps)) {
-				value.set(currentPlayer.get() ? currentPlayer.get()[key] : "")
-			}
-		}
-	});
-	allPlayers.get().forEach(player => connectPlayerSignals(player, currentPlayer, title, musicProps))
-	currentPlayer.set(getCurrentPlayer({ players: allPlayers.get() }))
-	for (const [key, value] of Object.entries(musicProps)) {
-		value.set(currentPlayer.get() ? currentPlayer.get()[key] : "")
-	}
-	const coverArtFunc = bind(coverArt).as(value => {
-		return value;
-	})
-	//TODO: Go to whatever screen is playing the music by clicking the image
-
 	return <window
 		visible
 		cssClasses={["Bar"]}
@@ -212,7 +181,9 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
 		anchor={TOP | LEFT | RIGHT}
 		application={App}>
 		<centerbox cssName="centerbox">
+			<label label="" />
 			<MusicInfoWidget />
+			<label label="" />
 		</centerbox>
 	</window>
 }
