@@ -21,7 +21,6 @@ interface MusicInfoProps {
 
 function ArtistWidget(artist: Variable<string>) {
 	let increasing = true;
-	let currentText = "";
 	let pauseCounter = 0;
 	const pauseDuration = 60;
 	let tickCallbackId: number | null = null;
@@ -36,14 +35,14 @@ function ArtistWidget(artist: Variable<string>) {
 					setup.set_size_request(300, 16);
 					//@ts-ignore
 					const tickCallback = () => {
-						if (currentText != setup.text && (currentAlignment <= 0.0 || currentAlignment >= 0.0)) {
-							currentText = setup.text
+						if (currentAlignment === -1) {
 							increasing = true
 							pauseCounter = 0
 							currentAlignment = 0
 							setup.set_xalign(0)
 							return GLib.SOURCE_CONTINUE
 						}
+						currentAlignment = setup.get_xalign()
 						const layout = setup.create_pango_layout(setup.text)
 						const text_width = layout.get_pixel_size().at(0)
 						const container_width = setup.get_width()
@@ -63,6 +62,7 @@ function ArtistWidget(artist: Variable<string>) {
 							if (currentAlignment >= 1) increasing = false;
 							//@ts-ignore
 							if (currentAlignment <= 0) increasing = true;
+							if (currentAlignment === -1) return GLib.SOURCE_CONTINUE
 							//@ts-ignore
 							if (increasing == true) {
 								setup.set_xalign(Math.min(1.0, currentAlignment + rate));
@@ -70,6 +70,8 @@ function ArtistWidget(artist: Variable<string>) {
 							if (increasing == false) {
 								setup.set_xalign(Math.max(0.0, currentAlignment - rate));
 							}
+							if (rate === 0) currentAlignment = -1;
+							if (rate > 1) currentAlignment = -1;
 
 						}
 
@@ -95,10 +97,10 @@ function ArtistWidget(artist: Variable<string>) {
 
 function TitleWidget(title: Variable<string>) {
 	let increasing = true;
-	let currentText = "";
 	let pauseCounter = 0;
 	const pauseDuration = 60;
 	let tickCallbackId: number | null = null;
+	let currentAlignment = 0;
 
 
 
@@ -111,14 +113,15 @@ function TitleWidget(title: Variable<string>) {
 					setup.set_size_request(300, 20);
 					//@ts-ignore
 					const tickCallback = () => {
-						const currentAlignment = setup.get_xalign()
-						if (currentText != setup.text && (currentAlignment <= 0.0 || currentAlignment >= 0.0)) {
-							currentText = setup.text
+						if (currentAlignment === -1) {
 							increasing = true
 							pauseCounter = 0
+							currentAlignment = 0
 							setup.set_xalign(0)
 							return GLib.SOURCE_CONTINUE
 						}
+						currentAlignment = setup.get_xalign()
+
 						const layout = setup.create_pango_layout(setup.text)
 						const text_width = layout.get_pixel_size().at(0)
 						const container_width = setup.get_width()
@@ -138,6 +141,8 @@ function TitleWidget(title: Variable<string>) {
 							if (currentAlignment >= 1) increasing = false;
 							//@ts-ignore
 							if (currentAlignment <= 0) increasing = true;
+							if (currentAlignment === -1) return GLib.SOURCE_CONTINUE
+
 							//@ts-ignore
 							if (increasing == true) {
 								setup.set_xalign(Math.min(1.0, currentAlignment + rate));
@@ -145,6 +150,8 @@ function TitleWidget(title: Variable<string>) {
 							if (increasing == false) {
 								setup.set_xalign(Math.max(0.0, currentAlignment - rate));
 							}
+							if (rate === 0) currentAlignment = -1;
+							if (rate > 1) currentAlignment = -1;
 
 						}
 
@@ -161,6 +168,7 @@ function TitleWidget(title: Variable<string>) {
 
 				cssClasses={["music-title"]}
 				text={bind(title).as((value) => {
+					currentAlignment = -1
 					if (value == undefined) return "";
 					return title.get()
 				})}
