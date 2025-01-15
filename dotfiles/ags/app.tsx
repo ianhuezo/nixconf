@@ -20,6 +20,11 @@ interface MusicInfoProps {
 }
 
 function ArtistWidget(artist: Variable<string>) {
+	let increasing = true;
+	let currentText = "";
+	let pauseCounter = 0;
+	const pauseDuration = 60;
+	let tickCallbackId: number | null = null;
 	return (
 		<box
 			cssClasses={["artist-container"]} name="artist-container">
@@ -27,7 +32,55 @@ function ArtistWidget(artist: Variable<string>) {
 				name="music-artist-label"
 				cssClasses={["music-artist"]}
 				setup={(setup) => {
-					setup.set_size_request(300, -1);
+					setup.set_size_request(300, 16);
+					//@ts-ignore
+					const tickCallback = () => {
+						const currentAlignment = setup.get_xalign()
+						if (currentText != setup.text && (currentAlignment <= 0.0 || currentAlignment >= 0.0)) {
+							currentText = setup.text
+							increasing = true
+							pauseCounter = 0
+							setup.set_xalign(0)
+							return GLib.SOURCE_CONTINUE
+						}
+						const layout = setup.create_pango_layout(setup.text)
+						const text_width = layout.get_pixel_size().at(0)
+						const container_width = setup.get_width()
+						if (text_width && text_width > container_width) {
+							//rate of change will be 0.01 maybe?
+							//@ts-ignore
+							const pixels_per_frame = 0.3 // Adjust this value to control speed
+							const total_scroll_distance = text_width - container_width
+							const rate = pixels_per_frame / total_scroll_distance
+
+							if ((currentAlignment >= 1.0 || currentAlignment <= 0.0) && pauseCounter < pauseDuration) {
+								pauseCounter++
+								return GLib.SOURCE_CONTINUE
+							}
+							if (pauseCounter >= pauseDuration) pauseCounter = 0;
+							// Convert desired pixel movement to xalign value
+							if (currentAlignment >= 1) increasing = false;
+							//@ts-ignore
+							if (currentAlignment <= 0) increasing = true;
+							//@ts-ignore
+							if (increasing == true) {
+								setup.set_xalign(Math.min(1.0, currentAlignment + rate));
+							}
+							if (increasing == false) {
+								setup.set_xalign(Math.max(0.0, currentAlignment - rate));
+							}
+
+						}
+
+						return GLib.SOURCE_CONTINUE
+					}
+					tickCallbackId = setup.add_tick_callback(tickCallback);
+				}}
+				onDestroy={(setup) => {
+					if (tickCallbackId !== null) {
+						setup.remove_tick_callback(tickCallbackId);
+						tickCallbackId = null;
+					}
 				}}
 				text={bind(artist).as((value) => {
 					if (value == undefined) return "";
@@ -53,10 +106,11 @@ function TitleWidget(title: Variable<string>) {
 			<Inscription
 				name="music-title-label"
 				setup={(setup) => {
-					setup.set_size_request(300, -1);
+					setup.set_size_request(300, 20);
 					//@ts-ignore
 					const tickCallback = () => {
-						if (currentText != setup.text && setup.get_xalign() != 0) {
+						const currentAlignment = setup.get_xalign()
+						if (currentText != setup.text && (currentAlignment <= 0.0 || currentAlignment >= 0.0)) {
 							currentText = setup.text
 							increasing = true
 							pauseCounter = 0
@@ -73,21 +127,21 @@ function TitleWidget(title: Variable<string>) {
 							const total_scroll_distance = text_width - container_width
 							const rate = pixels_per_frame / total_scroll_distance
 
-							if ((setup.get_xalign() >= 1 || setup.get_xalign() <= 0) && pauseCounter < pauseDuration) {
+							if ((currentAlignment >= 1.0 || currentAlignment <= 0.0) && pauseCounter < pauseDuration) {
 								pauseCounter++
 								return GLib.SOURCE_CONTINUE
 							}
 							if (pauseCounter >= pauseDuration) pauseCounter = 0;
 							// Convert desired pixel movement to xalign value
-							if (setup.get_xalign() >= 1) increasing = false;
+							if (currentAlignment >= 1) increasing = false;
 							//@ts-ignore
-							if (setup.get_xalign() <= 0) increasing = true;
+							if (currentAlignment <= 0) increasing = true;
 							//@ts-ignore
 							if (increasing == true) {
-								setup.set_xalign(Math.min(1.0, setup.get_xalign() + rate));
+								setup.set_xalign(Math.min(1.0, currentAlignment + rate));
 							}
 							if (increasing == false) {
-								setup.set_xalign(Math.max(0.0, setup.get_xalign() - rate));
+								setup.set_xalign(Math.max(0.0, currentAlignment - rate));
 							}
 
 						}
