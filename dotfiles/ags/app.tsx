@@ -25,6 +25,7 @@ function ArtistWidget(artist: Variable<string>) {
 	let pauseCounter = 0;
 	const pauseDuration = 60;
 	let tickCallbackId: number | null = null;
+	let currentAlignment = 0;
 	return (
 		<box
 			cssClasses={["artist-container"]} name="artist-container">
@@ -35,11 +36,11 @@ function ArtistWidget(artist: Variable<string>) {
 					setup.set_size_request(300, 16);
 					//@ts-ignore
 					const tickCallback = () => {
-						const currentAlignment = setup.get_xalign()
 						if (currentText != setup.text && (currentAlignment <= 0.0 || currentAlignment >= 0.0)) {
 							currentText = setup.text
 							increasing = true
 							pauseCounter = 0
+							currentAlignment = 0
 							setup.set_xalign(0)
 							return GLib.SOURCE_CONTINUE
 						}
@@ -83,6 +84,7 @@ function ArtistWidget(artist: Variable<string>) {
 					}
 				}}
 				text={bind(artist).as((value) => {
+					currentAlignment = -1;
 					if (value == undefined) return "";
 					return artist.get()
 				})}
@@ -197,7 +199,8 @@ const MusicInfoWidget = () => {
 	};
 	//Initialization of player properties
 	mpris.connect('player-added', (mpris, busName) => {
-		allPlayers.get().forEach(player => disconnectPlayerSignals(player));
+
+		allPlayers.get().forEach(player => disconnectPlayerSignals(player, currentPlayer));
 		allPlayers.set(Mpris.Mpris.get_default().get_players())
 		allPlayers.get().forEach(player => connectPlayerSignals(player, currentPlayer, title, musicProps))
 		currentPlayer.set(getCurrentPlayer({ players: allPlayers.get() }))
@@ -207,7 +210,7 @@ const MusicInfoWidget = () => {
 	});
 
 	mpris.connect('player-closed', (mpris, busName) => {
-		allPlayers.get().forEach(player => disconnectPlayerSignals(player));
+		allPlayers.get().forEach(player => disconnectPlayerSignals(player, currentPlayer));
 		allPlayers.set(Mpris.Mpris.get_default().get_players())
 		if (allPlayers.get().length > 0) {
 			currentPlayer.set(getCurrentPlayer({ players: allPlayers.get() }))
@@ -266,7 +269,7 @@ function connectPlayerSignals(player: Mpris.Player, currentPlayer: Variable<Mpri
 	})
 }
 
-function disconnectPlayerSignals(player: Mpris.Player) {
+function disconnectPlayerSignals(player: Mpris.Player, currentPlayer: Variable<Mpris.Player | undefined>) {
 	if (player == undefined) return;
 	const notifiers = [
 		'notify::title',
@@ -275,6 +278,9 @@ function disconnectPlayerSignals(player: Mpris.Player) {
 		'notify::playback-status'
 	]
 	notifiers.forEach(notifier => {
+		if (currentPlayer == undefined) return
+		//@ts-ignore
+		if (currentPlayer.get().playbackStatus == Mpris.PlaybackStatus.PLAYING) return;
 		//@ts-ignore
 		player.disconnect(notifier, (_player) => { });
 	})
