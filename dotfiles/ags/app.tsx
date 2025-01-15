@@ -11,17 +11,30 @@ const Grid = astalify<Gtk.Grid, Gtk.Grid.ConstructorProps>(Gtk.Grid, {
 	setChildren(self, children) { },
 })
 
+type InscriptionProps = ConstructProps<Gtk.Inscription, Gtk.Inscription.ConstructorProps>
+const Inscription = astalify<Gtk.Inscription, Gtk.Inscription.ConstructorProps>(Gtk.Inscription, {})
+
 interface MusicInfoProps {
 	artist?: string | Binding<string>;
 	title?: string | Binding<string>;
 }
 
+function ScrollBackAndForthCallback() {
+
+}
+
 function ArtistWidget(artist: Variable<string>) {
 	return (
-		<box cssClasses={[]}>
-			<label
+		<box setup={(setup) => {
+		}}
+			cssClasses={["artist-container"]} name="artist-container">
+			<Inscription
+				name="music-artist-label"
 				cssClasses={["music-artist"]}
-				label={bind(artist).as((value) => {
+				setup={(setup) => {
+					setup.set_size_request(300, -1);
+				}}
+				text={bind(artist).as((value) => {
 					if (value == undefined) return "";
 					return artist.get()
 				})}
@@ -31,15 +44,76 @@ function ArtistWidget(artist: Variable<string>) {
 }
 
 function TitleWidget(title: Variable<string>) {
+	let increasing = true;
+	let currentText = "";
+	let pauseCounter = 0;
+	const pauseDuration = 60;
+	let tickCallbackId: number | null = null;
+
+
+
 	return (
-		<box>
-			<label
+		<box setup={(setup) => {
+		}}
+			cssClasses={["title-container"]} name="title-container">
+			<Inscription
+				name="music-title-label"
+				setup={(setup) => {
+					setup.set_size_request(300, -1);
+					//@ts-ignore
+					const tickCallback = () => {
+						if (currentText != setup.text && setup.get_xalign() != 0) {
+							currentText = setup.text
+							increasing = true
+							pauseCounter = 0
+							setup.set_xalign(0)
+							return GLib.SOURCE_CONTINUE
+						}
+						const layout = setup.create_pango_layout(setup.text)
+						const text_width = layout.get_pixel_size().at(0)
+						const container_width = setup.get_width()
+						if (text_width && text_width > container_width) {
+							//rate of change will be 0.01 maybe?
+							//@ts-ignore
+							const pixels_per_frame = 0.3 // Adjust this value to control speed
+							const total_scroll_distance = text_width - container_width
+							const rate = pixels_per_frame / total_scroll_distance
+
+							if ((setup.get_xalign() >= 1 || setup.get_xalign() <= 0) && pauseCounter < pauseDuration) {
+								pauseCounter++
+								return GLib.SOURCE_CONTINUE
+							}
+							if (pauseCounter >= pauseDuration) pauseCounter = 0;
+							// Convert desired pixel movement to xalign value
+							if (setup.get_xalign() >= 1) increasing = false;
+							//@ts-ignore
+							if (setup.get_xalign() <= 0) increasing = true;
+							//@ts-ignore
+							if (increasing == true) {
+								setup.set_xalign(Math.min(1.0, setup.get_xalign() + rate));
+							}
+							if (increasing == false) {
+								setup.set_xalign(Math.max(0.0, setup.get_xalign() - rate));
+							}
+
+						}
+
+						return GLib.SOURCE_CONTINUE
+					}
+					tickCallbackId = setup.add_tick_callback(tickCallback);
+				}}
+				onDestroy={(setup) => {
+					if (tickCallbackId !== null) {
+						setup.remove_tick_callback(tickCallbackId);
+						tickCallbackId = null;
+					}
+				}}
+
 				cssClasses={["music-title"]}
-				label={bind(title).as((value) => {
+				text={bind(title).as((value) => {
 					if (value == undefined) return "";
 					return title.get()
 				})}
-				maxWidthChars={20}
 			/>
 		</box>
 	)
@@ -51,6 +125,7 @@ function CoverArtWidget(coverArt: Variable<string>) {
 		return value;
 	})
 	return <image
+		name="cover-art-image"
 		visible={bind(coverArt).as(value => {
 			if (!value) return false;
 			return value.length > 0;
@@ -106,12 +181,17 @@ const MusicInfoWidget = () => {
 	return (
 		<box>
 			{CoverArtWidget(coverArt)}
-			<box cssClasses={["music-info"]} vexpand={true}>
+			<box name="music-info" cssClasses={["music-info"]}
+				setup={(setup) => {
+					setup.set_size_request(300, -1)
+				}}
+			>
 				<Grid
+					cssClasses={["grid-container"]}
 					setup={(self) => {
-						self.set_row_spacing(10)
-						self.attach(TitleWidget(title), 0, 0, 1, 5);
-						self.attach(ArtistWidget(artist), 0, 1, 1, 3);
+						self.set_row_spacing(0)
+						self.attach(TitleWidget(title), 0, 0, 1, 1);
+						self.attach(ArtistWidget(artist), 0, 1, 1, 1);
 					}}
 				/>
 			</box>
@@ -128,6 +208,7 @@ function connectPlayerSignals(player: Mpris.Player, currentPlayer: Variable<Mpri
 		'notify::playback-status'
 	]
 	notifiers.forEach(notifier => {
+		//youtube is a big problem.  Waay to many notifiers
 		player.connect(notifier, (player) => {
 			for (const [key, value] of Object.entries(musicProps)) {
 				//if (currentPlayer.get() != player && currentPlayer.get()?.playbackStatus != Mpris.PlaybackStatus.PLAYING) continue;

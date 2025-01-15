@@ -25,29 +25,28 @@ window.Bar {
     button {
     };
     .music-info {
-      min-width: 80px;
-      margin-left: 8px;
+      min-width: 300px;
+      margin-left: 4px;
     }
-
     .music-title {
+      margin-top: 2px;
       font-size: 16px;
-      margin-left: 0px;
-      margin-right: 0px;
-      margin-top: -12px;
       color: #c69b67;
       font-family: DejaVuSansM Nerd Font, Noto Sans CJK JP, Noto Sans;
     }
     .music-artist {
       font-size: 12px;
-      margin-left: 0px;
-      margin-right: 0px;
-      margin-bottom: -24px;
       color: gray;
       font-family: DejaVuSansM Nerd Font, Noto Sans CJK JP, Noto Sans;
     }
     .music-grid{
       min-height: 40px;
       min-width: 40px;
-      border: 1px solid red;
+    }
+    .artist-container{
+      min-width: 40px;
+    }
+    .title-container {
+      min-width: 40px;
     }
 };
