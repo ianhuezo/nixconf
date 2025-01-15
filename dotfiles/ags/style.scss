@@ -3,7 +3,7 @@ $fg-color: #{"@theme_fg_color"};
 $bg-color: #{"@theme_bg_color"};
 
 window.Bar {
-    background: $bg-color;
+    background: #171D23;
     min-height: 40px;
     min-width: 40px;
     color: $fg-color;
@@ -30,13 +30,17 @@ window.Bar {
     }
     .music-title {
       font-size: 16px;
-      color: #c69b67;
+      color: #FF9E64;
+      font-weight: bold;
       font-family:  Noto Sans CJK JP, Noto Sans;
+      text-shadow: 0 0 6px #FF9E64CC;
     }
     .music-artist {
       font-size: 12px;
-      color: gray;
+      color:#B7C5D3;
+      font-weight: bold;
       font-family:  Noto Sans CJK JP, Noto Sans;
+      text-shadow: 1px 1px 5px #000000B3;
     }
     .music-grid{
       min-height: 40px;
