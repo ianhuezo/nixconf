@@ -19,14 +19,9 @@ interface MusicInfoProps {
 	title?: string | Binding<string>;
 }
 
-function ScrollBackAndForthCallback() {
-
-}
-
 function ArtistWidget(artist: Variable<string>) {
 	return (
-		<box setup={(setup) => {
-		}}
+		<box
 			cssClasses={["artist-container"]} name="artist-container">
 			<Inscription
 				name="music-artist-label"
@@ -53,8 +48,7 @@ function TitleWidget(title: Variable<string>) {
 
 
 	return (
-		<box setup={(setup) => {
-		}}
+		<box
 			cssClasses={["title-container"]} name="title-container">
 			<Inscription
 				name="music-title-label"
@@ -162,7 +156,7 @@ const MusicInfoWidget = () => {
 		allPlayers.get().forEach(player => disconnectPlayerSignals(player));
 		allPlayers.set(Mpris.Mpris.get_default().get_players())
 		if (allPlayers.get().length > 0) {
-			currentplayer.set(getcurrentplayer({ players: allplayers.get() }))
+			currentPlayer.set(getCurrentPlayer({ players: allPlayers.get() }))
 		} else {
 			currentPlayer.set(undefined)
 			for (const [key, value] of Object.entries(musicProps)) {
