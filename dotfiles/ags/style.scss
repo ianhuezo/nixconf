@@ -28,13 +28,6 @@ window.Bar {
       min-width: 300px;
       margin-left: 4px;
     }
-    .music-title {
-      font-size: 16px;
-      color: #FF9E64;
-      font-weight: bold;
-      font-family:  Noto Sans CJK JP, Noto Sans;
-      text-shadow: 0 0 6px #FF9E64CC;
-    }
     .music-artist {
       font-size: 12px;
       color:#B7C5D3;
@@ -53,3 +46,13 @@ window.Bar {
       min-width: 40px;
     }
 };
+    .music-title {
+      font-size: 16px;
+      color: #FF9E64;
+      font-weight: bold;
+      font-family:  Noto Sans CJK JP, Noto Sans;
+      text-shadow: 0 0 6px #FF9E64CC;
+    }
+    .grid-container {
+    };
+
