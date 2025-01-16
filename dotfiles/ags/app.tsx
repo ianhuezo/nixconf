@@ -3,11 +3,6 @@ import { Variable, GLib, bind, Binding } from "astal"
 import style from "style.scss"
 import Mpris from "gi://AstalMpris"
 import { astalify, type ConstructProps } from "astal/gtk4"
-import Pango from "gi://Pango?version=1.0"
-
-
-//on startup, doesn't work.  
-//
 
 const Grid = astalify<Gtk.Grid, Gtk.Grid.ConstructorProps>(Gtk.Grid, {
 	getChildren(self) { return [] },
@@ -79,7 +74,7 @@ function TextMarquee({ text, config = {} }: TextMarqueeProps) {
 
 
 			const layout = setup.create_pango_layout(nextText);
-			const [text_width, text_height] = layout.get_pixel_size();
+			const [text_width, _text_height] = layout.get_pixel_size();
 
 			if (text_width && text_width > finalConfig.containerWidth!) {
 				const total_scroll_distance = text_width - finalConfig.containerWidth!;
@@ -146,89 +141,6 @@ function TextMarquee({ text, config = {} }: TextMarqueeProps) {
 	);
 }
 
-
-
-
-function ArtistWidget(artist: Variable<string>) {
-	let increasing = true;
-	let pauseCounter = 0;
-	const pauseDuration = 60;
-	let tickCallbackId: number | null = null;
-	let currentAlignment = 0;
-	return (
-		<box
-			cssClasses={["artist-container"]} name="artist-container">
-			<Inscription
-				name="music-artist-label"
-				cssClasses={["music-artist"]}
-				setup={(setup) => {
-					setup.set_size_request(300, 16);
-					//@ts-ignore
-					const tickCallback = () => {
-						if (currentAlignment === -1) {
-							increasing = true
-							pauseCounter = 0
-							currentAlignment = 0
-							setup.set_xalign(0)
-							return GLib.SOURCE_CONTINUE
-						}
-						currentAlignment = setup.get_xalign()
-						if (setup.text.length == 0) {
-							return GLib.SOURCE_REMOVE
-						}
-						const layout = setup.create_pango_layout(setup.text)
-						const text_width = layout.get_pixel_size().at(0)
-						const container_width = setup.get_width()
-						if (text_width && text_width > container_width) {
-							//rate of change will be 0.01 maybe?
-							//@ts-ignore
-							const pixels_per_frame = 0.3 // Adjust this value to control speed
-							const total_scroll_distance = text_width - container_width
-							const rate = pixels_per_frame / total_scroll_distance
-
-							if ((currentAlignment >= 1.0 || currentAlignment <= 0.0) && pauseCounter < pauseDuration) {
-								pauseCounter++
-								return GLib.SOURCE_CONTINUE
-							}
-							if (pauseCounter >= pauseDuration) pauseCounter = 0;
-							// Convert desired pixel movement to xalign value
-							if (currentAlignment >= 1) increasing = false;
-							//@ts-ignore
-							if (currentAlignment <= 0) increasing = true;
-							if (currentAlignment === -1) return GLib.SOURCE_CONTINUE
-							//@ts-ignore
-							if (increasing == true) {
-								setup.set_xalign(Math.min(1.0, currentAlignment + rate));
-							}
-							if (increasing == false) {
-								setup.set_xalign(Math.max(0.0, currentAlignment - rate));
-							}
-							if (rate === 0) currentAlignment = -1;
-							if (rate >= 0.5) currentAlignment = -1;
-							if (rate < 0) currentAlignment = -1;
-
-						}
-
-						return GLib.SOURCE_CONTINUE
-					}
-					tickCallbackId = setup.add_tick_callback(tickCallback);
-				}}
-				onDestroy={(setup) => {
-					if (tickCallbackId !== null) {
-						setup.remove_tick_callback(tickCallbackId);
-						tickCallbackId = null;
-					}
-				}}
-				text={bind(artist).as((value) => {
-					currentAlignment = -1;
-					if (value == undefined) return "";
-					return artist.get()
-				})}
-			/>
-		</box>
-	)
-}
-
 function CoverArtWidget(coverArt: Variable<string>) {
 	const coverArtFunc = bind(coverArt).as(value => {
 		if (value == undefined) return ""
@@ -278,6 +190,15 @@ const MusicInfoWidget = () => {
 	for (const [key, value] of Object.entries(musicProps)) {
 		value.set(currentPlayer.get() ? currentPlayer.get()[key] : "")
 	}
+	const artistConfig: MarqueeConfig = {
+		startDelay: 0,
+		pauseDuration: 200,
+		containerWidth: 300,
+		containerHeight: 20,
+		pixelsPerFrame: 0.2,
+		boxCssClasses: ["artist-container"],
+		inscriptionCssClasses: ["music-artist"]
+	};
 	return (
 		<box>
 			{CoverArtWidget(coverArt)}
@@ -291,7 +212,7 @@ const MusicInfoWidget = () => {
 					setup={(self) => {
 						self.set_row_spacing(0)
 						self.attach(TextMarquee({ text: musicProps.title }), 0, 0, 1, 1);
-						self.attach(ArtistWidget(artist), 0, 1, 1, 1);
+						self.attach(TextMarquee({ text: musicProps.artist, config: artistConfig }), 0, 1, 1, 1);
 					}}
 				/>
 			</box>
