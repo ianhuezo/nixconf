@@ -1,12 +1,10 @@
 // https://gitlab.gnome.org/GNOME/gtk/-/blob/gtk-3-24/gtk/theme/Adwaita/_colors-public.scss
-$fg-color: #{"@theme_fg_color"};
-$bg-color: #{"@theme_bg_color"};
 
 window.Bar {
-    background: #171D23;
+    background-color: #171D23;
     min-height: 40px;
     min-width: 40px;
-    color: $fg-color;
+    color: #EFEFEF;
     font-weight: 600;
     font-size: 16px;
 
@@ -56,3 +54,13 @@ window.Bar {
     .grid-container {
     };
 
+    .art-toggle {
+      padding: 0px;
+      background: #171D23;
+      box-shadow: none;
+    }
+    .cava-widget{
+      background-color: #171D23;
+      color: #EFEFEF;
+      border-radius: 1px;
+    }

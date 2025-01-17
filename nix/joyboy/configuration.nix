@@ -249,6 +249,7 @@
     inputs.swww.packages.${pkgs.system}.swww
     treefmt
     nixfmt-rfc-style
+    pulseaudio
   ];
   #add git-lfs for vr stuff
   programs.git.enable = true;

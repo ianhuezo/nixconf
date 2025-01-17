@@ -28,10 +28,11 @@
             ags.packages.${system}.io
             ags.packages.${system}.battery
             ags.packages.${system}.notifd
+	    ags.packages.${system}.cava
           ];
 	})
+	pkgs.cava
       ];
-
       shellHook = ''
         echo "AGS + Astal development environment loaded"
       '';
