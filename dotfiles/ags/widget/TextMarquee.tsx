@@ -1,6 +1,7 @@
 import { Gtk } from "astal/gtk4"
 import { Variable, GLib, bind } from "astal"
 import { astalify } from "astal/gtk4"
+import Pango from "gi://Pango?version=1.0";
 
 const Inscription = astalify<Gtk.Inscription, Gtk.Inscription.ConstructorProps>(Gtk.Inscription, {})
 
@@ -41,7 +42,8 @@ export default function TextMarquee({ text, config = {} }: TextMarqueeProps) {
 	let currentAlignment = Variable(0);
 	let nextText = "THISISHTEASDFJFJDSAKFJLSD"
 	let widget: Gtk.Inscription | null = null;
-	text.subscribe(_value => {
+	let layout: Pango.Layout | null = null
+	text.subscribe(value => {
 		currentAlignment.drop()
 		if (tickCallbackId) {
 			currentAlignment.drop()
@@ -49,6 +51,7 @@ export default function TextMarquee({ text, config = {} }: TextMarqueeProps) {
 			tickCallbackId = null
 		}
 		currentAlignment.set(0)
+		layout = widget ? widget.create_pango_layout(value) : null;
 		tickCallbackId = widget?.add_tick_callback(createTickCallback(widget)) || null;
 		widget?.queue_resize()
 	})
@@ -72,13 +75,13 @@ export default function TextMarquee({ text, config = {} }: TextMarqueeProps) {
 					text.drop()
 					return GLib.SOURCE_REMOVE;
 				});
-				return GLib.SOURCE_REMOVE;
+				return GLib.SOURCE_CONTINUE;
+			}
+			if (!layout) {
+				return GLib.SOURCE_REMOVE
 			}
 
-
-
-			const layout = setup.create_pango_layout(nextText);
-			const [text_width, _text_height] = layout.get_pixel_size();
+			const [text_width, _text_height] = layout!.get_pixel_size();
 
 			if (text_width && text_width > finalConfig.containerWidth!) {
 				const total_scroll_distance = text_width - finalConfig.containerWidth!;
@@ -108,8 +111,10 @@ export default function TextMarquee({ text, config = {} }: TextMarqueeProps) {
 				if (rate === 0 || rate > 1 || rate >= 0.5 || rate < 0) {
 					currentAlignment.set(0)
 				}
+				return GLib.SOURCE_CONTINUE;
+
 			}
-			return GLib.SOURCE_CONTINUE;
+			return GLib.SOURCE_REMOVE
 		};
 	}
 
