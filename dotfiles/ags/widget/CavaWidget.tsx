@@ -61,7 +61,7 @@ export default function CavaWidget({ isVisible, config = {} }: CavaProps) {
 		//20 is amount of bars
 		//40 is height of total widget
 		if (!cava) {
-			return GLib.SOURCE_CONTINUE
+			return GLib.SOURCE_REMOVE
 		}
 		const context = widget.get_style_context();
 		const h = widget.get_allocated_height();

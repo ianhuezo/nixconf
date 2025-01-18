@@ -61,7 +61,7 @@ export default function TextMarquee({ text, config = {} }: TextMarqueeProps) {
 	function createTickCallback(setup: Gtk.Inscription) {
 		return () => {
 			if (text.get().length == 0) {
-				return GLib.SOURCE_CONTINUE;
+				return GLib.SOURCE_REMOVE;
 			}
 			if (nextText != text.get()) {
 				GLib.timeout_add(GLib.PRIORITY_DEFAULT, finalConfig.startDelay!, () => {
@@ -72,7 +72,7 @@ export default function TextMarquee({ text, config = {} }: TextMarqueeProps) {
 					text.drop()
 					return GLib.SOURCE_REMOVE;
 				});
-				return GLib.SOURCE_CONTINUE;
+				return GLib.SOURCE_REMOVE;
 			}
 
 
