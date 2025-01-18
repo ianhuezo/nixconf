@@ -145,6 +145,8 @@ export default function CavaWidget({ isVisible, config = {} }: CavaProps) {
 			cava!.disconnect(cavaListenerId)
 		}
 		widget = null;
+		isVisible.drop()
+		cavaValues.drop()
 		cavaListenerId = null;
 	}
 

@@ -14,6 +14,7 @@ const Grid = astalify<Gtk.Grid, Gtk.Grid.ConstructorProps>(Gtk.Grid, {
 })
 
 function CoverArtWidget(coverArt: Variable<string>) {
+	let widget: Gtk.Image | null = null;
 	const coverArtFunc = bind(coverArt).as(value => {
 		if (value == undefined) return ""
 		return value;
@@ -38,6 +39,7 @@ const MusicInfoWidget = () => {
 	const coverArt: Variable<string> = Variable("")
 	const playbackStatus: Variable<Mpris.PlaybackStatus> = Variable(Mpris.PlaybackStatus.STOPPED)
 	const isMusicBarDisplayed: Variable<boolean> = Variable(false)
+	const isTextDisplayed: Variable<boolean> = Variable(true)
 	const musicProps = {
 		title: title,
 		artist: artist,
@@ -65,6 +67,7 @@ const MusicInfoWidget = () => {
 	}
 	function toggleMusicPlayerText() {
 		isMusicBarDisplayed.set(!isMusicBarDisplayed.get())
+		isTextDisplayed.set(!isTextDisplayed.get())
 	}
 	const artistConfig: MarqueeConfig = {
 		startDelay: 0,
@@ -73,14 +76,18 @@ const MusicInfoWidget = () => {
 		containerHeight: 20,
 		pixelsPerFrame: 0.2,
 		boxCssClasses: ["artist-container"],
-		inscriptionCssClasses: ["music-artist"]
+		inscriptionCssClasses: ["music-artist"],
+		visible: isMusicBarDisplayed
 	};
+	const songConfig: MarqueeConfig = {
+		visible: isTextDisplayed
+	}
 	function GridWidget() {
 		return <Grid
 			cssClasses={["grid-container"]}
 			setup={(self) => {
 				self.set_row_spacing(0)
-				self.attach(TextMarquee({ text: musicProps.title }), 0, 0, 1, 1);
+				self.attach(TextMarquee({ text: musicProps.title, config: songConfig }), 0, 0, 1, 1);
 				self.attach(TextMarquee({ text: musicProps.artist, config: artistConfig }), 0, 1, 1, 1);
 			}}
 		/>

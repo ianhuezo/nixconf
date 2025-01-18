@@ -12,7 +12,7 @@ export interface MarqueeConfig {
 	pixelsPerFrame?: number;  // Speed of the scrolling
 	boxCssClasses?: string[];  // CSS classes for the container box
 	inscriptionCssClasses?: string[];  // CSS classes for the inscription
-	visible?: boolean;
+	visible?: Variable<boolean>;
 }
 
 export interface TextMarqueeProps {
@@ -28,7 +28,7 @@ export const DEFAULT_CONFIG: MarqueeConfig = {
 	pixelsPerFrame: 0.2,
 	boxCssClasses: ["title-container"],
 	inscriptionCssClasses: ["music-title"],
-	visible: true
+	visible: Variable(true)
 };
 
 export default function TextMarquee({ text, config = {} }: TextMarqueeProps) {
@@ -42,13 +42,20 @@ export default function TextMarquee({ text, config = {} }: TextMarqueeProps) {
 	let nextText = "THISISHTEASDFJFJDSAKFJLSD"
 	let widget: Gtk.Inscription | null = null;
 	text.subscribe(_value => {
+		currentAlignment.drop()
 		if (tickCallbackId) {
+			currentAlignment.drop()
 			widget?.remove_tick_callback(tickCallbackId)
 			tickCallbackId = null
 		}
 		currentAlignment.set(0)
 		tickCallbackId = widget?.add_tick_callback(createTickCallback(widget)) || null;
 		widget?.queue_resize()
+	})
+	finalConfig.visible?.subscribe(value => {
+		if (!value && widget) {
+			cleanupMarquee(widget)
+		}
 	})
 
 	function createTickCallback(setup: Gtk.Inscription) {
@@ -62,10 +69,12 @@ export default function TextMarquee({ text, config = {} }: TextMarqueeProps) {
 					increasing = true;
 					pauseCounter = 0;
 					currentAlignment.set(0)
+					text.drop()
 					return GLib.SOURCE_REMOVE;
 				});
 				return GLib.SOURCE_CONTINUE;
 			}
+
 
 
 			const layout = setup.create_pango_layout(nextText);
@@ -111,12 +120,15 @@ export default function TextMarquee({ text, config = {} }: TextMarqueeProps) {
 	}
 
 	function cleanupMarquee(setup: Gtk.Inscription) {
+		currentAlignment.set(0);
 		if (tickCallbackId !== null) {
 			setup.remove_tick_callback(tickCallbackId);
 			tickCallbackId = null;
 		}
 		widget = null;
-		currentAlignment.set(0);
+		text.drop()
+		currentAlignment.drop()
+		finalConfig.visible?.drop()
 	}
 
 
