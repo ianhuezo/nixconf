@@ -6,6 +6,7 @@ import { astalify } from "astal/gtk4"
 import TextMarquee, { MarqueeConfig } from "./widget/TextMarquee"
 import Cava from "gi://AstalCava"
 import CavaWidget from "./widget/CavaWidget"
+import GdkWayland from "gi://GdkWayland?version=4.0"
 
 const Grid = astalify<Gtk.Grid, Gtk.Grid.ConstructorProps>(Gtk.Grid, {
 	getChildren(self) { return [] },
@@ -55,7 +56,7 @@ const MusicInfoWidget = () => {
 	});
 
 	mpris.connect('player-closed', (mpris, player) => {
-		disconnectPlayerSignals(player, currentPlayer, musicProps, initialValues);
+
 	});
 	allPlayers.get().forEach(player => connectPlayerSignals(player, currentPlayer, title, musicProps))
 	currentPlayer.set(getCurrentPlayer({ players: allPlayers.get() }))
@@ -179,8 +180,14 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
 
 function main() {
 
-	const monitors = App.get_monitors();
-	return Bar(monitors[1]);
+	for (const monitor of App.get_monitors()) {
+		print(monitor.model)
+		if (monitor.model == "VG278") {
+			return Bar(monitor)
+		}
+	}
+
+
 }
 
 

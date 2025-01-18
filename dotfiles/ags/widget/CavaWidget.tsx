@@ -1,7 +1,6 @@
 import { Variable, GLib } from "astal"
 import { astalify, Gtk } from "astal/gtk4"
 import Cava from "gi://AstalCava"
-import cairo from "gi://cairo?version=1.0";
 
 const DrawingArea = astalify<Gtk.DrawingArea, Gtk.DrawingArea.ConstructorProps>(Gtk.DrawingArea, {})
 
@@ -21,7 +20,7 @@ export default function CavaWidget({ isVisible, config = {} }: CavaProps) {
 	let cavaListenerId: null | number = null
 	let initializationTimeout: number | null = null;
 	let widget: Gtk.DrawingArea | null = null;
-	const align = "end"
+	const align: "start" | "center" | "end" = "end"
 
 	async function initializeCava(): Promise<void> {
 		return new Promise((resolve) => {
