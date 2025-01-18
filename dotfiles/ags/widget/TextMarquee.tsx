@@ -50,7 +50,7 @@ export default function TextMarquee({ text, config = {} }: TextMarqueeProps) {
 			tickCallbackId = null
 		}
 		currentAlignment.set(0)
-		layout = widget ? widget.create_pango_layout(value) : null;
+		layout = widget ? widget.create_pango_layout(value || "") : null;
 		tickCallbackId = widget?.add_tick_callback(createTickCallback(widget)) || null;
 		widget?.queue_resize()
 	})
@@ -110,8 +110,7 @@ export default function TextMarquee({ text, config = {} }: TextMarqueeProps) {
 	function setupMarquee(setup: Gtk.Inscription) {
 		setup.set_min_lines(1)
 		if (!layout) {
-
-			layout = setup ? setup.create_pango_layout(text.get()) : null;
+			layout = setup ? setup.create_pango_layout(text.get() || "") : null;
 		}
 		tickCallbackId = setup.add_tick_callback(createTickCallback(setup))
 		widget = setup;
