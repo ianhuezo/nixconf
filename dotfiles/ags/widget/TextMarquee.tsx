@@ -40,7 +40,6 @@ export default function TextMarquee({ text, config = {} }: TextMarqueeProps) {
 	let pauseCounter = 0;
 	let tickCallbackId: number | null = null;
 	let currentAlignment = Variable(0);
-	let nextText = "THISISHTEASDFJFJDSAKFJLSD"
 	let widget: Gtk.Inscription | null = null;
 	let layout: Pango.Layout | null = null
 	text.subscribe(value => {
@@ -66,17 +65,7 @@ export default function TextMarquee({ text, config = {} }: TextMarqueeProps) {
 			if (text.get().length == 0) {
 				return GLib.SOURCE_REMOVE;
 			}
-			if (nextText != text.get()) {
-				GLib.timeout_add(GLib.PRIORITY_DEFAULT, finalConfig.startDelay!, () => {
-					nextText = text.get()
-					increasing = true;
-					pauseCounter = 0;
-					currentAlignment.set(0)
-					text.drop()
-					return GLib.SOURCE_REMOVE;
-				});
-				return GLib.SOURCE_CONTINUE;
-			}
+
 			if (!layout) {
 				return GLib.SOURCE_REMOVE
 			}
@@ -120,6 +109,10 @@ export default function TextMarquee({ text, config = {} }: TextMarqueeProps) {
 
 	function setupMarquee(setup: Gtk.Inscription) {
 		setup.set_min_lines(1)
+		if (!layout) {
+
+			layout = setup ? setup.create_pango_layout(text.get()) : null;
+		}
 		tickCallbackId = setup.add_tick_callback(createTickCallback(setup))
 		widget = setup;
 	}
