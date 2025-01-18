@@ -50,15 +50,15 @@ const MusicInfoWidget = () => {
 		coverArt: Variable(""),
 		playbackStatus: Variable(Mpris.PlaybackStatus.STOPPED)
 	}
+	const signalIds: Variable<Array<{ busName: string, signalId: number }>> = Variable([])
 	//Initialization of player properties
 	mpris.connect('player-added', (mpris, player) => {
-		connectPlayerSignals(player, currentPlayer, title, musicProps)
+		connectPlayerSignals(player, currentPlayer, title, musicProps, signalIds)
 	});
 
 	mpris.connect('player-closed', (mpris, player) => {
-
 	});
-	allPlayers.get().forEach(player => connectPlayerSignals(player, currentPlayer, title, musicProps))
+	allPlayers.get().forEach(player => connectPlayerSignals(player, currentPlayer, title, musicProps, signalIds))
 	currentPlayer.set(getCurrentPlayer({ players: allPlayers.get() }))
 	for (const [key, value] of Object.entries(musicProps)) {
 		value.set(currentPlayer.get() ? currentPlayer.get()[key] : "")
@@ -104,7 +104,7 @@ const MusicInfoWidget = () => {
 };
 
 
-function connectPlayerSignals(player: Mpris.Player, currentPlayer: Variable<Mpris.Player | undefined>, title: Variable<string>, musicProps: MusicProperties) {
+function connectPlayerSignals(player: Mpris.Player, currentPlayer: Variable<Mpris.Player | undefined>, title: Variable<string>, musicProps: MusicProperties, signalIds: Variable<Array<{ busName: string, signalId: number }>>) {
 	const notifiers = [
 		'notify::title',
 		'notify::artist',
@@ -113,30 +113,13 @@ function connectPlayerSignals(player: Mpris.Player, currentPlayer: Variable<Mpri
 	]
 	notifiers.forEach(notifier => {
 		//youtube is a big problem.  Waay to many notifiers
-		player.connect(notifier, (_player) => {
+		const signalId = player.connect(notifier, (_player) => {
 			for (const [key, value] of Object.entries(musicProps)) {
 				//if (currentPlayer.get() != player && currentPlayer.get()?.playbackStatus != Mpris.PlaybackStatus.PLAYING) continue;
 				value.set(_player[key])
 			}
 		});
-	})
-}
-
-function disconnectPlayerSignals(player: Mpris.Player, currentPlayer: Variable<Mpris.Player | undefined>, musicProps: MusicProperties, initialValues: MusicProperties) {
-	if (player == undefined) return;
-	const notifiers = [
-		'notify::title',
-		'notify::artist',
-		'notify::cover-art',
-		'notify::playback-status'
-	]
-	notifiers.forEach(notifier => {
-		//@ts-ignore
-		player.disconnect(notifier, (_player) => {
-			for (const [key, value] of Object.entries(musicProps)) {
-				value.set(initialValues[key].get())
-			}
-		});
+		signalIds.set([...signalIds.get(), { busName: player.get_bus_name(), signalId: signalId }])
 	})
 }
 
@@ -181,7 +164,6 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
 function main() {
 
 	for (const monitor of App.get_monitors()) {
-		print(monitor.model)
 		if (monitor.model == "VG278") {
 			return Bar(monitor)
 		}

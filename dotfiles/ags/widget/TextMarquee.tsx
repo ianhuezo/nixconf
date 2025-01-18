@@ -12,6 +12,7 @@ export interface MarqueeConfig {
 	pixelsPerFrame?: number;  // Speed of the scrolling
 	boxCssClasses?: string[];  // CSS classes for the container box
 	inscriptionCssClasses?: string[];  // CSS classes for the inscription
+	visible?: boolean;
 }
 
 export interface TextMarqueeProps {
@@ -26,7 +27,8 @@ export const DEFAULT_CONFIG: MarqueeConfig = {
 	containerHeight: 20,
 	pixelsPerFrame: 0.2,
 	boxCssClasses: ["title-container"],
-	inscriptionCssClasses: ["music-title"]
+	inscriptionCssClasses: ["music-title"],
+	visible: true
 };
 
 export default function TextMarquee({ text, config = {} }: TextMarqueeProps) {
@@ -113,6 +115,7 @@ export default function TextMarquee({ text, config = {} }: TextMarqueeProps) {
 			setup.remove_tick_callback(tickCallbackId);
 			tickCallbackId = null;
 		}
+		widget = null;
 		currentAlignment.set(0);
 	}
 
