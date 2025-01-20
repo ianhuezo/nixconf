@@ -20,6 +20,9 @@ export default function CavaWidget({ isVisible, config = {} }: CavaProps) {
 	let cavaListenerId: null | number = null
 	let initializationTimeout: number | null = null;
 	let widget: Gtk.DrawingArea | null = null;
+	// Subscription cleanup handler
+	let valueSubscription: null | (() => void) = null;
+	let visibilitySubscription: null | (() => void) = null;
 	const align: "start" | "center" | "end" = "end"
 
 	async function initializeCava(): Promise<void> {
@@ -50,11 +53,35 @@ export default function CavaWidget({ isVisible, config = {} }: CavaProps) {
 		});
 		widget = setup
 		widget.set_draw_func(drawBars)
+		valueSubscription = cavaValues.subscribe(_value => {
+			widget?.queue_draw()
+		})
+
+		visibilitySubscription = isVisible.subscribe(value => {
+			if (!value) {
+				destroyCava()
+			}
+		})
 
 	}
-	cavaValues.subscribe(_value => {
-		widget?.queue_draw()
-	})
+	function destroyCava() {
+		if (cavaListenerId) {
+			cava!.disconnect(cavaListenerId)
+		}
+		widget = null;
+		if (valueSubscription) {
+			valueSubscription();
+			valueSubscription = null;
+		}
+		if (visibilitySubscription) {
+			visibilitySubscription();
+			visibilitySubscription = null;
+		}
+		isVisible.drop()
+		cavaValues.drop()
+		cavaListenerId = null;
+		cava = null;
+	}
 
 	function drawBars(widget: Gtk.DrawingArea, cr: any) {
 		//code mostly stolen and modified slightly. nice affect, though :)
@@ -63,7 +90,6 @@ export default function CavaWidget({ isVisible, config = {} }: CavaProps) {
 		if (!cava) {
 			return GLib.SOURCE_REMOVE
 		}
-		const context = widget.get_style_context();
 		const h = widget.get_allocated_height();
 		const w = widget.get_allocated_width();
 
@@ -134,21 +160,9 @@ export default function CavaWidget({ isVisible, config = {} }: CavaProps) {
 		}
 
 	}
-	isVisible.subscribe(value => {
-		if (!value) {
-			destroyCava()
-		}
-	})
 
-	function destroyCava() {
-		if (cavaListenerId) {
-			cava!.disconnect(cavaListenerId)
-		}
-		widget = null;
-		isVisible.drop()
-		cavaValues.drop()
-		cavaListenerId = null;
-	}
+
+
 
 	return (
 		<box >

@@ -14,7 +14,6 @@ const Grid = astalify<Gtk.Grid, Gtk.Grid.ConstructorProps>(Gtk.Grid, {
 })
 
 function CoverArtWidget(coverArt: Variable<string>) {
-	let widget: Gtk.Image | null = null;
 	const coverArtFunc = bind(coverArt).as(value => {
 		if (value == undefined) return ""
 		return value;
@@ -26,6 +25,9 @@ function CoverArtWidget(coverArt: Variable<string>) {
 			return value.length > 0;
 		})}
 		file={coverArtFunc}
+		onDestroy={() => {
+			coverArt.drop()
+		}}
 		pixelSize={40}
 	/>
 }
@@ -90,12 +92,18 @@ const MusicInfoWidget = () => {
 				self.attach(TextMarquee({ text: musicProps.title, config: songConfig }), 0, 0, 1, 1);
 				self.attach(TextMarquee({ text: musicProps.artist, config: artistConfig }), 0, 1, 1, 1);
 			}}
+			onDestroy={() => {
+				musicProps.title.drop()
+				musicProps.artist.drop()
+				isMusicBarDisplayed.drop()
+				isTextDisplayed.drop()
+			}}
 		/>
 
 	}
 	return (
 		<box>
-			<button cssClasses={["art-toggle"]} onClicked={toggleMusicPlayerText}>{CoverArtWidget(coverArt)}</button>
+			<button cssClasses={["art-toggle"]} onClicked={toggleMusicPlayerText} onDestroy={() => coverArt.drop()}>{CoverArtWidget(coverArt)}</button>
 			<box name="music-info" cssClasses={["music-info"]}
 				setup={(setup) => {
 					setup.set_size_request(300, -1)

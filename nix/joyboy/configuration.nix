@@ -128,6 +128,7 @@
       noto-fonts
       noto-fonts-cjk-sans
       noto-fonts-emoji
+      maple-mono
     ]
     ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
 

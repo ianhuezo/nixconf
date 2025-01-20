@@ -421,7 +421,10 @@ in
   programs.kitty = {
     enable = true;
     extraConfig = ''
-      	         background_opacity 0.85
+		       font_family Maple Mono
+		       bold_font Maple Mono
+		       bold_italic_font Maple Mono
+      	               background_opacity 0.85
                        foreground #${config.colorScheme.palette.base05} 
                        background #${config.colorScheme.palette.base00} 
                        

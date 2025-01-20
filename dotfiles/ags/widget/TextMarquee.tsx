@@ -42,35 +42,19 @@ export default function TextMarquee({ text, config = {} }: TextMarqueeProps) {
 	let currentAlignment = Variable(0);
 	let widget: Gtk.Inscription | null = null;
 	let layout: Pango.Layout | null = null
-	text.subscribe(value => {
-		currentAlignment.drop()
-		if (tickCallbackId) {
-			currentAlignment.drop()
-			widget?.remove_tick_callback(tickCallbackId)
-			tickCallbackId = null
-		}
-		currentAlignment.set(0)
-		layout = widget ? widget.create_pango_layout(value || "") : null;
-		tickCallbackId = widget?.add_tick_callback(createTickCallback(widget)) || null;
-		widget?.queue_resize()
-	})
-	finalConfig.visible?.subscribe(value => {
-		if (!value && widget) {
-			cleanupMarquee(widget)
-		}
-	})
+	let textSubscription: null | (() => void) = null;
+	let visibilitySubscription: null | (() => void) = null;
+	let current_text = ""
+	let text_width = 0;
+	let _text_height = 0;
+
 
 	function createTickCallback(setup: Gtk.Inscription) {
+		currentAlignment.drop()
 		return () => {
-			if (text.get().length == 0) {
+			if (current_text.length == 0) {
 				return GLib.SOURCE_REMOVE;
 			}
-
-			if (!layout) {
-				return GLib.SOURCE_REMOVE
-			}
-
-			const [text_width, _text_height] = layout!.get_pixel_size();
 
 			if (text_width && text_width > finalConfig.containerWidth!) {
 				const total_scroll_distance = text_width - finalConfig.containerWidth!;
@@ -109,11 +93,41 @@ export default function TextMarquee({ text, config = {} }: TextMarqueeProps) {
 
 	function setupMarquee(setup: Gtk.Inscription) {
 		setup.set_min_lines(1)
+		if (textSubscription) {
+			textSubscription()
+			textSubscription = null
+		}
+		if (visibilitySubscription) {
+			visibilitySubscription()
+			visibilitySubscription = null
+		}
 		if (!layout) {
 			layout = setup ? setup.create_pango_layout(text.get() || "") : null;
+			[text_width, _text_height] = layout!.get_pixel_size();
+			layout = null;
 		}
 		tickCallbackId = setup.add_tick_callback(createTickCallback(setup))
 		widget = setup;
+		textSubscription = text.subscribe(value => {
+			current_text = value
+			currentAlignment.drop()
+			if (tickCallbackId) {
+				currentAlignment.drop()
+				widget?.remove_tick_callback(tickCallbackId)
+				tickCallbackId = null
+			}
+			currentAlignment.set(0)
+			layout = widget ? widget.create_pango_layout(value || "") : null;
+			[text_width, _text_height] = layout!.get_pixel_size();
+			layout = null;
+			tickCallbackId = widget?.add_tick_callback(createTickCallback(widget)) || null;
+			widget?.queue_resize()
+		})
+		visibilitySubscription = finalConfig.visible?.subscribe(value => {
+			if (!value && widget) {
+				cleanupMarquee(widget)
+			}
+		}) || null;
 	}
 
 	function cleanupMarquee(setup: Gtk.Inscription) {
@@ -123,6 +137,14 @@ export default function TextMarquee({ text, config = {} }: TextMarqueeProps) {
 			tickCallbackId = null;
 		}
 		widget = null;
+		if (textSubscription) {
+			textSubscription()
+			textSubscription = null
+		}
+		if (visibilitySubscription) {
+			visibilitySubscription()
+			visibilitySubscription = null
+		}
 		text.drop()
 		currentAlignment.drop()
 		finalConfig.visible?.drop()
