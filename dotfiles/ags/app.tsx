@@ -110,7 +110,7 @@ const MusicInfoWidget = () => {
 				}}
 			>
 				{bind(isMusicBarDisplayed).as(value => {
-					return value ? CavaWidget({ isVisible: isMusicBarDisplayed }) : GridWidget()
+					return value ? <CavaWidget isVisible={isMusicBarDisplayed} /> : GridWidget()
 				})}
 			</box>
 

@@ -1,6 +1,7 @@
 import { Variable, GLib } from "astal"
 import { astalify, Gtk } from "astal/gtk4"
 import Cava from "gi://AstalCava"
+import cairo from 'cairo'
 
 const DrawingArea = astalify<Gtk.DrawingArea, Gtk.DrawingArea.ConstructorProps>(Gtk.DrawingArea, {})
 
@@ -18,17 +19,14 @@ export default function CavaWidget({ isVisible, config = {} }: CavaProps) {
 	const cavaValues: Variable<Array<number>> = Variable(Array(20).fill(0))
 	let cava: Cava.Cava | null = null;
 	let cavaListenerId: null | number = null
-	let initializationTimeout: number | null = null;
-	let widget: Gtk.DrawingArea | null = null;
 	// Subscription cleanup handler
-	let valueSubscription: null | (() => void) = null;
 	let visibilitySubscription: null | (() => void) = null;
 	const align: "start" | "center" | "end" = "end"
 
 	async function initializeCava(): Promise<void> {
 		return new Promise((resolve) => {
 			// Use a small timeout to let the UI render first
-			initializationTimeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
+			GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
 				try {
 					cava = Cava.get_default();
 					resolve();
@@ -46,33 +44,29 @@ export default function CavaWidget({ isVisible, config = {} }: CavaProps) {
 		setup.set_size_request(finalConfig.containerWidth ?? 300, finalConfig.containerHeight ?? 40)
 		initializeCava().then(() => {
 			if (cava && !cavaListenerId) {
+				visibilitySubscription = isVisible.subscribe(value => {
+					if (!value) {
+						destroyCava()
+					}
+				})
+				//@ts-ignore
+				setup.set_draw_func(drawBars)
 				cavaListenerId = cava.connect("notify::values", () => {
 					cavaValues.set([...cava!.get_values()]);
+					setup?.queue_draw()
+
 				});
 			}
 		});
-		widget = setup
-		widget.set_draw_func(drawBars)
-		valueSubscription = cavaValues.subscribe(_value => {
-			widget?.queue_draw()
-		})
 
-		visibilitySubscription = isVisible.subscribe(value => {
-			if (!value) {
-				destroyCava()
-			}
-		})
 
 	}
+
 	function destroyCava() {
 		if (cavaListenerId) {
 			cava!.disconnect(cavaListenerId)
 		}
-		widget = null;
-		if (valueSubscription) {
-			valueSubscription();
-			valueSubscription = null;
-		}
+
 		if (visibilitySubscription) {
 			visibilitySubscription();
 			visibilitySubscription = null;
@@ -83,15 +77,17 @@ export default function CavaWidget({ isVisible, config = {} }: CavaProps) {
 		cava = null;
 	}
 
-	function drawBars(widget: Gtk.DrawingArea, cr: any) {
+	function drawBars(drawingArea: Gtk.DrawingArea, cr: cairo.Context) {
 		//code mostly stolen and modified slightly. nice affect, though :)
 		//20 is amount of bars
 		//40 is height of total widget
 		if (!cava) {
-			return GLib.SOURCE_REMOVE
+			//@ts-ignore
+			cr.$dispose()
+			return true
 		}
-		const h = widget.get_allocated_height();
-		const w = widget.get_allocated_width();
+		const h = drawingArea.get_allocated_height();
+		const w = drawingArea.get_allocated_width();
 
 		const bg = {
 			red: 0.09,   // #17
@@ -158,17 +154,18 @@ export default function CavaWidget({ isVisible, config = {} }: CavaProps) {
 			cr.lineTo(0, h);
 			cr.fill();
 		}
-
+		//@ts-ignore
+		cr.$dispose()
+		//@ts-ignore
+		return true
 	}
 
 
 
 
 	return (
-		<box >
+		<box onDestroy={() => { isVisible.drop() }}>
 			<DrawingArea
-				cssClasses={["cava-widget"]}
-				cssName="cava-widget"
 				setup={initialize}
 				onDestroy={destroyCava}
 			/>

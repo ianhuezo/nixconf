@@ -104,7 +104,9 @@ export default function TextMarquee({ text, config = {} }: TextMarqueeProps) {
 		if (!layout) {
 			layout = setup ? setup.create_pango_layout(text.get() || "") : null;
 			[text_width, _text_height] = layout!.get_pixel_size();
-			layout = null;
+		} else {
+			layout.set_text(text.get() || "", -1);
+			[text_width, _text_height] = layout!.get_pixel_size();
 		}
 		tickCallbackId = setup.add_tick_callback(createTickCallback(setup))
 		widget = setup;
@@ -117,9 +119,13 @@ export default function TextMarquee({ text, config = {} }: TextMarqueeProps) {
 				tickCallbackId = null
 			}
 			currentAlignment.set(0)
-			layout = widget ? widget.create_pango_layout(value || "") : null;
-			[text_width, _text_height] = layout!.get_pixel_size();
-			layout = null;
+			if (!layout) {
+				layout = setup ? setup.create_pango_layout(value || "") : null;
+				[text_width, _text_height] = layout!.get_pixel_size();
+			} else {
+				layout.set_text(value || "", -1);
+				[text_width, _text_height] = layout!.get_pixel_size();
+			}
 			tickCallbackId = widget?.add_tick_callback(createTickCallback(widget)) || null;
 			widget?.queue_resize()
 		})
