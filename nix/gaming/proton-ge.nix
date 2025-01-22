@@ -29,6 +29,7 @@ let
     # extract proton tarball to steam directory
     tar -xf $tarball_name -C ~/.steam/root/compatibilitytools.d/
   '';
-in {
+in
+{
   environment.systemPackages = [ get-proton-ge ];
 }

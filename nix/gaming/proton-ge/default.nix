@@ -1,32 +1,37 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, curl
-, jq
-, makeWrapper
-, coreutils
-, gnutar
-, symlinkJoin
+{
+  lib,
+  stdenv,
+  fetchFromGitHub,
+  curl,
+  jq,
+  makeWrapper,
+  coreutils,
+  gnutar,
+  symlinkJoin,
 }:
 
 let
   pname = "proton-ge-custom";
   version = "latest";
-  
+
   # Define Steam compatibility tools path
   steamCompatPath = "$HOME/.steam/root/compatibilitytools.d";
 in
 symlinkJoin {
   inherit pname version;
-  
+
   name = "${pname}-${version}";
 
-  nativeBuildInputs = [ curl jq makeWrapper ];
+  nativeBuildInputs = [
+    curl
+    jq
+    makeWrapper
+  ];
 
   buildInputs = [
     (stdenv.mkDerivation {
       inherit pname version;
-      
+
       dontUnpack = true;
       dontBuild = true;
 
@@ -36,18 +41,18 @@ symlinkJoin {
 
         # Get latest release info
         RELEASE_INFO=$(curl -s https://api.github.com/repos/GloriousEggroll/proton-ge-custom/releases/latest)
-        
+
         # Get download URLs
         TARBALL_URL=$(echo "$RELEASE_INFO" | jq -r '.assets[] | select(.name | endswith(".tar.gz")) | .browser_download_url')
         CHECKSUM_URL=$(echo "$RELEASE_INFO" | jq -r '.assets[] | select(.name | endswith(".sha512sum")) | .browser_download_url')
-        
+
         # Download files
         curl -L "$TARBALL_URL" -o proton.tar.gz
         curl -L "$CHECKSUM_URL" -o proton.sha512sum
-        
+
         # Verify checksum
         sha512sum -c proton.sha512sum
-        
+
         # Extract to our package directory
         tar -xf proton.tar.gz -C $out/share/proton-ge/
       '';
@@ -65,7 +70,7 @@ symlinkJoin {
   # Create setup script
   postBuild = ''
     mkdir -p $out/bin
-    
+
     # Create setup script
     cat > $out/bin/setup-proton-ge << EOF
     #!${stdenv.shell}
@@ -74,7 +79,7 @@ symlinkJoin {
     ln -sfn $out/share/proton-ge/* "${steamCompatPath}/"
     echo "Proton GE has been installed to ${steamCompatPath}"
     EOF
-    
+
     chmod +x $out/bin/setup-proton-ge
   '';
 }

@@ -153,20 +153,20 @@ in
       luasnip.enable = true;
       cmp = {
         enable = true;
-	autoEnableSources = true;
+        autoEnableSources = true;
         settings = {
           sources = [
-            {name = "nvim_lsp";}
-            {name = "buffer";}
-            {name = "path";}
-	    {name = "treesitter";}
-	    {name = "luasnip";}
+            { name = "nvim_lsp"; }
+            { name = "buffer"; }
+            { name = "path"; }
+            { name = "treesitter"; }
+            { name = "luasnip"; }
           ];
           mapping = {
             "<C-y>" = "cmp.mapping.confirm({ select = true })";
             "<C-n>" = "cmp.mapping.select_next_item()";
             "<C-p>" = "cmp.mapping.select_prev_item()";
-	    "<C-Space>" = "cmp.mapping.complete()";
+            "<C-Space>" = "cmp.mapping.complete()";
           };
         };
       };
@@ -186,7 +186,7 @@ in
             "node_modules"
             ".git"
             "target"
-	    "*.lock"
+            "*.lock"
           ];
           # Set to false if you don't have ripgrep installed
           vimgrep_arguments = [

@@ -421,71 +421,71 @@ in
   programs.kitty = {
     enable = true;
     extraConfig = ''
-		       font_family Maple Mono
-		       bold_font Maple Mono
-		       bold_italic_font Maple Mono
-      	               background_opacity 0.85
-                       foreground #${config.colorScheme.palette.base05} 
-                       background #${config.colorScheme.palette.base00} 
-                       
-                       # grayish
-                       color0 #${config.colorScheme.palette.base03} 
-                       color8 #${config.colorScheme.palette.base03} 
-                       
-                       # Salmon
-                       color1 #${config.colorScheme.palette.base08} 
-                       color9 #${config.colorScheme.palette.base08} 
-                       
-                       # Green
-                       color2  #${config.colorScheme.palette.base0C} 
-                       color10 #${config.colorScheme.palette.base0C} 
-                       
-                       # Yellow-brown
-                       color3  #${config.colorScheme.palette.base09} 
-                       color11 #${config.colorScheme.palette.base09} 
-                       
-                       # Blue
-                       color4  #${config.colorScheme.palette.base0D} 
-                       color12 #${config.colorScheme.palette.base0D}
-                       
-                       # Magenta
-                       color5  #${config.colorScheme.palette.base0E} 
-                       color13 #${config.colorScheme.palette.base0E}
-                       
-                       # Cyan
-                       color6  #${config.colorScheme.palette.base0C} 
-                       color14 #${config.colorScheme.palette.base0C} 
-                       
-                       # White
-                       color7  #${config.colorScheme.palette.base05} 
-                       color15 #${config.colorScheme.palette.base05} 
-                       
-                       # Cursor
-                       cursor #${config.colorScheme.palette.base05} 
-                       cursor_text_color #${config.colorScheme.palette.base00} 
-                       
-                       # Selection highlight
-                       selection_foreground none
-                       selection_background #${config.colorScheme.palette.base03}
-                       
-                       # The color for highlighting URLs on mouse-over
-                       url_color #${config.colorScheme.palette.base0B}
-                       
-                       # Window borders
-                       active_border_color #${config.colorScheme.palette.base0D}
-                       inactive_border_color #${config.colorScheme.palette.base00}
-                       bell_border_color #${config.colorScheme.palette.base09}
-                       
-                       # Tab bar
-                       tab_bar_style fade
-                       tab_fade 1
-                       active_tab_foreground   #3d59a1
-                       active_tab_background   #16161e
-                       active_tab_font_style   bold
-                       inactive_tab_foreground #787c99
-                       inactive_tab_background #16161e
-                       inactive_tab_font_style bold
-                       tab_bar_background #101014
+      		       font_family Maple Mono
+      		       bold_font Maple Mono
+      		       bold_italic_font Maple Mono
+            	               background_opacity 0.85
+                             foreground #${config.colorScheme.palette.base05} 
+                             background #${config.colorScheme.palette.base00} 
+                             
+                             # grayish
+                             color0 #${config.colorScheme.palette.base03} 
+                             color8 #${config.colorScheme.palette.base03} 
+                             
+                             # Salmon
+                             color1 #${config.colorScheme.palette.base08} 
+                             color9 #${config.colorScheme.palette.base08} 
+                             
+                             # Green
+                             color2  #${config.colorScheme.palette.base0C} 
+                             color10 #${config.colorScheme.palette.base0C} 
+                             
+                             # Yellow-brown
+                             color3  #${config.colorScheme.palette.base09} 
+                             color11 #${config.colorScheme.palette.base09} 
+                             
+                             # Blue
+                             color4  #${config.colorScheme.palette.base0D} 
+                             color12 #${config.colorScheme.palette.base0D}
+                             
+                             # Magenta
+                             color5  #${config.colorScheme.palette.base0E} 
+                             color13 #${config.colorScheme.palette.base0E}
+                             
+                             # Cyan
+                             color6  #${config.colorScheme.palette.base0C} 
+                             color14 #${config.colorScheme.palette.base0C} 
+                             
+                             # White
+                             color7  #${config.colorScheme.palette.base05} 
+                             color15 #${config.colorScheme.palette.base05} 
+                             
+                             # Cursor
+                             cursor #${config.colorScheme.palette.base05} 
+                             cursor_text_color #${config.colorScheme.palette.base00} 
+                             
+                             # Selection highlight
+                             selection_foreground none
+                             selection_background #${config.colorScheme.palette.base03}
+                             
+                             # The color for highlighting URLs on mouse-over
+                             url_color #${config.colorScheme.palette.base0B}
+                             
+                             # Window borders
+                             active_border_color #${config.colorScheme.palette.base0D}
+                             inactive_border_color #${config.colorScheme.palette.base00}
+                             bell_border_color #${config.colorScheme.palette.base09}
+                             
+                             # Tab bar
+                             tab_bar_style fade
+                             tab_fade 1
+                             active_tab_foreground   #3d59a1
+                             active_tab_background   #16161e
+                             active_tab_font_style   bold
+                             inactive_tab_foreground #787c99
+                             inactive_tab_background #16161e
+                             inactive_tab_font_style bold
+                             tab_bar_background #101014
     '';
   };
   home.file.".config/quickshell".source = config.lib.file.mkOutOfStoreSymlink quickshellPath;

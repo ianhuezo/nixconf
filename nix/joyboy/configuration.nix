@@ -46,7 +46,7 @@
   # networking.hostName = "joyboy";
 
   programs.dconf.enable = true;
-  
+
   #enable caching of art urls
   services.gvfs.enable = true;
 
@@ -67,6 +67,7 @@
     LC_TELEPHONE = "en_US.UTF-8";
     LC_TIME = "en_US.UTF-8";
   };
+  services.sysprof.enable = true;
 
   # Enable the X11 windowing system.
   # You can disable this if you're only using the Wayland session.
@@ -221,6 +222,7 @@
   environment.systemPackages = with pkgs; [
     #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     #  wget
+    valgrind
     ripgrep
     libnotify
     inotify-tools
@@ -251,6 +253,8 @@
     treefmt
     nixfmt-rfc-style
     pulseaudio
+    glxinfo # Provides glxinfo command
+    mesa-demos # Provides additional OpenGL utilities
   ];
   #add git-lfs for vr stuff
   programs.git.enable = true;
