@@ -1,9 +1,12 @@
 import { Variable, GLib } from "astal"
-import { astalify, Gtk } from "astal/gtk4"
+import { astalify } from "astal/gtk4"
 import Cava from "gi://AstalCava"
-import cairo from 'cairo'
+import Gtk from 'gi://Gtk?version=4.0';
+import Cairo from 'cairo'
 
 const DrawingArea = astalify<Gtk.DrawingArea, Gtk.DrawingArea.ConstructorProps>(Gtk.DrawingArea, {})
+
+Gtk.init()
 
 export interface CavaConfig {
 	containerWidth?: number;  // Width of the container
@@ -15,10 +18,10 @@ export interface CavaProps {
 }
 
 export default function CavaWidget({ isVisible, config = {} }: CavaProps) {
-	let finalConfig = { ...config };
-	const cavaValues: Variable<Array<number>> = Variable(Array(20).fill(0))
+	const finalConfig = { ...config };
 	let cava: Cava.Cava | null = null;
 	let cavaListenerId: null | number = null
+	let valueListener: Variable<boolean> = Variable(false)
 	// Subscription cleanup handler
 	let visibilitySubscription: null | (() => void) = null;
 	const align: "start" | "center" | "end" = "end"
@@ -38,27 +41,29 @@ export default function CavaWidget({ isVisible, config = {} }: CavaProps) {
 			});
 		});
 	}
-	function initialize(setup: Gtk.DrawingArea) {
+	async function initialize(setup: Gtk.DrawingArea) {
 		setup.set_content_width(finalConfig.containerWidth ?? 300)
 		setup.set_content_height(finalConfig.containerHeight ?? 40)
 		setup.set_size_request(finalConfig.containerWidth ?? 300, finalConfig.containerHeight ?? 40)
-		initializeCava().then(() => {
+		await initializeCava().then(() => {
 			if (cava && !cavaListenerId) {
 				visibilitySubscription = isVisible.subscribe(value => {
 					if (!value) {
 						destroyCava()
 					}
 				})
-				//@ts-ignore
-				setup.set_draw_func(drawBars)
 				cavaListenerId = cava.connect("notify::values", () => {
-					cavaValues.set([...cava!.get_values()]);
-					setup?.queue_draw()
-
+					valueListener.set(!valueListener.get())
 				});
 			}
 		});
-
+		valueListener.subscribe(_value => {
+			setup.queue_draw()
+		})
+		setup.set_draw_func((area: Gtk.DrawingArea, cr: Cairo.Context, width: number, height: number) => {
+			drawBars(area, cr, cava!, height, width)
+			cr.$dispose()
+		})
 
 	}
 
@@ -72,23 +77,11 @@ export default function CavaWidget({ isVisible, config = {} }: CavaProps) {
 			visibilitySubscription = null;
 		}
 		isVisible.drop()
-		cavaValues.drop()
 		cavaListenerId = null;
 		cava = null;
 	}
 
-	function drawBars(drawingArea: Gtk.DrawingArea, cr: cairo.Context) {
-		//code mostly stolen and modified slightly. nice affect, though :)
-		//20 is amount of bars
-		//40 is height of total widget
-		if (!cava) {
-			//@ts-ignore
-			cr.$dispose()
-			return true
-		}
-		const h = drawingArea.get_allocated_height();
-		const w = drawingArea.get_allocated_width();
-
+	function drawBars(drawingArea: Gtk.DrawingArea, cr: cairo.Context, cavaCtx: Cava.Cava, h: number, w: number) {
 		const bg = {
 			red: 0.09,   // #17
 			green: 0.11, // #1D
@@ -117,8 +110,8 @@ export default function CavaWidget({ isVisible, config = {} }: CavaProps) {
 
 		cr.setSourceRGBA(fg.red, fg.green, fg.blue, fg.alpha);
 		if (!true) {
-			for (let i = 0; i < cavaValues.get().length; i++) {
-				const height = h * (cavaValues.get()[i] / 1);
+			for (let i = 0; i < cavaCtx.get_values().length; i++) {
+				const height = h * (cavaCtx.get_values()[i] / 1);
 				let y = 0;
 				let x = 0;
 				switch (align) {
@@ -136,39 +129,33 @@ export default function CavaWidget({ isVisible, config = {} }: CavaProps) {
 						x = w - height;
 						break;
 				}
-				cr.rectangle(i * (w / cava!.get_bars()), y, w / cava!.get_bars(), height);
+				cr.rectangle(i * (w / cavaCtx.get_bars()), y, w / cavaCtx.get_bars(), height);
 				cr.fill();
 			}
 		} else {
 			let lastX = 0;
-			let lastY = h - h * (cavaValues.get()[0] / 1);
+			let lastY = h - h * (cavaCtx.get_values()[0] / 1);
 			cr.moveTo(lastX, lastY);
-			for (let i = 1; i < cavaValues.get().length; i++) {
-				const height = h * (cavaValues.get()[i] / 1);
+			for (let i = 1; i < cavaCtx.get_values().length; i++) {
+				const height = h * (cavaCtx.get_values()[i] / 1);
 				let y = h - height;
-				cr.curveTo(lastX + w / (cava!.get_bars() - 1) / 2, lastY, lastX + w / (cava!.get_bars() - 1) / 2, y, i * (w / (cava!.get_bars() - 1)), y);
-				lastX = i * (w / (cava!.get_bars() - 1));
+				cr.curveTo(lastX + w / (cavaCtx.get_bars() - 1) / 2, lastY, lastX + w / (cavaCtx.get_bars() - 1) / 2, y, i * (w / (cavaCtx.get_bars() - 1)), y);
+				lastX = i * (w / (cavaCtx.get_bars() - 1));
 				lastY = y;
 			}
 			cr.lineTo(w, h);
 			cr.lineTo(0, h);
 			cr.fill();
 		}
-		//@ts-ignore
-		cr.$dispose()
-		//@ts-ignore
-		return true
 	}
 
 
 
 
 	return (
-		<box onDestroy={() => { isVisible.drop() }}>
-			<DrawingArea
-				setup={initialize}
-				onDestroy={destroyCava}
-			/>
-		</box>
+		<DrawingArea
+			setup={initialize}
+			onDestroy={destroyCava}
+		/>
 	)
 }

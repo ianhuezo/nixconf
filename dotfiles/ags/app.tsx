@@ -4,9 +4,7 @@ import style from "style.scss"
 import Mpris from "gi://AstalMpris"
 import { astalify } from "astal/gtk4"
 import TextMarquee, { MarqueeConfig } from "./widget/TextMarquee"
-import Cava from "gi://AstalCava"
 import CavaWidget from "./widget/CavaWidget"
-import GdkWayland from "gi://GdkWayland?version=4.0"
 
 const Grid = astalify<Gtk.Grid, Gtk.Grid.ConstructorProps>(Gtk.Grid, {
 	getChildren(self) { return [] },
