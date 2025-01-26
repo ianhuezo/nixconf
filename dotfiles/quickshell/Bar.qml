@@ -34,7 +34,7 @@ Scope {
                     anchors.centerIn: parent
                     spacing: 2
                     height: 32
-                    width: 632
+                    width: 532
 
                     Image {
                         source: Mpris.players.values.map(value => value.trackArtUrl)[0] ?? ""
@@ -42,9 +42,7 @@ Scope {
                         width: 32
                         height: 32
                         mipmap: true
-                        layer.enabled: true
-                        layer.textureSize: Qt.size(32, 32)
-                        layer.smooth: false // Disable layer smoothing
+                        layer.smooth: true // Disable layer smoothing
                         Rectangle {
                             anchors.fill: parent
                             color: "gray"
@@ -54,6 +52,7 @@ Scope {
 
                     Repeater {
                         model: root.cavaValues  // Explicit scoping using root
+                        width: 200
                         delegate: Rectangle {
                             width: 6
                             height: Math.min(parent.height, Math.max(2, modelData * 1))
@@ -64,7 +63,7 @@ Scope {
                     }
                     Canvas {
                         id: waveCanvas
-                        width: 300
+                        width: 200
                         height: 32
                         onPaint: {
                             const ctx = getContext("2d");
