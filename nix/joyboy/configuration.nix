@@ -222,6 +222,7 @@
   environment.systemPackages = with pkgs; [
     #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     #  wget
+    cava
     valgrind
     ripgrep
     libnotify
@@ -255,6 +256,8 @@
     pulseaudio
     glxinfo # Provides glxinfo command
     mesa-demos # Provides additional OpenGL utilities
+    # qt6.full
+    # qt6.qtdeclarative
   ];
   #add git-lfs for vr stuff
   programs.git.enable = true;

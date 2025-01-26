@@ -10,6 +10,7 @@ let
   neovim = import ./nix/programs/neovim { inherit inputs; };
   quickshellPath = /etc/nixos/dotfiles/quickshell;
   agsPath = /etc/nixos/dotfiles/ags;
+  cavaPath = /etc/nixos/dotfiles/cava;
   leftMonitor = "HDMI-A-1";
   rightMonitor = "DP-1";
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
@@ -76,6 +77,8 @@ in
     starship
     inputs.quickshell.packages.${pkgs.system}.default
     inputs.hyprland-qtutils.packages.${pkgs.system}.default
+    qt6.full
+    qt6.qtdeclarative
   ];
   programs.zoxide.enable = true;
   programs.zoxide.enableZshIntegration = true;
@@ -490,6 +493,7 @@ in
   };
   home.file.".config/quickshell".source = config.lib.file.mkOutOfStoreSymlink quickshellPath;
   home.file.".config/ags".source = config.lib.file.mkOutOfStoreSymlink agsPath;
+  home.file.".config/cava_conf".source = config.lib.file.mkOutOfStoreSymlink cavaPath;
   home.file."${config.home.homeDirectory}/Pictures" = {
     source = ./wallpapers;
     recursive = true;
@@ -561,6 +565,9 @@ in
     STEAMVR_LH_ENABLE = "true";
     QS_CONFIG_PATH = "${config.home.homeDirectory}/.config/quickshell";
     QS_BASE_PATH = "${config.home.homeDirectory}/.config/quickshell";
+    QML2_IMPORT_PATH = "${pkgs.qt6.qtdeclarative}/${pkgs.qt6.qtbase.qtQmlPrefix}:${
+      inputs.quickshell.packages.${pkgs.system}.default
+    }/lib/qt-6/qml";
   };
 
   # Let Home Manager install and manage itself.

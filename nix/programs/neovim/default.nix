@@ -138,6 +138,22 @@ in
         "typescript.tsx"
         "vue"
       ];
+      lsp.servers.qmlls = {
+        enable = true;
+        cmd = [
+          "${pkgs.qt6.qtdeclarative}/bin/qmlls"
+          "-I"
+          "${inputs.quickshell.packages.${pkgs.system}.default}/lib/qt-6/qml"
+          "-I"
+          "${pkgs.qt6.qtdeclarative}/${pkgs.qt6.qtbase.qtQmlPrefix}"
+        ];
+        filetypes = [ "qml" ];
+        autostart = true;
+        settings = {
+          # Optional: Configure LSP behavior
+          qml.formatOnSave = true;
+        };
+      };
 
       treesitter = {
         enable = true;

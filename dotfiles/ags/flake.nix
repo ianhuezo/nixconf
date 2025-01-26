@@ -32,16 +32,17 @@
 
         # additional libraries and executables to add to gjs' runtime
         extraPackages = [
-              ags.packages.${system}.apps
-              ags.packages.${system}.hyprland
-              ags.packages.${system}.mpris
-              ags.packages.${system}.wireplumber
-              ags.packages.${system}.network
-              ags.packages.${system}.tray
-              ags.packages.${system}.io
-              ags.packages.${system}.battery
-              ags.packages.${system}.notifd
-              ags.packages.${system}.cava        ];
+          ags.packages.${system}.apps
+          ags.packages.${system}.hyprland
+          ags.packages.${system}.mpris
+          ags.packages.${system}.wireplumber
+          ags.packages.${system}.network
+          ags.packages.${system}.tray
+          ags.packages.${system}.io
+          ags.packages.${system}.battery
+          ags.packages.${system}.notifd
+          ags.packages.${system}.cava
+        ];
       };
       devShells.${system}.default = pkgs.mkShell {
         buildInputs = [
