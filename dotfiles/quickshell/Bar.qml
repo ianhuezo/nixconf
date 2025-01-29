@@ -2,11 +2,16 @@ import Quickshell
 import Quickshell.Io
 import QtQuick
 import Quickshell.Services.Mpris
+import QtQuick.Controls
+import QtQuick.Layouts
 
 Scope {
     id: root  // Added root identifier for proper scoping
     property var cavaValues: []
     property string albumArtUrl: ""
+    property var lineWidth: 3
+    property var waveColor: Qt.rgba(0, 0, 255, 1)
+    property var useCanvasVisualization: true
 
     Variants {
         model: Quickshell.screens
@@ -25,22 +30,74 @@ Scope {
 
             // Visualizer container
             Rectangle {
-                id: visualizerContainer
+                id: bar
                 anchors {
                     fill: parent
                 }
 
+                //GridLayout {
+                //    anchors.centerIn: parent
+                //    height: parent.height
+                //    columns: 2
+                //    rows: 1
+                //    columnSpacing: 2
+                //
+                //    Image {
+                //        source: {
+                //            //first prefer spotify no matter what. unless it does not exist
+                //            var players = Mpris.players.values.filter(player => {
+                //                return player.identity == "Spotify";
+                //            });
+                //            return players[0].trackArtUrl ?? Mpris.players.values.map(value => value.trackArtUrl)[0] ?? "";
+                //        }
+                //        fillMode: Image.PreserveAspectFit
+                //        width: parent.height
+                //        height: parent.height
+                //        sourceSize.width: parent.height
+                //        cache: false //disable this as memory will climb each song change
+                //        sourceSize.height: parent.height
+                //        mipmap: true
+                //        layer.smooth: true // Disable layer smoothing
+                //        Rectangle {
+                //            anchors.fill: parent
+                //            color: "gray"
+                //            visible: parent.status !== Image.Ready
+                //        }
+                //    }
+                //    Button {
+                //        Layout.fillWidth: true
+                //        Layout.fillHeight: true
+                //        Layout.alignment: Qt.AlignCenter
+                //
+                //        background: Rectangle {
+                //            color: "transparent"
+                //            border.color: "red"
+                //        }
+                //    }
+                //}
+
                 Row {
                     anchors.centerIn: parent
+                    visible: true
                     spacing: 2
+                    z: 0
                     height: 32
-                    width: 532
+                    width: 232
 
                     Image {
-                        source: Mpris.players.values.map(value => value.trackArtUrl)[0] ?? ""
+                        source: {
+                            //first prefer spotify no matter what. unless it does not exist
+                            var players = Mpris.players.values.filter(player => {
+                                return player.identity == "Spotify";
+                            });
+                            return players[0].trackArtUrl ?? Mpris.players.values.map(value => value.trackArtUrl)[0] ?? "";
+                        }
                         fillMode: Image.PreserveAspectFit
-                        width: 32
-                        height: 32
+                        width: parent.height
+                        height: parent.height
+                        sourceSize.width: parent.height
+                        cache: false //disable this as memory will climb each song change
+                        sourceSize.height: parent.height
                         mipmap: true
                         layer.smooth: true // Disable layer smoothing
                         Rectangle {
@@ -51,19 +108,22 @@ Scope {
                     }
 
                     Repeater {
+                        id: repeater
                         model: root.cavaValues  // Explicit scoping using root
-                        width: 200
                         delegate: Rectangle {
                             width: 6
+                            visible: !root.useCanvasVisualization
                             height: Math.min(parent.height, Math.max(2, modelData * 1))
-                            color: "#7da6ff"
+                            color: root.waveColor
                             radius: 2
                             anchors.bottom: parent.bottom  // Anchor to bottom
                         }
                     }
                     Canvas {
                         id: waveCanvas
-                        width: 200
+                        visible: root.useCanvasVisualization
+                        z: 1
+                        width: 166
                         height: 32
                         onPaint: {
                             const ctx = getContext("2d");
@@ -84,7 +144,7 @@ Scope {
                             ctx.beginPath();
                             ctx.strokeStyle = root.waveColor;
                             ctx.lineWidth = root.lineWidth;
-                            ctx.fillStyle = Qt.rgba(0.5, 0.5, 1, 0.2);
+                            ctx.fillStyle = root.waveColor;
 
                             // 3. Draw filled path
                             ctx.moveTo(0, baseY);
@@ -95,7 +155,7 @@ Scope {
                                 const y = baseY - (root.cavaValues[i] / maxValue * (baseY - 2));
 
                                 if (i === 0) {
-                                    ctx.lineTo(x, y);
+                                    continue;
                                 } else {
                                     const prevY = baseY - (root.cavaValues[i - 1] / maxValue * (baseY - 2));
                                     const cp1x = x - stepX / 2;
@@ -120,8 +180,6 @@ Scope {
                         repeat: true
                         onTriggered: {
                             waveCanvas.requestPaint();
-                            // Debug current values
-                            // console.log("Current values:", JSON.parse(JSON.stringify(root.cavaValues)))
                         }
                     }
                 }

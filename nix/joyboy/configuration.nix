@@ -50,6 +50,14 @@
   #enable caching of art urls
   services.gvfs.enable = true;
 
+  #ollama support
+  services.ollama = {
+    enable = true;
+    # Optional: load models on startup
+    loadModels = [ "deepseek-r1:32b-qwen-distill-q8_0" ];
+    acceleration = "cuda";
+  };
+
   # Set your time zone.
   time.timeZone = "America/New_York";
 
