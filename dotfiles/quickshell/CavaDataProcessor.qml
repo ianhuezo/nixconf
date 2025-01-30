@@ -1,9 +1,11 @@
 import Quickshell
 import Quickshell.Io
+import QtQuick
 
 Process {
     id: processor
-    command: ["sh", "../scripts/cava_startup.sh"]
+    property string scriptLocation: Qt.resolvedUrl("../scripts/cava_startup.sh")
+    command: [scriptLocation]
     running: true
     property var lastValues: []
     signal newData(var processedValues)

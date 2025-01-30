@@ -11,6 +11,7 @@ let
   quickshellPath = /etc/nixos/dotfiles/quickshell;
   agsPath = /etc/nixos/dotfiles/ags;
   cavaPath = /etc/nixos/dotfiles/cava;
+  scriptsPath = /etc/nixos/dotfiles/scripts;
   leftMonitor = "HDMI-A-1";
   rightMonitor = "DP-1";
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
@@ -336,6 +337,7 @@ in
           "$mod SHIFT, S, exec, hyprshot -m region --clipboard-only"
           # "CTRL, TAB, overview:toggle"
           "$mod, Q, killactive"
+	  "$mod, B, exec, ~/.config/custom_scripts/quickshell_toggle.sh"
           "$mod SHIFT, Q, exec,loginctl terminate-user $USER"
           "$mod SHIFT, F, fullscreen"
           "$mod, N, exec, hyprctl dispatch togglefloating"
@@ -493,6 +495,7 @@ in
   };
   home.file.".config/quickshell".source = config.lib.file.mkOutOfStoreSymlink quickshellPath;
   home.file.".config/ags".source = config.lib.file.mkOutOfStoreSymlink agsPath;
+  home.file.".config/custom_scripts".source = config.lib.file.mkOutOfStoreSymlink scriptsPath;
   home.file.".config/cava_conf".source = config.lib.file.mkOutOfStoreSymlink cavaPath;
   home.file."${config.home.homeDirectory}/Pictures" = {
     source = ./wallpapers;

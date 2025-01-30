@@ -7,7 +7,7 @@ Row {
     spacing: 2
 
     Repeater {
-        model: bars.cavaValues.slice()
+        model: bars.cavaValues
         delegate: Rectangle {
             width: 6
             height: Math.min(parent.height, Math.max(2, modelData * 1))
