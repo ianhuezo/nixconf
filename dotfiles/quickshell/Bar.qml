@@ -10,7 +10,8 @@ Scope {
     property var cavaValues: []
     property string albumArtUrl: ""
     property var lineWidth: 3
-    property var waveColor: Qt.rgba(0, 0, 255, 1)
+    property var waveColor: '#FF9E64'
+    property var fullBarColor: '#171D23'
     property var useCanvasVisualization: true
 
     Variants {
@@ -34,47 +35,14 @@ Scope {
                 anchors {
                     fill: parent
                 }
+                color: fullBarColor
 
-                //GridLayout {
-                //    anchors.centerIn: parent
-                //    height: parent.height
-                //    columns: 2
-                //    rows: 1
-                //    columnSpacing: 2
-                //
-                //    Image {
-                //        source: {
-                //            //first prefer spotify no matter what. unless it does not exist
-                //            var players = Mpris.players.values.filter(player => {
-                //                return player.identity == "Spotify";
-                //            });
-                //            return players[0].trackArtUrl ?? Mpris.players.values.map(value => value.trackArtUrl)[0] ?? "";
-                //        }
-                //        fillMode: Image.PreserveAspectFit
-                //        width: parent.height
-                //        height: parent.height
-                //        sourceSize.width: parent.height
-                //        cache: false //disable this as memory will climb each song change
-                //        sourceSize.height: parent.height
-                //        mipmap: true
-                //        layer.smooth: true // Disable layer smoothing
-                //        Rectangle {
-                //            anchors.fill: parent
-                //            color: "gray"
-                //            visible: parent.status !== Image.Ready
-                //        }
-                //    }
-                //    Button {
-                //        Layout.fillWidth: true
-                //        Layout.fillHeight: true
-                //        Layout.alignment: Qt.AlignCenter
-                //
-                //        background: Rectangle {
-                //            color: "transparent"
-                //            border.color: "red"
-                //        }
-                //    }
-                //}
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        root.useCanvasVisualization = !root.useCanvasVisualization;
+                    }
+                }
 
                 Row {
                     anchors.centerIn: parent
@@ -118,6 +86,12 @@ Scope {
                             radius: 2
                             anchors.bottom: parent.bottom  // Anchor to bottom
                         }
+                        Behavior on height {
+                            NumberAnimation {
+                                duration: 100
+                                easing.type: Easing.OutQuad
+                            }
+                        }
                     }
                     Canvas {
                         id: waveCanvas
@@ -125,6 +99,11 @@ Scope {
                         z: 1
                         width: 166
                         height: 32
+                        Behavior on opacity {
+                            NumberAnimation {
+                                duration: 200
+                            }
+                        }
                         onPaint: {
                             const ctx = getContext("2d");
                             ctx.clearRect(0, 0, width, height);
@@ -154,7 +133,7 @@ Scope {
                                 // 4. Ensure values scale to at least 2px height
                                 const y = baseY - (root.cavaValues[i] / maxValue * (baseY - 2));
 
-                                if (i === 0) {
+                                if (i === 0 || i === root.cavaValues.length - 1) {
                                     continue;
                                 } else {
                                     const prevY = baseY - (root.cavaValues[i - 1] / maxValue * (baseY - 2));
@@ -194,11 +173,10 @@ Scope {
 
         stdout: SplitParser {
             onRead: data => {
-                const newValues = data.trim().split(';').map(v => {
+                const newValues = data.trim().split(';').filter(v => v != '').map(v => {
                     const num = parseInt(v, 10);
                     return Math.min(40, Math.max(0, isNaN(num) ? 0 : num));
                 });
-
                 // Apply exponential smoothing
                 if (root.cavaValues.length === 0) {
                     root.cavaValues = newValues;
