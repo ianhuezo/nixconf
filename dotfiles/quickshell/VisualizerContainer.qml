@@ -19,9 +19,17 @@ Rectangle {
         height: parent.height
         width: Math.min(parent.width, implicitWidth)
 
-        NowPlayingArt {
+        Item {
+            id: imageButton
+            width: parent.height
             height: parent.height
-            width: height
+            NowPlayingArt {
+                height: parent.height
+                width: parent.width
+            }
+            MouseArea {
+                anchors.fill: parent
+            }
         }
 
         Item {
