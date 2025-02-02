@@ -47,7 +47,7 @@
 
   nix.gc = {
     automatic = true;
-    options = "--delete-older-than +5";
+    options = "--delete-older-than 3d";
   };
 
   #This specifically allows Spotify to find local files from phone sync
