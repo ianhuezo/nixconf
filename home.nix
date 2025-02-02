@@ -337,7 +337,7 @@ in
           "$mod SHIFT, S, exec, hyprshot -m region --clipboard-only"
           # "CTRL, TAB, overview:toggle"
           "$mod, Q, killactive"
-	  "$mod, B, exec, ~/.config/custom_scripts/quickshell_toggle.sh"
+          "$mod, B, exec, ~/.config/custom_scripts/quickshell_toggle.sh"
           "$mod SHIFT, Q, exec,loginctl terminate-user $USER"
           "$mod SHIFT, F, fullscreen"
           "$mod, N, exec, hyprctl dispatch togglefloating"

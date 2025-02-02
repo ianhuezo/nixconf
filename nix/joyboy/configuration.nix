@@ -45,6 +45,15 @@
   networking.networkmanager.enable = true;
   # networking.hostName = "joyboy";
 
+  nix.gc = {
+    automatic = true;
+    options = "--delete-older-than +5";
+  };
+
+  #This specifically allows Spotify to find local files from phone sync
+  networking.firewall.allowedTCPPorts = [ 57621 ];
+  zramSwap.enable = true;
+
   programs.dconf.enable = true;
 
   #enable caching of art urls
