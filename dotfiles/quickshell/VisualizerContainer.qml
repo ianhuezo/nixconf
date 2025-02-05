@@ -1,5 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
+import Quickshell
+import QtQuick.Controls
 
 Rectangle {
     id: container
@@ -7,7 +9,9 @@ Rectangle {
     property bool useCanvas: true
     property color waveColor: 'white'
     property color barColor: 'black'
+    property var togglePopup: false
     signal toggleVisualization
+    signal toggleMusicDownloader
 
     color: barColor
     width: 166
@@ -15,7 +19,6 @@ Rectangle {
 
     Row {
         anchors.centerIn: parent
-        spacing: 2
         height: parent.height
         width: Math.min(parent.width, implicitWidth)
 
@@ -29,6 +32,10 @@ Rectangle {
             }
             MouseArea {
                 anchors.fill: parent
+                onClicked: {
+                    togglePopup = !togglePopup;
+                    popupLoader.active = togglePopup;
+                }
             }
         }
 
@@ -50,10 +57,65 @@ Rectangle {
             }
         }
     }
+    LazyLoader {
+        id: popupLoader
 
-    //Component {
-    //    id: marqueeInfoComponent
-    //}
+        PanelWindow {
+            id: downloaderPopup
+            anchors {
+                top: true
+                right: true
+                left: true
+                bottom: true
+            }
+            color: 'transparent'
+            height: container.height
+            visible: popupLoader.active
+
+            PopupWindow {
+                id: popupWindow
+                anchor.window: downloaderPopup
+                anchor.rect.x: container.width / 2 - width / 2
+                anchor.rect.y: {
+                    console.log(downloaderPopup.height);
+                    console.log(container.height);
+                    return downloaderPopup.y - container.height;
+                }
+                width: 500
+                height: 500
+                visible: popupLoader.active
+
+                Rectangle {
+                    anchors.fill: parent
+                    x: parent.x
+                    y: parent.y
+                    border.color: 'black'
+                    color: '#171D23'
+                }
+            }
+
+            MouseArea {
+                id: mouseEntireScreen
+                anchors.fill: parent
+
+                onClicked: event => {
+                    var popupX = popupWindow.anchor.rect.x;
+                    var popupY = popupWindow.anchor.rect.y;
+                    var popupWidth = popupWindow.width;
+                    var popupHeight = popupWindow.height;
+
+                    // Check if the click is inside the popup's bounds
+                    var isInsidePopup = (mouseEntireScreen.x >= popupX && mouseEntireScreen.x <= popupX + popupWidth && mouseEntireScreen.y >= popupY && mouseEntireScreen.y <= popupY + popupHeight);
+
+                    // Close the popup if the click is outside
+                    if (!isInsidePopup) {
+                        togglePopup = false;
+                        popupLoader.active = false;
+                    }
+                }
+            }
+        }
+    }
 
     Component {
         id: waveComponent
