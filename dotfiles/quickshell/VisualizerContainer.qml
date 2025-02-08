@@ -101,7 +101,7 @@ Rectangle {
                         layer.effect: MultiEffect {
                             brightness: 1.0
                             colorization: 1.0
-                            colorizationColor: '#E8E8E8'
+                            colorizationColor: '#828282'
                         }
                     }
                 }

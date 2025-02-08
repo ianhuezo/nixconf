@@ -13,7 +13,9 @@ Scope {
     }
 
     Variants {
-        model: Quickshell.screens
+        model: {
+            return Quickshell.screens.filter(screen => screen.name == "DP-1");
+        }
         delegate: PanelWindow {
             required property var modelData
             screen: modelData
