@@ -272,10 +272,14 @@
     treefmt
     nixfmt-rfc-style
     pulseaudio
-    glxinfo # Provides glxinfo command
-    mesa-demos # Provides additional OpenGL utilities
-    # qt6.full
-    # qt6.qtdeclarative
+    ffmpeg
+    (python3.withPackages (
+	python-pkgs: with python-pkgs; [
+	  yt-dlp
+	]
+    ))
+    # glxinfo # Provides glxinfo command
+    # mesa-demos # Provides additional OpenGL utilities
   ];
   #add git-lfs for vr stuff
   programs.git.enable = true;

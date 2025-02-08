@@ -1,7 +1,7 @@
 import QtQuick
-import QtQuick.Layouts
-import Quickshell
+import QtQuick.Window
 import QtQuick.Controls
+import QtQuick.Effects
 
 Rectangle {
     id: container
@@ -9,7 +9,6 @@ Rectangle {
     property bool useCanvas: true
     property color waveColor: 'white'
     property color barColor: 'black'
-    property var togglePopup: false
     signal toggleVisualization
     signal toggleMusicDownloader
 
@@ -27,14 +26,20 @@ Rectangle {
             width: parent.height
             height: parent.height
             NowPlayingArt {
+                id: playingArt
                 height: parent.height
                 width: parent.width
             }
             MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    togglePopup = !togglePopup;
-                    popupLoader.active = togglePopup;
+                anchors.fill: playingArt
+                onClicked: event => {
+                    if (popupWindow.active) {
+                        popupWindow.hide();
+                        return;
+                    }
+                    if (!popupWindow.active) {
+                        popupWindow.show();
+                    }
                 }
             }
         }
@@ -57,66 +62,91 @@ Rectangle {
             }
         }
     }
-    LazyLoader {
+    Loader {
         id: popupLoader
+        Window {
+            id: popupWindow
+            width: 400
+            height: 300
+            flags: Qt.FramelessWindowHint | Qt.Popup
 
-        PanelWindow {
-            id: downloaderPopup
-            anchors {
-                top: true
-                right: true
-                left: true
-                bottom: true
-            }
+            readonly property int targetY: container.y + container.height
+
+            x: container.x + (container.width - width) / 2
+            y: targetY
             color: 'transparent'
-            height: container.height
-            visible: popupLoader.active
 
-            PopupWindow {
-                id: popupWindow
-                anchor.window: downloaderPopup
-                anchor.rect.x: container.width / 2 - width / 2
-                anchor.rect.y: {
-                    console.log(downloaderPopup.height);
-                    console.log(container.height);
-                    return downloaderPopup.y - container.height;
-                }
-                width: 500
-                height: 500
-                visible: popupLoader.active
+            Rectangle {
+                anchors.fill: parent
+                color: '#171D23'
+                border.color: '#FF9E64'
+                border.width: 4
+                radius: 10
 
                 Rectangle {
-                    anchors.fill: parent
-                    x: parent.x
-                    y: parent.y
-                    border.color: 'black'
-                    color: '#171D23'
+                    id: imageUploadedArea
+                    width: parent.width
+                    height: parent.height * 0.5
+                    radius: parent.radius
+                    color: 'transparent'
+
+                    Image {
+                        id: youtubeMediaSvg
+                        anchors.centerIn: parent
+                        width: parent.width
+                        height: parent.height
+                        fillMode: Image.PreserveAspectFit
+                        source: '../assets/icons/media.svg'
+                        layer.enabled: true
+                        layer.effect: MultiEffect {
+                            brightness: 1.0
+                            colorization: 1.0
+                            colorizationColor: '#E8E8E8'
+                        }
+                    }
                 }
-            }
+                Rectangle {
+                    id: imageTextInputs
+                    width: parent.width
+                    color: 'transparent'
+                    y: imageUploadedArea.y + imageUploadedArea.height
+                    height: parent.height * 0.5
+                    radius: parent.radius
 
-            MouseArea {
-                id: mouseEntireScreen
-                anchors.fill: parent
-
-                onClicked: event => {
-                    var popupX = popupWindow.anchor.rect.x;
-                    var popupY = popupWindow.anchor.rect.y;
-                    var popupWidth = popupWindow.width;
-                    var popupHeight = popupWindow.height;
-
-                    // Check if the click is inside the popup's bounds
-                    var isInsidePopup = (mouseEntireScreen.x >= popupX && mouseEntireScreen.x <= popupX + popupWidth && mouseEntireScreen.y >= popupY && mouseEntireScreen.y <= popupY + popupHeight);
-
-                    // Close the popup if the click is outside
-                    if (!isInsidePopup) {
-                        togglePopup = false;
-                        popupLoader.active = false;
+                    Rectangle {
+                        id: textInputBottom
+                        width: parent.width * 0.8
+                        height: 2
+                        radius: 1
+                        x: parent.x + (parent.width - textInputBottom.width) / 2
+                        y: parent.height * 0.2 + 8
+                        color: '#E8E8E8'
+                    }
+                    Rectangle {
+                        id: textInputBox
+                        height: parent.height * 0.2 + 4
+                        width: textInputBottom.width
+                        x: textInputBottom.x
+                        color: 'transparent'
+                        TextField {
+                            id: textInput
+                            placeholderText: qsTr("Add Link...")
+                            placeholderTextColor: '#828282'
+                            anchors.fill: parent
+                            width: parent.width
+                            height: parent.height
+                            readOnly: false
+                            color: 'white'
+                            background: Rectangle {
+                                color: '#1e262e'
+                                radius: 5
+                            }
+                        }
                     }
                 }
             }
         }
     }
-
     Component {
         id: waveComponent
         WaveVisualizer {
