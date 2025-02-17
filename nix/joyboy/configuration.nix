@@ -52,7 +52,16 @@
   };
 
   #This specifically allows Spotify to find local files from phone sync
-  networking.firewall.allowedTCPPorts = [ 57621 ];
+  networking.firewall.allowedTCPPorts = [
+    57621
+    27040
+    27031
+    27032
+    27033
+    27034
+    27035
+    27036
+  ];
   zramSwap.enable = true;
 
   programs.dconf.enable = true;
@@ -274,9 +283,9 @@
     pulseaudio
     ffmpeg
     (python3.withPackages (
-	python-pkgs: with python-pkgs; [
-	  yt-dlp
-	]
+      python-pkgs: with python-pkgs; [
+        yt-dlp
+      ]
     ))
     # glxinfo # Provides glxinfo command
     # mesa-demos # Provides additional OpenGL utilities
