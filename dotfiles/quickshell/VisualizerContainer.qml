@@ -80,7 +80,7 @@ Rectangle {
                 anchors.fill: parent
                 color: '#171D23'
                 border.color: '#FF9E64'
-                border.width: 4
+                border.width: 1
                 radius: 10
 
                 Rectangle {
@@ -144,7 +144,7 @@ Rectangle {
                         }
                     }
                     Button {
-                        id: horizontalButtonInputs
+                        id: convertButton
                         x: Math.round(textInputBottom.x)
                         y: Math.round(textInputBottom.y + textInputBottom.height + 8)
                         width: Math.round(textInputBottom.width)
@@ -157,13 +157,19 @@ Rectangle {
                             pixelSize: 14
                             bold: true
                         }
+                        MouseArea {
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+                            acceptedButtons: Qt.NoButton
+                        }
 
                         palette.buttonText: "#E8E8E8"
 
                         contentItem: Text {
-                            text: horizontalButtonInputs.text
-                            font: horizontalButtonInputs.font
-                            color: horizontalButtonInputs.palette.buttonText
+                            text: convertButton.text
+                            font: convertButton.font
+                            color: convertButton.palette.buttonText
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
                             renderType: Text.NativeRendering
@@ -173,6 +179,38 @@ Rectangle {
                         background: Rectangle {
                             color: "#7AA2F7"
                             radius: imageTextInputs.radius
+                        }
+                    }
+                    Button {
+                        id: cancelButton
+                        width: convertButton.width // Match Convert button width
+                        x: convertButton.x
+                        y: convertButton.y + convertButton.height + 8
+                        height: convertButton.height
+
+                        text: "Cancel"
+                        font: convertButton.font // Reuse same font settings
+                        palette.buttonText: '#F7768E'
+                        background: Rectangle {
+                            border.color: "#F7768E"
+                            border.width: 2
+                            radius: imageTextInputs.radius
+                            color: 'transparent'
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+                            acceptedButtons: Qt.NoButton
+                        }
+                        contentItem: Text {
+                            text: cancelButton.text
+                            font: cancelButton.font
+                            color: cancelButton.palette.buttonText
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            renderType: Text.NativeRendering
                         }
                     }
                 }
