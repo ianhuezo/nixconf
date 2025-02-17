@@ -101,7 +101,7 @@ Rectangle {
                         layer.effect: MultiEffect {
                             brightness: 1.0
                             colorization: 1.0
-                            colorizationColor: '#828282'
+                            colorizationColor: '#efefef'
                         }
                     }
                 }
@@ -109,7 +109,7 @@ Rectangle {
                     id: imageTextInputs
                     width: parent.width
                     color: 'transparent'
-                    y: imageUploadedArea.y + imageUploadedArea.height
+                    y: imageUploadedArea.y + imageUploadedArea.height + 8
                     height: parent.height * 0.5
                     radius: parent.radius
 
@@ -119,7 +119,7 @@ Rectangle {
                         height: 2
                         radius: 1
                         x: parent.x + (parent.width - textInputBottom.width) / 2
-                        y: parent.height * 0.2 + 8
+                        y: parent.height * 0.2 + 4
                         color: '#E8E8E8'
                     }
                     Rectangle {
@@ -141,6 +141,38 @@ Rectangle {
                                 color: '#1e262e'
                                 radius: 5
                             }
+                        }
+                    }
+                    Button {
+                        id: horizontalButtonInputs
+                        x: Math.round(textInputBottom.x)
+                        y: Math.round(textInputBottom.y + textInputBottom.height + 8)
+                        width: Math.round(textInputBottom.width)
+                        height: Math.round(textInputBox.height)
+
+                        text: "Convert to MP3"
+
+                        font {
+                            family: "Helvetica"
+                            pixelSize: 14
+                            bold: true
+                        }
+
+                        palette.buttonText: "#E8E8E8"
+
+                        contentItem: Text {
+                            text: horizontalButtonInputs.text
+                            font: horizontalButtonInputs.font
+                            color: horizontalButtonInputs.palette.buttonText
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            renderType: Text.NativeRendering
+                            antialiasing: true
+                        }
+
+                        background: Rectangle {
+                            color: "#7AA2F7"
+                            radius: imageTextInputs.radius
                         }
                     }
                 }
