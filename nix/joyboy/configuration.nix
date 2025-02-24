@@ -34,7 +34,8 @@
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
+  #CUPS DISABLE
+  services.printing.enable = false;
   # Enable networking
   networking.wireless.iwd.enable = true;
   networking.wireless.iwd.settings = {
@@ -54,13 +55,13 @@
   #This specifically allows Spotify to find local files from phone sync
   networking.firewall.allowedTCPPorts = [
     57621
-    27040
-    27031
-    27032
-    27033
-    27034
-    27035
-    27036
+    # 27040
+    # 27031
+    # 27032
+    # 27033
+    # 27034
+    # 27035
+    # 27036
   ];
   zramSwap.enable = true;
 
