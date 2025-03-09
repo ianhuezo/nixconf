@@ -7,10 +7,14 @@ Process {
     property string bitrate: "192"  // Default value
     property string downloadUrl: ""
 
+    // Signals
+    signal finished(int exitCode)
+    signal error(string message)
+    signal downloading(real percent, var info)
+
     // Core configuration
     command: [scriptLocation, bitrate, downloadUrl]
     running: false
-
     // Progress parsing
     stdout: SplitParser {
         onRead: data => {
@@ -20,8 +24,15 @@ Process {
                 const percentage = match[1];
                 const jsonObject = JSON.parse(match[2]);
                 mediaDownloadProcess.downloading(percentage, jsonObject);
-            }
-        }
+	    }else{
+	       try{
+	          const jsonObject = JSON.parse(data)
+	          mediaDownloadProcess.downloading(100,jsonObject)
+	       } catch(e){
+	          
+	       }
+	    }
+	  }
     }
     stderr: SplitParser {
         onRead: function (data) {
@@ -29,26 +40,7 @@ Process {
         }
     }
 
-    // Signals
-    signal finished
-    signal error(string message)
-    signal percentage(var percent)
-    signal downloading(var percent, var info)
-
-    // Process lifecycle handlers
     onFinished: {
-        if (exited() !== 0) {
-            // Check if there's an error message from stderr
-            const errorMessage = mediaDownloadProcess.readAllStandardError();
-            if (errorMessage.length > 0) {
-                error(errorMessage.trim());
-            } else {
-                error("Script execution failed with exit code " + exitCode);
-            }
-        } else {
-            finished();
-        }
+        running = false;
     }
-    onError: error()
-    onDownloading: downloading()
 }

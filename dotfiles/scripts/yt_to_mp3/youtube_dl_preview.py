@@ -136,7 +136,7 @@ def main():
             info = ydl.extract_info(url, download=True)
             
             # Get final processed filename
-            base_name = sanitize_filename(info["title"])
+            base_name = sanitize_filename(info["title"]).lstrip()
             audio_path = f"/tmp/{base_name}_{sha_hash}.mp3"
             thumbnail_path = f"/tmp/{base_name}_{sha_hash}.jpg"
 

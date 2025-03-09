@@ -88,7 +88,8 @@ Rectangle {
                     width: parent.width
                     height: parent.height * 0.5
                     radius: parent.radius
-                    color: 'transparent'
+		    color: 'transparent'
+		    y: parent.y + 8
 
                     Image {
                         id: youtubeMediaSvg
@@ -103,6 +104,17 @@ Rectangle {
                             colorization: 1.0
                             colorizationColor: '#efefef'
                         }
+			visible: !youtubeThumbnail.visible
+                    }
+                    Image {
+                        id: youtubeThumbnail
+                        anchors.centerIn: parent
+                        width: parent.width
+                        height: parent.height
+                        fillMode: Image.PreserveAspectFit
+			source: ''
+			visible: youtubeThumbnail.source.toString().length > 0
+
                     }
                 }
                 Rectangle {
@@ -163,6 +175,34 @@ Rectangle {
                             cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
                             acceptedButtons: Qt.NoButton
                         }
+                        onClicked: {
+                            const currentUrl = textInput.text;
+                            if (currentUrl == "") {
+                                return;
+                            }
+                            ytDataProcessor.downloadUrl = currentUrl;
+                            ytDataProcessor.running = true;
+                        }
+                        YTDataProcessor {
+                            id: ytDataProcessor
+                            onDownloading: (percent, info) => {
+                                const {
+                                    percentage,
+                                    title,
+                                    uploader,
+                                    audio_path,
+                                    thumbnail_path
+                                } = info;
+				console.log(percent, title, thumbnail_path)
+				if(thumbnail_path.length > 0 && percent == 100){
+				    youtubeThumbnail.source = '/tmp/' + encodeURIComponent(thumbnail_path.replace('/tmp/',''))
+				}
+                            }
+                            onError: error => {
+                                console.log(error);
+                            }
+                            onFinished: {}
+                        }
 
                         palette.buttonText: "#E8E8E8"
 
@@ -190,9 +230,10 @@ Rectangle {
 
                         text: "Cancel"
                         font: convertButton.font // Reuse same font settings
-                        palette.buttonText: '#F7768E'
+			enabled: youtubeThumbnail.source.toString().length > 0
+                        palette.buttonText: youtubeThumbnail.source.toString().length > 0 ? '#F7768E' : 'gray'
                         background: Rectangle {
-                            border.color: "#F7768E"
+                            border.color: youtubeThumbnail.source.toString().length > 0 ? '#F7768E' : 'gray'
                             border.width: 2
                             radius: imageTextInputs.radius
                             color: 'transparent'
