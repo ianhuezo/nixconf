@@ -1,5 +1,3 @@
-#!/run/current-system/sw/bin/python
-
 import yt_dlp
 import sys
 import json
