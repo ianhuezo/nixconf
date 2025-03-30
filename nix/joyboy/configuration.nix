@@ -286,6 +286,8 @@
     (python3.withPackages (
       python-pkgs: with python-pkgs; [
         yt-dlp
+	eyed3
+	pillow
       ]
     ))
     # glxinfo # Provides glxinfo command

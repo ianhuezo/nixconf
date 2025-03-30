@@ -4,6 +4,7 @@ import QtQuick.Controls
 import QtQuick.Effects
 
 Rectangle {
+    id: popupContainer
     anchors.fill: parent
     color: '#171D23'
     border.color: '#FF9E64'
@@ -33,14 +34,23 @@ Rectangle {
             }
             visible: !youtubeThumbnail.visible
         }
-        Image {
-            id: youtubeThumbnail
-            anchors.centerIn: parent
-            width: parent.width
-            height: parent.height
-            fillMode: Image.PreserveAspectFit
-            source: ''
+        Rectangle {
+            id: clippingRectangle
+            width: 150
+            height: 150
+            y: (parent.height - height) / 2 // Center vertically initially
+            x: (parent.width - width) / 2 // Start centered horizontally
+            color: "transparent"
             visible: youtubeThumbnail.source.toString().length > 0
+            clip: true // Ensure image is clipped to the rectangle bounds
+
+            Image {
+                id: youtubeThumbnail
+                anchors.fill: parent
+                fillMode: Image.PreserveAspectCrop
+                source: '' ///tmp/DECO*27 - モニタリング feat. 初音ミク_5b1a98.jpg
+                visible: source.toString().length > 0
+            }
         }
     }
     Rectangle {
@@ -73,6 +83,7 @@ Rectangle {
                 anchors.fill: parent
                 width: parent.width
                 height: parent.height
+                text: ''
                 readOnly: false
                 color: 'white'
                 background: Rectangle {
@@ -88,7 +99,7 @@ Rectangle {
             width: Math.round(textInputBottom.width)
             height: Math.round(textInputBox.height)
 
-            text: "Convert to MP3"
+            text: youtubeThumbnail.source.toString().length > 0 ? "Add to Library" : "Convert to MP3"
 
             font {
                 family: "Helvetica"
@@ -102,12 +113,23 @@ Rectangle {
                 acceptedButtons: Qt.NoButton
             }
             onClicked: {
+                const localPath = tagMP3FileProcess.mp3Path;
+                if (localPath?.toString().length > 0) {
+                    tagMP3FileProcess.running = true;
+                    return;
+                }
                 const currentUrl = textInput.text;
                 if (currentUrl == "") {
                     return;
                 }
                 ytDataProcessor.downloadUrl = currentUrl;
                 ytDataProcessor.running = true;
+            }
+            CreateMP3Processor {
+                id: tagMP3FileProcess
+                onError: error => {
+                    console.log(error);
+                }
             }
             YTDataProcessor {
                 id: ytDataProcessor
@@ -119,9 +141,14 @@ Rectangle {
                         audio_path,
                         thumbnail_path
                     } = info;
-		    console.log(thumbnail_path)
                     if (thumbnail_path.length > 0 && percent == 100) {
                         youtubeThumbnail.source = '/tmp/' + encodeURIComponent(thumbnail_path.replace('/tmp/', ''));
+                        textInput.text = title;
+                        textInput.readOnly = true;
+                        tagMP3FileProcess.mp3Path = audio_path;
+                        tagMP3FileProcess.albumName = title;
+                        tagMP3FileProcess.albumArtist = uploader;
+                        tagMP3FileProcess.albumArtPath = thumbnail_path;
                     }
                 }
                 onError: error => {
@@ -143,7 +170,7 @@ Rectangle {
             }
 
             background: Rectangle {
-                color: "#7AA2F7"
+                color: youtubeThumbnail.source.toString().length > 0 ? '#2da3a9' : "#7AA2F7"
                 radius: imageTextInputs.radius
             }
         }
@@ -174,6 +201,13 @@ Rectangle {
 
             onClicked: {
                 youtubeThumbnail.source = '';
+                textInput.text = '';
+                textInput.horizontalAlignment = Text.AlignLeft;
+                textInput.readOnly = false;
+                tagMP3FileProcess.mp3Path = '';
+                tagMP3FileProcess.albumName = '';
+                tagMP3FileProcess.albumArtist = '';
+                tagMP3FileProcess.albumArtPath = '';
             }
             contentItem: Text {
                 text: cancelButton.text

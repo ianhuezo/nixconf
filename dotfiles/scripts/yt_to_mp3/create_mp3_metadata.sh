@@ -1,0 +1,16 @@
+#!/bin/sh
+
+ALBUM_NAME="$1"
+ALBUM_ARTIST="$2"
+ALBUM_ART_PATH="$3"
+ALBUM_MP3_PATH="$4"
+ALBUM_MP3_OUT_PATH="$5"
+
+eyeD3 \
+  --title "$ALBUM_NAME" \
+  --artist "$ALBUM_ARTIST" \
+  --add-image "$ALBUM_ART_PATH:FRONT_COVER" \
+  --track "01" \
+  "$ALBUM_MP3_PATH"
+
+cp "$ALBUM_MP3_PATH" "$ALBUM_MP3_OUT_PATH/$ALBUM_NAME.mp3"

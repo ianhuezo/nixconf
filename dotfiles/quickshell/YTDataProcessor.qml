@@ -24,15 +24,13 @@ Process {
                 const percentage = match[1];
                 const jsonObject = JSON.parse(match[2]);
                 mediaDownloadProcess.downloading(percentage, jsonObject);
-	    }else{
-	       try{
-	          const jsonObject = JSON.parse(data)
-	          mediaDownloadProcess.downloading(100,jsonObject)
-	       } catch(e){
-	          
-	       }
-	    }
-	  }
+            } else {
+                try {
+                    const jsonObject = JSON.parse(data);
+                    mediaDownloadProcess.downloading(100, jsonObject);
+                } catch (e) {}
+            }
+        }
     }
     stderr: SplitParser {
         onRead: function (data) {
