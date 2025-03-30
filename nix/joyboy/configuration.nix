@@ -174,11 +174,11 @@
     enable = true;
     defaultRuntime = true; # Register as default OpenXR runtime
   };
-  programs.envision.enable = true;
+  programs.envision.enable = false;
   systemd.user.services.monado.environment = {
     STEAMVR_LH_ENABLE = "1";
     XRT_COMPOSITOR_COMPUTE = "1";
-    WMR_HANDTRACKING = "0";
+    # WMR_HANDTRACKING = "0";
     U_PACING_COMP_MIN_TIME_MS = "5";
   };
 
@@ -286,8 +286,8 @@
     (python3.withPackages (
       python-pkgs: with python-pkgs; [
         yt-dlp
-	eyed3
-	pillow
+        eyed3
+        pillow
       ]
     ))
     # glxinfo # Provides glxinfo command

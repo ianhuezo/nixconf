@@ -33,6 +33,9 @@
     hyprland-qtutils = {
       url = "github:hyprwm/hyprland-qtutils";
     };
+    # nixpkgs-xr = {
+    #   url = "github:nix-community/nixpkgs-xr";
+    # };
   };
 
   outputs =
@@ -54,6 +57,7 @@
             inherit inputs;
           };
           modules = [
+	    # inputs.nixpkgs-xr.nixosModules.nixpkgs-xr
             ./nix/joyboy/configuration.nix
             home-manager.nixosModules.home-manager
             {
