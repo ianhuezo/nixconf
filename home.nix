@@ -80,7 +80,6 @@ in
     inputs.hyprland-qtutils.packages.${pkgs.system}.default
     qt6.full
     qt6.qtdeclarative
-    wlx-overlay-s
   ];
   programs.zoxide.enable = true;
   programs.zoxide.enableZshIntegration = true;
@@ -555,7 +554,7 @@ in
     ];
   };
 
-  nixpkgs.config.home.allowUnfree = true;
+  # nixpkgs.config.home.allowUnfree = true;
   # Home Manager can also manage your environment variables through
   # 'home.sessionVariables'. These will be explicitly sourced when using a
   # shell provided by Home Manager. If you don't want to manage your shell
