@@ -57,7 +57,7 @@
             inherit inputs;
           };
           modules = [
-	    # inputs.nixpkgs-xr.nixosModules.nixpkgs-xr
+            # inputs.nixpkgs-xr.nixosModules.nixpkgs-xr
             ./nix/joyboy/configuration.nix
             home-manager.nixosModules.home-manager
             {

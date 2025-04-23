@@ -45,12 +45,18 @@
   };
   networking.networkmanager.wifi.backend = "iwd";
   networking.networkmanager.enable = true;
+  systemd.services.systemd-networkd.enable = false;
+  systemd.services.systemd-resolved.enable = false;
   # networking.hostName = "joyboy";
 
   nix.gc = {
     automatic = true;
     options = "--delete-older-than 3d";
   };
+  networking.firewall.allowedUDPPorts = [
+    67
+    68
+  ];
 
   #This specifically allows Spotify to find local files from phone sync
   networking.firewall.allowedTCPPorts = [
