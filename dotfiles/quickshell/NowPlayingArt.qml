@@ -8,7 +8,14 @@ Image {
     sourceSize.width: height
     sourceSize.height: height
     mipmap: true
+    smooth: true                        // Enable smooth scaling
+    antialiasing: true                  // Improved rendering quality
+    asynchronous: true                  // Load image asynchronously
     cache: false
+
+    layer.enabled: true
+    layer.smooth: true
+    layer.samples: 4  // Antialiasing samples
 
     source: ''
     Binding {
@@ -18,7 +25,6 @@ Image {
             const players = Mpris.players.values;
             const spotify = players.find(p => p.identity === "Spotify");
             const trackArtUrl = spotify?.trackArtUrl ?? players[0]?.trackArtUrl ?? "";
-            console.log("CHANGED");
             if (trackArtUrl != "") {
                 return trackArtUrl;
             }
@@ -42,8 +48,20 @@ Image {
     }
 
     Rectangle {
+        id: placeholder
         anchors.fill: parent
-        color: "gray"
-        visible: parent.status !== Image.Ready
+        color: "#303030"  // Darker gray for better contrast
+        visible: art.status !== Image.Ready
+
+        // Music note icon as placeholder
+        Text {
+            anchors.centerIn: parent
+            text: "♪"  // Music note symbol
+            color: "#808080"
+            font.pixelSize: parent.height * 0.6
+        }
+
+        // Rounded corners for placeholder too
+        radius: 4
     }
 }

@@ -38,7 +38,7 @@ Rectangle {
                         return;
                     }
                     if (!popupWindow.active) {
-                        popupWindow.show();
+                        slideIn.start();
                     }
                 }
             }
@@ -70,12 +70,30 @@ Rectangle {
             height: 300
             flags: Qt.FramelessWindowHint | Qt.Popup
 
-            readonly property int targetY: container.y + container.height
+            readonly property int targetY: container.y + container.height + 8
 
-            x: container.x + (container.width - width) / 2
+            x: container.x + container.width * 2
             y: targetY
             color: 'transparent'
+            //onYChanged: {
+            //    const progress = 1 - ((y - targetY) / (startY - targetY));
+            //    visible = progress >= triggerThreshold;
+            //    opacity: Math.min(1, progress * 1.5); // Smooth fade-in
+            //}
 
+            NumberAnimation {
+                id: slideIn
+                target: popupWindow
+                property: "y"
+                from: popupWindow.targetY - 300
+                to: popupWindow.targetY
+                duration: 1000
+                easing.type: Easing.InOutQuad
+                onStarted: {
+                    popupWindow.show();
+                }
+                onFinished: popupLoader.active = false
+            }
             YoutubeConversionContainer {}
         }
     }
