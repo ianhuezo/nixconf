@@ -82,15 +82,15 @@ Scope {
                                 Rectangle {
                                     width: 20
                                     height: 20
-                                    color: "grey"
                                     radius: 10
-                                }
-
-                                Text {
-                                    text: "Left"
-                                    color: "white"
-                                    font.pixelSize: 12
-                                    anchors.verticalCenter: parent.verticalCenter
+                                    color: 'transparent'
+                                    Image {
+                                        id: nixosIcon
+                                        sourceSize.width: parent.width
+                                        sourceSize.height: parent.height
+                                        fillMode: Image.PreserveAspectFit
+                                        source: "../assets/icons/nixos.png"
+                                    }
                                 }
                             }
                         }
@@ -133,18 +133,11 @@ Scope {
                                 anchors.rightMargin: 15
                                 spacing: 5
 
-                                Text {
-                                    text: "Right"
-                                    color: "white"
-                                    font.pixelSize: 12
-                                    anchors.verticalCenter: parent.verticalCenter
-                                }
-
                                 Rectangle {
                                     width: 20
                                     height: 20
-                                    color: "grey"
                                     radius: 10
+                                    color: 'transparent'
                                 }
                             }
                         }
