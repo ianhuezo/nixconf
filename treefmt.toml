@@ -10,7 +10,7 @@
 
 # Exclude files or directories matching the specified globs
 # Env $TREEFMT_EXCLUDES
-# excludes = ["*.md", "*.gif"]
+excludes = ["*.png", "*.gif", "*.jpg", "*.qml"]
 
 # Exit with error if any changes were made during execution
 # Useful for CI
@@ -49,3 +49,9 @@
 [formatter.nixfmt-rfc-style]
 command = "nixfmt"
 includes = ["*.nix"]
+
+[formatter.shfmt]
+command = "shfmt"
+excludes = []
+includes = ["*.sh", "*.bash", "*.envrc", "*.envrc.*"]
+options = ["-s", "-w", "-i", "2"]
