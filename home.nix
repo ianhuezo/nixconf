@@ -25,6 +25,7 @@ let
     swww img ${config.home.homeDirectory}/Pictures/frieren.png --transition-type any & disown
     sleep 1
     systemctl --user import-environment XDG_CURRENT_DESKTOP XDG_SESSION_TYPE
+
     sleep 1
   '';
 in
@@ -46,6 +47,11 @@ in
     enable = true;
     colorScheme = config.colorScheme;
   };
+  home.file.".syncplay/syncplay.ini".text = ''
+    [client_settings]
+    mediaplayer = VLC
+    vlc_path = ${pkgs.vlc}/bin/vlc
+  '';
 
   # This value determines the Home Manager release that your config.home.ration is
   # compatible with. This helps avoid breakage when a new Home Manager release
@@ -76,6 +82,7 @@ in
     typescript
     typescript-language-server
     starship
+    syncplay
     inputs.quickshell.packages.${pkgs.system}.default
     inputs.hyprland-qtutils.packages.${pkgs.system}.default
     qt6.full
