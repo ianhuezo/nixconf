@@ -89,7 +89,7 @@ Scope {
                                         sourceSize.width: parent.width
                                         sourceSize.height: parent.height
                                         fillMode: Image.PreserveAspectFit
-                                        source: "../assets/icons/nixos.png"
+                                        source: "../../assets/icons/nixos.png"
                                     }
                                 }
                             }

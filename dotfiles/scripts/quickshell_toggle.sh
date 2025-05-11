@@ -4,5 +4,5 @@
 if pgrep -x ".quickshell-wra"; then
   pkill quickshell
 else
-  quickshell
+  quickshell -p ~/.config/quickshell/bar/shell.qml
 fi
