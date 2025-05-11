@@ -141,6 +141,7 @@ Rectangle {
                         audio_path,
                         thumbnail_path
                     } = info;
+
                     if (thumbnail_path.length > 0 && percent == 100) {
                         youtubeThumbnail.source = '/tmp/' + encodeURIComponent(thumbnail_path.replace('/tmp/', ''));
                         textInput.text = title;

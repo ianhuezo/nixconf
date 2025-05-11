@@ -38,7 +38,7 @@ Rectangle {
                         return;
                     }
                     if (!popupWindow.active) {
-                        slideIn.start();
+                        popupWindow.show();
                     }
                 }
             }
@@ -81,19 +81,19 @@ Rectangle {
             //    opacity: Math.min(1, progress * 1.5); // Smooth fade-in
             //}
 
-            NumberAnimation {
-                id: slideIn
-                target: popupWindow
-                property: "y"
-                from: popupWindow.targetY - 300
-                to: popupWindow.targetY
-                duration: 1000
-                easing.type: Easing.InOutQuad
-                onStarted: {
-                    popupWindow.show();
-                }
-                onFinished: popupLoader.active = false
-            }
+            //NumberAnimation {
+            //    id: slideIn
+            //    target: popupWindow
+            //    property: "y"
+            //    from: popupWindow.targetY - 300
+            //    to: popupWindow.targetY
+            //    duration: 1000
+            //    easing.type: Easing.InOutQuad
+            //    onStarted: {
+            //        popupWindow.show();
+            //    }
+            //    onFinished: popupLoader.active = false
+            //}
             YoutubeConversionContainer {}
         }
     }
