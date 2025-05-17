@@ -77,7 +77,7 @@ Scope {
                                 anchors.verticalCenter: parent.verticalCenter
                                 anchors.left: parent.left
                                 anchors.leftMargin: 15
-                                spacing: 10
+                                spacing: 30
 
                                 Rectangle {
                                     id: nixosRect
@@ -95,10 +95,11 @@ Scope {
                                 }
                                 Rectangle {
                                     id: hyprlandRect
-                                    width: 20
+                                    width: parent.width / 1.1
                                     height: 20
                                     radius: 10
                                     color: 'transparent'
+                                    HyprlandWorkspaces {}
                                 }
                             }
                         }
