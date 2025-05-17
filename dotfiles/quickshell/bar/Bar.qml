@@ -77,9 +77,10 @@ Scope {
                                 anchors.verticalCenter: parent.verticalCenter
                                 anchors.left: parent.left
                                 anchors.leftMargin: 15
-                                spacing: 5
+                                spacing: 10
 
                                 Rectangle {
+                                    id: nixosRect
                                     width: 20
                                     height: 20
                                     radius: 10
@@ -91,6 +92,13 @@ Scope {
                                         fillMode: Image.PreserveAspectFit
                                         source: "../../assets/icons/nixos.png"
                                     }
+                                }
+                                Rectangle {
+                                    id: hyprlandRect
+                                    width: 20
+                                    height: 20
+                                    radius: 10
+                                    color: 'transparent'
                                 }
                             }
                         }
