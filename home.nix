@@ -16,18 +16,17 @@ let
   rightMonitor = "DP-1";
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
     xrandr --output DP-1 --primary & disown
-    sleep 1
     hyprlock & disown
-    dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
-    nm-applet --indicator & disown 
-    swww-daemon & disown
+    sleep 1
+    swww-daemon &
     sleep 1
     swww img ${config.home.homeDirectory}/Pictures/frieren.png --transition-type any & disown
     sleep 1
-    systemctl --user import-environment XDG_CURRENT_DESKTOP XDG_SESSION_TYPE
-
-    sleep 1
-  '';
+    # Other startup commands
+    dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+    nm-applet --indicator & disown
+    systemctl --user import-environment XDG_CURRENT_DESKTOP XDG_SESSION_TYPE & disown  
+    '';
 in
 {
 
@@ -400,6 +399,10 @@ in
       };
       cursor = {
         no_hardware_cursors = true;
+      };
+      misc = {
+          disable_hyprland_logo = true;
+          disable_splash_rendering = true;
       };
       animations = {
         enabled = "yes";
