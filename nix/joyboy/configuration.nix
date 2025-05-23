@@ -19,6 +19,13 @@
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
+  services.journald.extraConfig = ''
+    Storage=persistent
+    SystemMaxUse=100M
+    MaxRetentionSec=1week
+    MaxFileSec=1day
+    Compress=yes
+  '';
   boot.loader.efi.canTouchEfiVariables = true;
   boot.tmp.cleanOnBoot = true;
   # boot.loader.grub.enable = true;
@@ -78,7 +85,7 @@
 
   #ollama support
   services.ollama = {
-    enable = true;
+    enable = false;
     # Optional: load models on startup
     loadModels = [ "deepseek-r1:32b-qwen-distill-q8_0" ];
     acceleration = "cuda";
