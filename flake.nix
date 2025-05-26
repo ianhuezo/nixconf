@@ -25,7 +25,7 @@
       inputs.hyprland.follows = "hyprland";
     };
     nix-colors.url = "github:misterio77/nix-colors";
-    swww.url = "github:LGFae/swww";
+    swww.url = "github:LGFae/swww/412326e40a399e61e15a31147569e97c69900dba";
     quickshell = {
       url = "git+https://git.outfoxxed.me/outfoxxed/quickshell";
       inputs.nixpkgs.follows = "nixpkgs";

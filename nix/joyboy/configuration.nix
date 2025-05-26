@@ -170,8 +170,9 @@
       noto-fonts
       noto-fonts-cjk-sans
       noto-fonts-emoji
-      maple-mono
-    ] #++ (builtins.attrValues maple-mono)
+      # maple-mono
+    ] 
+    ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.maple-mono) 
     ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
 
   # Enable steam
@@ -179,6 +180,7 @@
     enable = true;
     remotePlay.openFirewall = true;
     localNetworkGameTransfers.openFirewall = true;
+    # fontPackages = [];
   };
   programs.steam.gamescopeSession.enable = true;
   programs.gamemode.enable = true;

@@ -801,16 +801,17 @@
         "utils": "utils"
       },
       "locked": {
-        "lastModified": 1748196981,
-        "narHash": "sha256-ruSQ2sV0LbJmwmbfn53zLx0wE9m4OJlKA+ppoibL2j8=",
+        "lastModified": 1741196160,
+        "narHash": "sha256-brdkJiO8RGebFz9lElNNDYKGmfuQiGuuy30eKoFhUbY=",
         "owner": "LGFae",
         "repo": "swww",
-        "rev": "107576af07520db094b891da014a86c2c3a7b174",
+        "rev": "412326e40a399e61e15a31147569e97c69900dba",
         "type": "github"
       },
       "original": {
         "owner": "LGFae",
         "repo": "swww",
+        "rev": "412326e40a399e61e15a31147569e97c69900dba",
         "type": "github"
       }
     },
