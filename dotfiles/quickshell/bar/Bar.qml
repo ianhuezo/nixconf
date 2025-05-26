@@ -8,7 +8,7 @@ Scope {
     property bool useCanvasVisualization: true
     property var barOffsetY: 8  // Renamed from barOffset
     property var barOffsetX: 10 // New horizontal offset property
-    property var verticalPadding: 0 // Padding for top and bottom of the inner bar
+    property var verticalPadding: 8 // Padding for top and bottom of the inner bar
 
     CavaDataProcessor {
         id: cavaProcessor
@@ -23,7 +23,8 @@ Scope {
             id: panel
             required property var modelData
             screen: modelData
-            height: 38 + (root.barOffsetY * 2) // Account for both top and bottom offsets
+            implicitHeight: 38 + (root.barOffsetY * 2)
+            height: 54 // Account for both top and bottom offsets
             color: '#00000000' // Transparent main panel
             anchors {
                 top: true
@@ -43,8 +44,8 @@ Scope {
                         right: parent.right
                         top: parent.top
                         bottom: parent.bottom
-                        topMargin: root.barOffsetY
-                        bottomMargin: root.barOffsetY
+                        topMargin: root.verticalPadding
+                        bottomMargin: root.verticalPadding
                         leftMargin: root.barOffsetX
                         rightMargin: root.barOffsetX
                     }
