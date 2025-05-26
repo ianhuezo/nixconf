@@ -1,11 +1,58 @@
 #!/bin/sh
 
-# Search for color codes in all files from the current directory
-grep -rnI --color=never -E -o \
-'rgba?\([^)]*\)|#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})' . | \
-# Format output as: filename,line_number,color_code
-sed -E 's/^([^:]+):([^:]+):/\1,\2,/' | \
-# Display in fzf with preview
+# Function to convert RGB to hex
+rgb_to_hex() {
+    local rgb_str="$1"
+    local values=$(echo "$rgb_str" | sed -E 's/rgba?\(([^)]+)\).*/\1/' | tr -d ' ')
+    local r=$(echo "$values" | cut -d, -f1)
+    local g=$(echo "$values" | cut -d, -f2) 
+    local b=$(echo "$values" | cut -d, -f3)
+    
+    # Handle potential floating point values
+    r=$(printf "%.0f" "$r" 2>/dev/null || echo "$r")
+    g=$(printf "%.0f" "$g" 2>/dev/null || echo "$g")
+    b=$(printf "%.0f" "$b" 2>/dev/null || echo "$b")
+    
+    printf "#%02X%02X%02X" "$r" "$g" "$b" 2>/dev/null || echo "$rgb_str"
+}
+
+# Function to expand 3-digit hex to 6-digit
+expand_hex() {
+    local hex="$1"
+    if [ ${#hex} -eq 4 ]; then
+        local c1=$(echo "$hex" | cut -c2)
+        local c2=$(echo "$hex" | cut -c3)
+        local c3=$(echo "$hex" | cut -c4)
+        echo "#${c1}${c1}${c2}${c2}${c3}${c3}"
+    else
+        echo "$hex"
+    fi
+}
+
+# Search and process colors
+{
+    grep -rnI --color=never -E -o 'rgba?\([^)]*\)|#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})' . | \
+    sed -E 's/^([^:]+):([^:]+):/\1,\2,/' | \
+    while IFS=, read -r file line color; do
+        if echo "$color" | grep -q '^rgb'; then
+            hex_color=$(rgb_to_hex "$color")
+        else
+            hex_color=$(expand_hex "$(echo "$color" | tr '[:lower:]' '[:upper:]')")
+        fi
+        
+        # Create color box representation
+        printf "%s,%s,[■] '%s'\n" "$file" "$line" "$hex_color"
+    done
+} | \
 fzf --delimiter=, \
-    --preview 'echo -e "File: {1}\nLine: {2}\nColor: \033[38;5;13m{3}\033[0m"' \
-    --preview-window=up:3
+    --preview 'echo -e "File: {1}\nLine: {2}\nColor: {3}\n";
+               hex=$(echo {3} | grep -o "#[A-Fa-f0-9]\{6\}");
+               if [ -n "$hex" ]; then
+                   r=$((0x$(echo $hex | cut -c2-3)));
+                   g=$((0x$(echo $hex | cut -c4-5)));
+                   b=$((0x$(echo $hex | cut -c6-7)));
+                   printf "\033[48;2;%d;%d;%dm      \033[0m\n" "$r" "$g" "$b";
+                   printf "RGB: %d, %d, %d\n" "$r" "$g" "$b";
+               fi' \
+    --preview-window=up:8 \
+    --ansi
