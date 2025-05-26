@@ -29,6 +29,19 @@ expand_hex() {
     fi
 }
 
+# Function to create colored box
+create_colored_box() {
+    local hex="$1"
+    if [ -n "$hex" ] && echo "$hex" | grep -q "^#[A-Fa-f0-9]\{6\}$"; then
+        local r=$((0x$(echo $hex | cut -c2-3)))
+        local g=$((0x$(echo $hex | cut -c4-5)))
+        local b=$((0x$(echo $hex | cut -c6-7)))
+        printf "\033[48;2;%d;%d;%dm  \033[0m" "$r" "$g" "$b"
+    else
+        printf "error"
+    fi
+}
+
 # Search and process colors
 {
     grep -rnI --color=never -E -o 'rgba?\([^)]*\)|#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})' . | \
@@ -40,19 +53,21 @@ expand_hex() {
             hex_color=$(expand_hex "$(echo "$color" | tr '[:lower:]' '[:upper:]')")
         fi
         
-        # Create color box representation
-        printf "%s,%s,[■] '%s'\n" "$file" "$line" "$hex_color"
+        # Create colored box representation
+        colored_box=$(create_colored_box "$hex_color")
+        printf "%s,%s,[%s],'%s'\n" "$file" "$line" "$colored_box" "$hex_color"
     done
-} | \
-fzf --delimiter=, \
-    --preview 'echo -e "File: {1}\nLine: {2}\nColor: {3}\n";
-               hex=$(echo {3} | grep -o "#[A-Fa-f0-9]\{6\}");
-               if [ -n "$hex" ]; then
-                   r=$((0x$(echo $hex | cut -c2-3)));
-                   g=$((0x$(echo $hex | cut -c4-5)));
-                   b=$((0x$(echo $hex | cut -c6-7)));
-                   printf "\033[48;2;%d;%d;%dm      \033[0m\n" "$r" "$g" "$b";
-                   printf "RGB: %d, %d, %d\n" "$r" "$g" "$b";
-               fi' \
-    --preview-window=up:8 \
-    --ansi
+}
+# } | \
+# fzf --delimiter=, \
+#     --preview 'echo -e "File: {1}\nLine: {2}\nColor: {3}\n";
+#                hex=$(echo {3} | grep -o "#[A-Fa-f0-9]\{6\}");
+#                if [ -n "$hex" ]; then
+#                    r=$((0x$(echo $hex | cut -c2-3)));
+#                    g=$((0x$(echo $hex | cut -c4-5)));
+#                    b=$((0x$(echo $hex | cut -c6-7)));
+#                    printf "Color Preview: \033[48;2;%d;%d;%dm      \033[0m\n" "$r" "$g" "$b";
+#                    printf "RGB: %d, %d, %d\n" "$r" "$g" "$b";
+#                fi' \
+#     --preview-window=up:8 \
+#     --ansi     --ansi
