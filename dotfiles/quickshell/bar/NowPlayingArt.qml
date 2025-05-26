@@ -24,13 +24,15 @@ Image {
         art.source: {
             const players = Array.from(Mpris.players.values);
             let activePlayer = null;
-
             // 1. Find playing Spotify
-            activePlayer = players.find(p => p.identity === "Spotify" && p.playbackStatus === "Playing");
+            activePlayer = players.find(p => p.identity === "Spotify" && p.playbackState === MprisPlaybackState.Playing);
 
             // 2. If no playing Spotify, find first playing player
             if (!activePlayer) {
-                activePlayer = players.find(p => p.playbackStatus === "Playing");
+                activePlayer = players.find(p => p.playbackState === MprisPlaybackState.Playing);
+            }
+            if (activePlayer) {
+                return activePlayer.trackArtUrl;
             }
 
             // 3. Fallback to original behavior: Spotify or first player
