@@ -12,7 +12,7 @@ let
   agsPath = /etc/nixos/dotfiles/ags;
   cavaPath = /etc/nixos/dotfiles/cava;
   scriptsPath = /etc/nixos/dotfiles/scripts;
-  frierenEtherealTheme = pkgs.lib.importJSON ./dotfiles/themes/base16-frieren-ethereal.json;
+  frierenEtherealTheme = pkgs.lib.importJSON ./dotfiles/themes/frieren-ethereal.json;
   nixColorsLib = inputs.nix-colors.lib.nix-colors;
   leftMonitor = "HDMI-A-1";
   rightMonitor = "DP-1";
@@ -42,9 +42,7 @@ in
   home.username = "ianh";
   home.homeDirectory = "/home/ianh";
   #import the preferred color scheme
-  colorschemes.enable = true;
-  colorschemes.schemes.frieren-ethereal.base16 = frierenEtherealTheme;
-  colorschemes.scheme = "frieren-ethereal";
+  colorScheme = nix-colors.colorSchemes.tokyo-city-dark;
 
   modules.neovim = {
     enable = true;
