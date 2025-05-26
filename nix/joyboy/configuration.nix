@@ -171,7 +171,7 @@
       noto-fonts-cjk-sans
       noto-fonts-emoji
       maple-mono
-    ]
+    ] #++ (builtins.attrValues maple-mono)
     ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
 
   # Enable steam
@@ -264,7 +264,7 @@
     #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     #  wget
     cava
-    # valgrind
+    valgrind
     ripgrep
     libnotify
     inotify-tools
