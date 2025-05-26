@@ -126,7 +126,7 @@ in
       lsp.servers.typos_lsp.enable = true;
       # lsp.servers.qmlls.enable = true;
       typescript-tools = {
-        enable = true;
+        enable = false;
       };
       lsp.servers.ts_ls.enable = true;
       lsp.servers.ts_ls.filetypes = [
