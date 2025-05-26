@@ -1,6 +1,7 @@
 import Quickshell
 import Quickshell.Io
 import QtQuick
+import QtQuick.Effects
 
 Scope {
     id: root
@@ -9,6 +10,18 @@ Scope {
     property var barOffsetY: 8  // Renamed from barOffset
     property var barOffsetX: 10 // New horizontal offset property
     property var verticalPadding: 8 // Padding for top and bottom of the inner bar
+
+    readonly property color base00: "#0D121B" // Deepest background
+    readonly property color base01: "#111A2C" // Slightly lighter background
+    readonly property color base02: "#1A263B" // Mid-dark background
+    readonly property color base03: "#2A3E5C" // Foreground Dim / Subtle border
+    readonly property color base04: "#6C8CB7" // Foreground Mid
+    readonly property color base05: "#E0F2F7" // Foreground Light / Primary text
+    readonly property color base06: "#F0F8FA" // Foreground Lighter
+    readonly property color base07: "#FDFEFF" // Foreground Lightest
+    readonly property color base0B: "#A0E6FF" // Glowing Cyan-Blue (excellent for accents)
+    readonly property color base0C: "#89DDFF" // Cyan (another great accent)
+    readonly property color base0D: "#7AA2F7" // Blue (deeper accent)
 
     CavaDataProcessor {
         id: cavaProcessor
@@ -23,8 +36,7 @@ Scope {
             id: panel
             required property var modelData
             screen: modelData
-            implicitHeight: 38 + (root.barOffsetY * 2)
-            height: 54 // Account for both top and bottom offsets
+            implicitHeight: 54
             color: '#00000000' // Transparent main panel
             anchors {
                 top: true
@@ -49,8 +61,37 @@ Scope {
                         leftMargin: root.barOffsetX
                         rightMargin: root.barOffsetX
                     }
-                    color: '#171D23'
+                    color: root.base01
                     radius: 8 // Optional: rounded corners for the bar
+
+                    layer.enabled: true
+                    layer.effect: MultiEffect {
+                        blur: 10 // Still apply blur to the background
+                        // --- NEW: Glow Effect ---
+                        // You can combine blur and glow directly here!
+                    }
+
+                    Rectangle {
+                        anchors.fill: parent
+                        anchors.margins: -1 // Extends slightly outward for the highlight border
+                        color: "transparent"
+                        border.color: "#2A3E5C" // A mid-tone blue from the wallpaper's spectrum
+                        border.width: 1
+                        radius: parent.radius + 1
+                    }
+
+                    // Accent Glow Line (the "frieren flowers" glow effect)
+                    Rectangle {
+                        anchors.fill: parent
+                        anchors.margins: 1 // Inset for a fine line
+                        color: "transparent"
+                        border.color: "#A0E6FF" // Bright, ethereal blue/cyan for accent (like the flowers)
+                        border.width: 0 // Slightly thicker for more glow
+                        radius: parent.radius - 1
+
+                        // Optional: Add a subtle glow effect (requires ShaderEffect or custom rendering)
+                        // For a simple demo, we'll keep it as a border.
+                    }
 
                     // Content container with padding
                     Rectangle {
