@@ -35,6 +35,7 @@ in
   imports = [
     nix-colors.homeManagerModules.default
     ./nix/programs/neovim
+    ./nix/themes/frieren-ethereal
   ];
 
   # Home Manager needs a bit of information about you and the paths it should
