@@ -12,7 +12,6 @@ let
   agsPath = /etc/nixos/dotfiles/ags;
   cavaPath = /etc/nixos/dotfiles/cava;
   scriptsPath = /etc/nixos/dotfiles/scripts;
-  frierenEtherealTheme = pkgs.lib.importJSON ./dotfiles/themes/frieren-ethereal.json;
   nix-colors-lib = nix-colors.lib.contrib { inherit pkgs; };
   leftMonitor = "HDMI-A-1";
   rightMonitor = "DP-1";
@@ -42,11 +41,11 @@ in
   home.username = "ianh";
   home.homeDirectory = "/home/ianh";
   #import the preferred color scheme
-  colorScheme = nix-colors-lib.colorSchemeFromPicture {
-    path = ./wallpapers/frieren.png;
-    variant = "dark";
-  };
-  colorScheme = nix-colors.colorSchemes.tokyo-city-dark;
+  # colorScheme = nix-colors-lib.colorSchemeFromPicture {
+  #   path = ./wallpapers/frieren.png;
+  #   variant = "dark";
+  # };
+  colorScheme = import ./nix/themes/dark-ethereal;
 
   modules.neovim = {
     enable = true;
@@ -414,17 +413,35 @@ in
       };
       animations = {
         enabled = "yes";
+# Some default animations, see https://wiki.hyprland.org/Configuring/Animations/ for more
 
-        # Some default animations, see https://wiki.hyprland.org/Configuring/Animations/ for more
-
-        bezier = "myBezier, 0.05, 0.9, 0.1, 1.05";
+        bezier = [
+	  "specialcubic, 0.34, 1.56, 0.64, 1"
+	  "specialCubicReverse2, 0, -0.07, 1, -0.35"
+          "wind, 0.05, 0.9, 0.1, 1.05"
+          "winIn, 0.1, 1.1, 0.1, 1.1"
+          "winOut, 0.3, -0.3, 0, 1"
+          "linear, 1, 1, 1, 1"
+          "Cubic, 0.1, 0.1, 0.1, 1"
+          "overshot, 0.05, 0.9, 0.1, 1.1"
+          "ease-in-out, 0.17, 0.67, 0.83, 0.67"
+          "ease-in, 0.17, 0.67, 0.83, 0.67"
+          "ease-out, 0.42, 0, 1, 1"
+          "easeInOutSine, 0.37, 0, 0.63, 1"
+          "easeInSine, 0.12, 0, 0.39, 0"
+          "easeOutSine, 0.61, 1, 0.88, 1"
+        ];
         animation = [
-          "windows, 1, 7, myBezier"
-          "windowsOut, 1, 7, default, popin 80%"
-          "border, 1, 10, default"
-          "borderangle, 1, 8, default"
-          "fade, 1, 7, default"
-          "workspaces, 1, 6, default"
+          "windowsIn, 1, 4, easeInOutSine, slide" 
+          "windowsOut, 1, 4, easeInOutSine, slide"
+          "border, 1, 3, easeInOutSine"
+          "borderangle, 1, 30, easeInOutSine, loop"
+          "workspacesIn, 1, 3, easeInOutSine, slidefade"
+          "workspacesOut, 1, 3, easeInOutSine, slidefade"
+          "specialWorkspaceIn, 1, 3, easeInOutSine, slidevert"
+          "specialWorkspaceOut, 1, 3, easeInOutSine, slidevert"
+          "layersIn, 1, 3, easeInOutSine, fade"
+          "layersOut, 1, 3, easeInOutSine, fade"
         ];
       };
     };
@@ -444,7 +461,10 @@ in
   #
   gtk = {
     enable = true;
-
+    font = {
+      name = "fira-sans";
+      size = 12;
+    };
     theme = {
       package = gtkThemeFromScheme { scheme = config.colorScheme; };
       name = "${config.colorScheme.slug}";
@@ -453,80 +473,77 @@ in
       name = "Tela-dark";
       package = pkgs.tela-icon-theme;
     };
-    #
-    #   font = {
-    #     name = "Sans";
-    #     size = 11;
-    #   };
+
   };
   programs.kitty = {
     enable = true;
     extraConfig = ''
-      		       font_family Maple Mono
-      		       bold_font Maple Mono
-      		       bold_italic_font Maple Mono
-            	               background_opacity 0.85
-                             foreground #${config.colorScheme.palette.base05} 
-                             background #${config.colorScheme.palette.base00} 
-                             
-                             # grayish
-                             color0 #${config.colorScheme.palette.base03} 
-                             color8 #${config.colorScheme.palette.base03} 
-                             
-                             # Salmon
-                             color1 #${config.colorScheme.palette.base08} 
-                             color9 #${config.colorScheme.palette.base08} 
-                             
-                             # Green
-                             color2  #${config.colorScheme.palette.base0C} 
-                             color10 #${config.colorScheme.palette.base0C} 
-                             
-                             # Yellow-brown
-                             color3  #${config.colorScheme.palette.base09} 
-                             color11 #${config.colorScheme.palette.base09} 
-                             
-                             # Blue
-                             color4  #${config.colorScheme.palette.base0D} 
-                             color12 #${config.colorScheme.palette.base0D}
-                             
-                             # Magenta
-                             color5  #${config.colorScheme.palette.base0E} 
-                             color13 #${config.colorScheme.palette.base0E}
-                             
-                             # Cyan
-                             color6  #${config.colorScheme.palette.base0C} 
-                             color14 #${config.colorScheme.palette.base0C} 
-                             
-                             # White
-                             color7  #${config.colorScheme.palette.base05} 
-                             color15 #${config.colorScheme.palette.base05} 
-                             
-                             # Cursor
-                             cursor #${config.colorScheme.palette.base05} 
-                             cursor_text_color #${config.colorScheme.palette.base00} 
-                             
-                             # Selection highlight
-                             selection_foreground none
-                             selection_background #${config.colorScheme.palette.base03}
-                             
-                             # The color for highlighting URLs on mouse-over
-                             url_color #${config.colorScheme.palette.base0B}
-                             
-                             # Window borders
-                             active_border_color #${config.colorScheme.palette.base0D}
-                             inactive_border_color #${config.colorScheme.palette.base00}
-                             bell_border_color #${config.colorScheme.palette.base09}
-                             
-                             # Tab bar
-                             tab_bar_style fade
-                             tab_fade 1
-                             active_tab_foreground   #3d59a1
-                             active_tab_background   #16161e
-                             active_tab_font_style   bold
-                             inactive_tab_foreground #787c99
-                             inactive_tab_background #16161e
-                             inactive_tab_font_style bold
-                             tab_bar_background #101014
+      font_family Maple Mono
+      bold_font Maple Mono
+      bold_italic_font Maple Mono
+      font_size 12.0
+      background_opacity 0.85
+      foreground #${config.colorScheme.palette.base05} 
+      background #${config.colorScheme.palette.base00} 
+      
+      # grayish
+      color0 #${config.colorScheme.palette.base03} 
+      color8 #${config.colorScheme.palette.base03} 
+      
+      # Salmon
+      color1 #${config.colorScheme.palette.base08} 
+      color9 #${config.colorScheme.palette.base08} 
+      
+      # Green
+      color2  #${config.colorScheme.palette.base0C} 
+      color10 #${config.colorScheme.palette.base0C} 
+      
+      # Yellow-brown
+      color3  #${config.colorScheme.palette.base09} 
+      color11 #${config.colorScheme.palette.base09} 
+      
+      # Blue
+      color4  #${config.colorScheme.palette.base0D} 
+      color12 #${config.colorScheme.palette.base0D}
+      
+      # Magenta
+      color5  #${config.colorScheme.palette.base0E} 
+      color13 #${config.colorScheme.palette.base0E}
+      
+      # Cyan
+      color6  #${config.colorScheme.palette.base0C} 
+      color14 #${config.colorScheme.palette.base0C} 
+      
+      # White
+      color7  #${config.colorScheme.palette.base05} 
+      color15 #${config.colorScheme.palette.base05} 
+      
+      # Cursor
+      cursor #${config.colorScheme.palette.base05} 
+      cursor_text_color #${config.colorScheme.palette.base00} 
+      
+      # Selection highlight
+      selection_foreground none
+      selection_background #${config.colorScheme.palette.base03}
+      
+      # The color for highlighting URLs on mouse-over
+      url_color #${config.colorScheme.palette.base0B}
+      
+      # Window borders
+      active_border_color #${config.colorScheme.palette.base0D}
+      inactive_border_color #${config.colorScheme.palette.base00}
+      bell_border_color #${config.colorScheme.palette.base09}
+      
+      # Tab bar
+      tab_bar_style fade
+      tab_fade 1
+      active_tab_foreground   #3d59a1
+      active_tab_background   #16161e
+      active_tab_font_style   bold
+      inactive_tab_foreground #787c99
+      inactive_tab_background #16161e
+      inactive_tab_font_style bold
+      tab_bar_background #101014
     '';
   };
   home.file.".config/quickshell".source = config.lib.file.mkOutOfStoreSymlink quickshellPath;

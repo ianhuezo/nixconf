@@ -1,6 +1,6 @@
 {
   # This entire attribute set defines the 'colorScheme'
-  colorScheme = {
+  
     # Unique identifier for the scheme, often slug-cased version of the name
     slug = "frieren-ethereal";
     # Human-readable name of the theme
@@ -29,5 +29,4 @@
       base0E = "#BB9AF7"; # Purple (matching Frieren's magic)
       base0F = "#BB9AF7"; # Purple (often same as base0E)
     };
-  };
-}
+  }
