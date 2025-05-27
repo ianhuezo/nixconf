@@ -19,6 +19,7 @@ Scope {
     readonly property color base05: "#E0F2F7" // Foreground Light / Primary text
     readonly property color base06: "#F0F8FA" // Foreground Lighter
     readonly property color base07: "#FDFEFF" // Foreground Lightest
+    readonly property color base09: "#FF9E64" // Foreground Lightest
     readonly property color base0B: "#A0E6FF" // Glowing Cyan-Blue (excellent for accents)
     readonly property color base0C: "#89DDFF" // Cyan (another great accent)
     readonly property color base0D: "#7AA2F7" // Blue (deeper accent)
@@ -99,47 +100,7 @@ Scope {
                         color: "transparent" // No visible background
 
                         // Left section
-                        Rectangle {
-                            id: leftSection
-                            height: parent.height
-                            width: parent.width / 4
-                            anchors {
-                                left: parent.left
-                                top: parent.top
-                            }
-                            color: "transparent"
-
-                            Row {
-                                id: leftContent
-                                anchors.verticalCenter: parent.verticalCenter
-                                anchors.left: parent.left
-                                anchors.leftMargin: 15
-                                spacing: 30
-
-                                Rectangle {
-                                    id: nixosRect
-                                    width: 20
-                                    height: 20
-                                    radius: 10
-                                    color: 'transparent'
-                                    Image {
-                                        id: nixosIcon
-                                        sourceSize.width: parent.width
-                                        sourceSize.height: parent.height
-                                        fillMode: Image.PreserveAspectFit
-                                        source: "../../assets/icons/nixos.png"
-                                    }
-                                }
-                                Rectangle {
-                                    id: hyprlandRect
-                                    width: parent.width / 1.1
-                                    height: 20
-                                    radius: 10
-                                    color: 'transparent'
-                                    HyprlandWorkspaces {}
-                                }
-                            }
-                        }
+                        Left {}
 
                         // Center section
                         Rectangle {
@@ -162,7 +123,7 @@ Scope {
                         }
 
                         // Right section
-                        Rectangle {
+                        Row {
                             id: rightSection
                             height: parent.height
                             width: parent.width / 4
@@ -170,53 +131,37 @@ Scope {
                                 right: parent.right
                                 top: parent.top
                             }
-                            color: "transparent"
-
-                            Row {
-                                id: rightContent
-                                anchors.verticalCenter: parent.verticalCenter
-                                anchors.right: parent.right
-                                anchors.rightMargin: 15
-                                spacing: 10
-                                //the row content will arrange left to right
-                                Rectangle {
-                                    id: oneStatContainer
-                                    width: 80
-                                    height: parent.height
-                                    color: mainContainer.color
-                                    Rectangle {
-                                        width: 40
-                                        height: parent.height
-                                        x: 34
-                                        color: 'green'
-                                        Text {
-                                            anchors.centerIn: parent
-                                            text: '1%'
-                                            font.pointSize: 12
-                                        }
-                                    }
-
-                                    Rectangle {
-                                        id: circle
-                                        width: 30
-                                        height: 30
-                                        radius: 15
-                                        color: 'transparent'
-                                        border.color: 'red'
-                                        border.width: 2
-                                        antialiasing: true
-                                        Image {
-                                            source: ''
-                                        }
-                                    }
+                            layoutDirection: Qt.RightToLeft
+                            ListModel {
+                                id: circleStatsModel
+                                ListElement {
+                                    percentage: 90
+                                    statText: "90%"
+                                    iconSource: '../../assets/icons/gpu.svg'
                                 }
-                                Rectangle {
-                                    width: 30
-                                    height: 30
-                                    radius: 15
-                                    color: 'transparent'
-                                    border.color: 'red'
-                                    border.width: 2
+                                ListElement {
+                                    percentage: 50
+                                    statText: "50%"
+                                    iconSource: '../../assets/icons/cpu.svg'
+                                }
+                                ListElement {
+                                    percentage: 50
+                                    statText: "22%"
+                                    iconSource: '../../assets/icons/ram.svg'
+                                }
+                            }
+
+                            Repeater {
+                                model: circleStatsModel
+                                delegate: CircleProgress {
+
+                                    percentage: model.percentage
+                                    statText: model.statText
+                                    iconSource: model.iconSource
+                                    textColor: root.base09
+                                    backgroundColor: root.base01
+                                    progressColor: root.base09
+                                    color: mainContainer.color
                                 }
                             }
                         }
