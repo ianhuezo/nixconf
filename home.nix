@@ -2,11 +2,13 @@
   inputs,
   config,
   pkgs,
+  lib,
   gtkThemeFromScheme,
   ...
 }:
 let
   nix-colors = import inputs.nix-colors { };
+  # stylix = import inputs.stylix { };
   neovim = import ./nix/programs/neovim { inherit inputs; };
   quickshellPath = /etc/nixos/dotfiles/quickshell;
   agsPath = /etc/nixos/dotfiles/ags;
@@ -34,6 +36,7 @@ in
 
   imports = [
     nix-colors.homeManagerModules.default
+    inputs.stylix.homeModules.stylix
     ./nix/programs/neovim
   ];
 
@@ -42,14 +45,16 @@ in
   home.username = "ianh";
   home.homeDirectory = "/home/ianh";
   #import the preferred color scheme
-  colorScheme = nix-colors-lib.colorSchemeFromPicture {
-    path = ./wallpapers/frieren.png;
-    variant = "dark";
+
+  stylix = {
+    enable = true;
+    image = ./wallpapers/frieren.png;
+    polarity = "dark";
   };
 
   modules.neovim = {
     enable = true;
-    colorScheme = config.colorScheme;
+    colorScheme = config.lib.stylix.colors;
   };
   home.file.".syncplay/syncplay.ini".text = ''
     [client_settings]
@@ -143,11 +148,11 @@ in
   programs.wofi.style = ''
         #window {
            border-radius: 15px;
-           background-color: #${config.colorScheme.palette.base00};
+           background-color: #${config.lib.stylix.colors.base00};
            padding: 5px;
         }
         #outer-box {
-    	border: 1px solid #${config.colorScheme.palette.base0E};
+    	border: 1px solid #${config.lib.stylix.colors.base0E};
     	border-radius:15px;
         }
         #img {
@@ -158,7 +163,7 @@ in
     	box-shadow: none;
     	border: none;
     	opacity: 0.9;
-    	background-color: #${config.colorScheme.palette.base00};
+    	background-color: #${config.lib.stylix.colors.base00};
         }
         #input:focus{
     	border-image: none;
@@ -168,7 +173,7 @@ in
         }
         #entry:selected {
           all: unset;
-          background-color: #${config.colorScheme.palette.base0D};
+          background-color: #${config.lib.stylix.colors.base0D};
           border-radius: 5px;
           font-size: 0.8em;
         }
@@ -185,25 +190,25 @@ in
     	border: none;
         }
         #entry:focus {
-            background: #${config.colorScheme.palette.base0D};
+            background: #${config.lib.stylix.colors.base0D};
     	font-size: 0.8em;
         }
         *{
           font-family: monospace;
           font-size: 1.04em;
           font-weight: bold;
-          color: #${config.colorScheme.palette.base07};
+          color: #${config.lib.stylix.colors.base07};
         }
   '';
   services.mako = {
     enable = true;
     settings = {
       defaultTimeout = 10000;
-      font = "JetBrains Mono Nerd Font Mono";
-      backgroundColor = "#${config.colorScheme.palette.base00}80";
+      font = lib.mkForce "JetBrains Mono Nerd Font Mono";
+      backgroundColor = "#${config.lib.stylix.colors.base00}80";
       borderRadius = 20;
       padding = "10,5,10,5";
-      borderColor = "#${config.colorScheme.palette.base0C}";
+      borderColor = "#${config.lib.stylix.colors.base0C}";
       borderSize = 2;
     };
   };
@@ -284,7 +289,7 @@ in
       	  shadow_passes = 1
       	  shadow_boost = 1.2
       	  shadow_size = 3
-      	  shadow_color = rgb(#${config.colorScheme.palette.base00})
+      	  shadow_color = rgb(#${config.lib.stylix.colors.base00})
                 halign = center
                 valign = bottom
             }
@@ -396,9 +401,9 @@ in
         gaps_in = 3;
         gaps_out = 3;
         border_size = 1;
-        "col.active_border" =
-          "rgba(${config.colorScheme.palette.base0C}ee) rgba(${config.colorScheme.palette.base01}ee) 45deg";
-        "col.inactive_border" = "rgba(${config.colorScheme.palette.base03}aa)";
+        # "col.active_border" =
+        #   "rgba(${config.lib.stylix.colors.base0C}ee) rgba(${config.lib.stylix.colors.base01}ee) 45deg";
+        # "col.inactive_border" = "rgba(${config.lib.stylix.colors.base03}aa)";
         layout = "master";
       };
       decoration = {
@@ -433,7 +438,7 @@ in
   wayland.windowManager.hyprland.plugins = [
     # inputs.Hyprspace.packages.${pkgs.system}.Hyprspace
   ];
-  qt.platformTheme = "gtk";
+  # qt.platformTheme = "gtk";
   home.pointerCursor = {
     gtk.enable = true;
     package = pkgs.bibata-cursors;
@@ -444,10 +449,10 @@ in
   gtk = {
     enable = true;
 
-    theme = {
-      package = gtkThemeFromScheme { scheme = config.colorScheme; };
-      name = "${config.colorScheme.slug}";
-    };
+    # theme = {
+    #   package = gtkThemeFromScheme { scheme = config.colorScheme; };
+    #   name = "${config.colorScheme.slug}";
+    # };
     iconTheme = {
       name = "Tela-dark";
       package = pkgs.tela-icon-theme;
@@ -465,56 +470,56 @@ in
       		       bold_font Maple Mono
       		       bold_italic_font Maple Mono
             	               background_opacity 0.85
-                             foreground #${config.colorScheme.palette.base05} 
-                             background #${config.colorScheme.palette.base00} 
+                             foreground #${config.lib.stylix.colors.base05} 
+                             background #${config.lib.stylix.colors.base00} 
                              
                              # grayish
-                             color0 #${config.colorScheme.palette.base03} 
-                             color8 #${config.colorScheme.palette.base03} 
+                             color0 #${config.lib.stylix.colors.base03} 
+                             color8 #${config.lib.stylix.colors.base03} 
                              
                              # Salmon
-                             color1 #${config.colorScheme.palette.base08} 
-                             color9 #${config.colorScheme.palette.base08} 
+                             color1 #${config.lib.stylix.colors.base08} 
+                             color9 #${config.lib.stylix.colors.base08} 
                              
                              # Green
-                             color2  #${config.colorScheme.palette.base0C} 
-                             color10 #${config.colorScheme.palette.base0C} 
+                             color2  #${config.lib.stylix.colors.base0C} 
+                             color10 #${config.lib.stylix.colors.base0C} 
                              
                              # Yellow-brown
-                             color3  #${config.colorScheme.palette.base09} 
-                             color11 #${config.colorScheme.palette.base09} 
+                             color3  #${config.lib.stylix.colors.base09} 
+                             color11 #${config.lib.stylix.colors.base09} 
                              
                              # Blue
-                             color4  #${config.colorScheme.palette.base0D} 
-                             color12 #${config.colorScheme.palette.base0D}
+                             color4  #${config.lib.stylix.colors.base0D} 
+                             color12 #${config.lib.stylix.colors.base0D}
                              
                              # Magenta
-                             color5  #${config.colorScheme.palette.base0E} 
-                             color13 #${config.colorScheme.palette.base0E}
+                             color5  #${config.lib.stylix.colors.base0E} 
+                             color13 #${config.lib.stylix.colors.base0E}
                              
                              # Cyan
-                             color6  #${config.colorScheme.palette.base0C} 
-                             color14 #${config.colorScheme.palette.base0C} 
+                             color6  #${config.lib.stylix.colors.base0C} 
+                             color14 #${config.lib.stylix.colors.base0C} 
                              
                              # White
-                             color7  #${config.colorScheme.palette.base05} 
-                             color15 #${config.colorScheme.palette.base05} 
+                             color7  #${config.lib.stylix.colors.base05} 
+                             color15 #${config.lib.stylix.colors.base05} 
                              
                              # Cursor
-                             cursor #${config.colorScheme.palette.base05} 
-                             cursor_text_color #${config.colorScheme.palette.base00} 
+                             cursor #${config.lib.stylix.colors.base05} 
+                             cursor_text_color #${config.lib.stylix.colors.base00} 
                              
                              # Selection highlight
                              selection_foreground none
-                             selection_background #${config.colorScheme.palette.base03}
+                             selection_background #${config.lib.stylix.colors.base03}
                              
                              # The color for highlighting URLs on mouse-over
-                             url_color #${config.colorScheme.palette.base0B}
+                             url_color #${config.lib.stylix.colors.base0B}
                              
                              # Window borders
-                             active_border_color #${config.colorScheme.palette.base0D}
-                             inactive_border_color #${config.colorScheme.palette.base00}
-                             bell_border_color #${config.colorScheme.palette.base09}
+                             active_border_color #${config.lib.stylix.colors.base0D}
+                             inactive_border_color #${config.lib.stylix.colors.base00}
+                             bell_border_color #${config.lib.stylix.colors.base09}
                              
                              # Tab bar
                              tab_bar_style fade
@@ -792,13 +797,13 @@ in
   #  /etc/profiles/per-user/ianh/etc/profile.d/hm-session-vars.sh
   #
   home.sessionVariables = {
-    XDG_CACHE_HOME = "${config.home.homeDirectory}/var/.cache";
-    XDG_CONFIG_HOME = "${config.home.homeDirectory}/.config";
-    XDG_CONFIG_DIRS = "${config.home.homeDirectory}/etc/xdg";
-    XDG_DATA_HOME = "${config.home.homeDirectory}/var/share";
-    XDG_STATE_HOME = "${config.home.homeDirectory}/var/state";
-    XDG_DATA_DIRS = "/usr/local/share/:/usr/share/:/etc/profiles/per-user/$USER/share/:/run/current-system/sw/share/";
-    XDG_PICTURES_DIR = "${config.home.homeDirectory}/pictures";
+    XDG_CACHE_HOME = lib.mkForce "${config.home.homeDirectory}/var/.cache";
+    XDG_CONFIG_HOME = lib.mkForce "${config.home.homeDirectory}/.config";
+    XDG_CONFIG_DIRS = lib.mkForce "${config.home.homeDirectory}/etc/xdg";
+    XDG_DATA_HOME = lib.mkForce "${config.home.homeDirectory}/var/share";
+    XDG_STATE_HOME = lib.mkForce "${config.home.homeDirectory}/var/state";
+    XDG_DATA_DIRS = lib.mkForce "/usr/local/share/:/usr/share/:/etc/profiles/per-user/$USER/share/:/run/current-system/sw/share/";
+    XDG_PICTURES_DIR = lib.mkForce "${config.home.homeDirectory}/pictures";
     NIXOS_XDG_OPEN_USE_PORTAL = "1";
     QT_QPA_PLATFORM = "wayland";
     STEAM_EXTRA_COMPAT_TOOLS_PATHS = "\${HOME}/.steam/root/compatibilitytools.d";

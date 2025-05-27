@@ -40,7 +40,7 @@ in
         settings.on_highlights = ''
           	function(highlights, colors) 
                      highlights.LineNr = {
-                       fg = "#${cfg.colorScheme.palette.base09}",
+                       fg = "#${cfg.colorScheme.base09}",
                      }
           	end
         '';
