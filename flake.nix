@@ -33,6 +33,10 @@
     hyprland-qtutils = {
       url = "github:hyprwm/hyprland-qtutils";
     };
+    stylix = {
+      url = "github:danth/stylix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # nixpkgs-xr = {
     #   url = "github:nix-community/nixpkgs-xr";
     # };

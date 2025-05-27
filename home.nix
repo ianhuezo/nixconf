@@ -13,7 +13,7 @@ let
   cavaPath = /etc/nixos/dotfiles/cava;
   scriptsPath = /etc/nixos/dotfiles/scripts;
   frierenEtherealTheme = pkgs.lib.importJSON ./dotfiles/themes/frieren-ethereal.json;
-  nixColorsLib = inputs.nix-colors.lib.nix-colors;
+  nix-colors-lib = nix-colors.lib.contrib { inherit pkgs; };
   leftMonitor = "HDMI-A-1";
   rightMonitor = "DP-1";
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
@@ -35,7 +35,6 @@ in
   imports = [
     nix-colors.homeManagerModules.default
     ./nix/programs/neovim
-    ./nix/themes/frieren-ethereal
   ];
 
   # Home Manager needs a bit of information about you and the paths it should
@@ -43,7 +42,10 @@ in
   home.username = "ianh";
   home.homeDirectory = "/home/ianh";
   #import the preferred color scheme
-  colorScheme = nix-colors.colorSchemes.tokyo-city-dark;
+  colorScheme = nix-colors-lib.colorSchemeFromPicture {
+    path = ./wallpapers/frieren.png;
+    variant = "dark";
+  };
 
   modules.neovim = {
     enable = true;
