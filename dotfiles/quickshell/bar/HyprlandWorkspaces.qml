@@ -9,7 +9,7 @@ Column {
     anchors.fill: parent
     spacing: 10
 
-    property int activeWsId: Hyprland.focusedMonitor.activeWorkspace.id
+    property int activeWsId: Hyprland.focusedMonitor.activeWorkspace ? Hyprland.focusedMonitor.activeWorkspace.id : 1
     property var workspaceMap: {
         let map = {};
         Hyprland.workspaces.values.forEach(w => map[w.id] = w);
@@ -24,6 +24,7 @@ Column {
             if (event.name === "workspace") {
                 Hyprland.refreshWorkspaces();
                 activeWsId = event.data;
+                workspaceRow.triggerWorkspaceSwing(event.data);
             }
         }
     }
@@ -34,6 +35,17 @@ Column {
         width: parent.width
         height: 20
         spacing: 8
+        property var swingAnimations: []
+        function registerSwingAnimation(index, animation) {
+            swingAnimations[index] = animation;
+        }
+
+        // Function to trigger specific animation
+        function triggerWorkspaceSwing(workspaceIndex) {
+            if (swingAnimations[workspaceIndex - 1]) {
+                swingAnimations[workspaceIndex - 1].start();
+            }
+        }
         Repeater {
             model: Math.max(5, Math.min(5, Object.values(hyprlandWindowDisplay.workspaceMap).length))
             delegate: Rectangle {
@@ -43,7 +55,11 @@ Column {
                 radius: 10
                 color: "transparent"
                 transformOrigin: Item.Top
-                // Lamp icon - shown for all workspaces
+
+                Component.onCompleted: {
+                    workspaceRow.registerSwingAnimation(index, swingAnimation);
+                }
+
                 Image {
                     id: lampIcon
                     anchors.centerIn: parent
