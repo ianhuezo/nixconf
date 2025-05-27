@@ -46,6 +46,7 @@ in
     path = ./wallpapers/frieren.png;
     variant = "dark";
   };
+  colorScheme = nix-colors.colorSchemes.tokyo-city-dark;
 
   modules.neovim = {
     enable = true;
