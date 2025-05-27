@@ -48,7 +48,7 @@ in
 
   stylix = {
     enable = true;
-    
+    base16Scheme = import ./nix/themes/frieren-ethereal;
     polarity = "dark";
 
     targets = {

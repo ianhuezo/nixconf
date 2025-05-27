@@ -1,15 +1,4 @@
 {
-  # This entire attribute set defines the 'colorScheme'
-  colorScheme = {
-    # Unique identifier for the scheme, often slug-cased version of the name
-    slug = "frieren-ethereal";
-    # Human-readable name of the theme
-    name = "Frieren Ethereal";
-    # Author(s) of the theme
-    author = "AI Gemini (inspired by Frieren artwork)";
-
-    # The core Base16 palette
-    palette = {
       base00 = "#0D121B"; # Deepest background
       base01 = "#111A2C"; # Slightly lighter background
       base02 = "#1A263B"; # Mid-dark background
@@ -28,6 +17,4 @@
       base0D = "#7AA2F7"; # Blue (deeper cool accent)
       base0E = "#BB9AF7"; # Purple (matching Frieren's magic)
       base0F = "#BB9AF7"; # Purple (often same as base0E)
-    };
-  };
 }
