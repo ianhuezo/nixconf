@@ -48,8 +48,12 @@ in
 
   stylix = {
     enable = true;
-    image = ./wallpapers/frieren.png;
+    
     polarity = "dark";
+
+    targets = {
+      nixvim.enable = false;
+    };
   };
 
   modules.neovim = {
