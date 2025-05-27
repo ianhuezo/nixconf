@@ -66,9 +66,7 @@ Scope {
 
                     layer.enabled: true
                     layer.effect: MultiEffect {
-                        blur: 10 // Still apply blur to the background
-                        // --- NEW: Glow Effect ---
-                        // You can combine blur and glow directly here!
+                        blur: 10
                     }
 
                     Rectangle {
@@ -88,9 +86,6 @@ Scope {
                         border.color: "#A0E6FF" // Bright, ethereal blue/cyan for accent (like the flowers)
                         border.width: 0 // Slightly thicker for more glow
                         radius: parent.radius - 1
-
-                        // Optional: Add a subtle glow effect (requires ShaderEffect or custom rendering)
-                        // For a simple demo, we'll keep it as a border.
                     }
 
                     // Content container with padding
@@ -182,13 +177,46 @@ Scope {
                                 anchors.verticalCenter: parent.verticalCenter
                                 anchors.right: parent.right
                                 anchors.rightMargin: 15
-                                spacing: 5
-
+                                spacing: 10
+                                //the row content will arrange left to right
                                 Rectangle {
-                                    width: 20
-                                    height: 20
-                                    radius: 10
+                                    id: oneStatContainer
+                                    width: 80
+                                    height: parent.height
+                                    color: mainContainer.color
+                                    Rectangle {
+                                        width: 40
+                                        height: parent.height
+                                        x: 34
+                                        color: 'green'
+                                        Text {
+                                            anchors.centerIn: parent
+                                            text: '1%'
+                                            font.pointSize: 12
+                                        }
+                                    }
+
+                                    Rectangle {
+                                        id: circle
+                                        width: 30
+                                        height: 30
+                                        radius: 15
+                                        color: 'transparent'
+                                        border.color: 'red'
+                                        border.width: 2
+                                        antialiasing: true
+                                        Image {
+                                            source: ''
+                                        }
+                                    }
+                                }
+                                Rectangle {
+                                    width: 30
+                                    height: 30
+                                    radius: 15
                                     color: 'transparent'
+                                    border.color: 'red'
+                                    border.width: 2
                                 }
                             }
                         }
