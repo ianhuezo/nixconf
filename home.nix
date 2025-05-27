@@ -281,10 +281,10 @@ in
                 font_size = 24
                 font_family = JetBrains Mono Nerd Font Mono
                 position = 0, 30
-      	  shadow_passes = 1
-      	  shadow_boost = 1.2
-      	  shadow_size = 3
-      	  shadow_color = rgb(#${config.colorScheme.palette.base00})
+      	        shadow_passes = 1
+      	        shadow_boost = 1.2
+      	        shadow_size = 3
+      	        shadow_color = rgb(#${config.colorScheme.palette.base00})
                 halign = center
                 valign = bottom
             }
