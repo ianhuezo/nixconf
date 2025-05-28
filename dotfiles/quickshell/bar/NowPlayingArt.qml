@@ -22,14 +22,28 @@ Image {
         id: urlTrackBinding
         target: Mpris.players
         art.source: {
-            const players = Mpris.players.values;
-            const spotify = players.find(p => p.identity === "Spotify");
-            const trackArtUrl = spotify?.trackArtUrl ?? players[0]?.trackArtUrl ?? "";
-            if (trackArtUrl != "") {
-                return trackArtUrl;
+            const players = Array.from(Mpris.players.values);
+            let activePlayer = null;
+            // 1. Find playing Spotify
+            activePlayer = players.find(p => p.identity === "Spotify" && p.playbackState === MprisPlaybackState.Playing);
+
+            // 2. If no playing Spotify, find first playing player
+            if (!activePlayer) {
+                activePlayer = players.find(p => p.playbackState === MprisPlaybackState.Playing);
             }
-            runImageExtract.mp3File = spotify?.trackTitle;
-            runImageExtract.running = true;
+            if (activePlayer) {
+                return activePlayer.trackArtUrl;
+            }
+
+            // 3. Fallback to original behavior: Spotify or first player
+            if (!activePlayer) {
+                activePlayer = players.find(p => p.identity === "Spotify") || players[0];
+            }
+
+            if (activePlayer?.trackArtUrl) {
+                return activePlayer.trackArtUrl;
+            }
+            return '';
         }
     }
 

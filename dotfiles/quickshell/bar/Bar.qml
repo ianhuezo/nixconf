@@ -1,6 +1,7 @@
 import Quickshell
 import Quickshell.Io
 import QtQuick
+import QtQuick.Effects
 
 Scope {
     id: root
@@ -8,7 +9,20 @@ Scope {
     property bool useCanvasVisualization: true
     property var barOffsetY: 8  // Renamed from barOffset
     property var barOffsetX: 10 // New horizontal offset property
-    property var verticalPadding: 0 // Padding for top and bottom of the inner bar
+    property var verticalPadding: 8 // Padding for top and bottom of the inner bar
+
+    readonly property color base00: "#0D121B" // Deepest background
+    readonly property color base01: "#111A2C" // Slightly lighter background
+    readonly property color base02: "#1A263B" // Mid-dark background
+    readonly property color base03: "#2A3E5C" // Foreground Dim / Subtle border
+    readonly property color base04: "#6C8CB7" // Foreground Mid
+    readonly property color base05: "#E0F2F7" // Foreground Light / Primary text
+    readonly property color base06: "#F0F8FA" // Foreground Lighter
+    readonly property color base07: "#FDFEFF" // Foreground Lightest
+    readonly property color base09: "#FF9E64" // Foreground Lightest
+    readonly property color base0B: "#A0E6FF" // Glowing Cyan-Blue (excellent for accents)
+    readonly property color base0C: "#89DDFF" // Cyan (another great accent)
+    readonly property color base0D: "#7AA2F7" // Blue (deeper accent)
 
     CavaDataProcessor {
         id: cavaProcessor
@@ -23,8 +37,9 @@ Scope {
             id: panel
             required property var modelData
             screen: modelData
-            height: 38 + (root.barOffsetY * 2) // Account for both top and bottom offsets
+            implicitHeight: 54
             color: '#00000000' // Transparent main panel
+
             anchors {
                 top: true
                 left: true
@@ -43,13 +58,37 @@ Scope {
                         right: parent.right
                         top: parent.top
                         bottom: parent.bottom
-                        topMargin: root.barOffsetY
-                        bottomMargin: root.barOffsetY
+                        topMargin: root.verticalPadding
+                        bottomMargin: root.verticalPadding
                         leftMargin: root.barOffsetX
                         rightMargin: root.barOffsetX
                     }
-                    color: '#171D23'
+                    color: root.base01
                     radius: 8 // Optional: rounded corners for the bar
+
+                    layer.enabled: true
+                    layer.effect: MultiEffect {
+                        blur: 10
+                    }
+
+                    Rectangle {
+                        anchors.fill: parent
+                        anchors.margins: -1 // Extends slightly outward for the highlight border
+                        color: "transparent"
+                        border.color: "#2A3E5C" // A mid-tone blue from the wallpaper's spectrum
+                        border.width: 1
+                        radius: parent.radius + 1
+                    }
+
+                    // Accent Glow Line (the "frieren flowers" glow effect)
+                    Rectangle {
+                        anchors.fill: parent
+                        anchors.margins: 1 // Inset for a fine line
+                        color: "transparent"
+                        border.color: "#A0E6FF" // Bright, ethereal blue/cyan for accent (like the flowers)
+                        border.width: 0 // Slightly thicker for more glow
+                        radius: parent.radius - 1
+                    }
 
                     // Content container with padding
                     Rectangle {
@@ -62,47 +101,7 @@ Scope {
                         color: "transparent" // No visible background
 
                         // Left section
-                        Rectangle {
-                            id: leftSection
-                            height: parent.height
-                            width: parent.width / 4
-                            anchors {
-                                left: parent.left
-                                top: parent.top
-                            }
-                            color: "transparent"
-
-                            Row {
-                                id: leftContent
-                                anchors.verticalCenter: parent.verticalCenter
-                                anchors.left: parent.left
-                                anchors.leftMargin: 15
-                                spacing: 30
-
-                                Rectangle {
-                                    id: nixosRect
-                                    width: 20
-                                    height: 20
-                                    radius: 10
-                                    color: 'transparent'
-                                    Image {
-                                        id: nixosIcon
-                                        sourceSize.width: parent.width
-                                        sourceSize.height: parent.height
-                                        fillMode: Image.PreserveAspectFit
-                                        source: "../../assets/icons/nixos.png"
-                                    }
-                                }
-                                Rectangle {
-                                    id: hyprlandRect
-                                    width: parent.width / 1.1
-                                    height: 20
-                                    radius: 10
-                                    color: 'transparent'
-                                    HyprlandWorkspaces {}
-                                }
-                            }
-                        }
+                        Left {}
 
                         // Center section
                         Rectangle {
@@ -125,28 +124,46 @@ Scope {
                         }
 
                         // Right section
-                        Rectangle {
+                        Row {
                             id: rightSection
                             height: parent.height
                             width: parent.width / 4
+                            property real ramPercentage: GetRam.ram
+                            property int cpuPercentage: GetCPU.cpu
+                            property int gpuPercentage: GetGPU.gpu
+
+                            property var circleStatsData: [
+                                {
+                                    percentage: gpuPercentage,
+                                    statText: gpuPercentage + "%",
+                                    iconSource: '../../assets/icons/gpu.svg'
+                                },
+                                {
+                                    percentage: cpuPercentage,
+                                    statText: cpuPercentage + "%",
+                                    iconSource: '../../assets/icons/cpu.svg'
+                                },
+                                {
+                                    percentage: ramPercentage,
+                                    statText: ramPercentage + "%",
+                                    iconSource: '../../assets/icons/ram.svg'
+                                }
+                            ]
                             anchors {
                                 right: parent.right
                                 top: parent.top
                             }
-                            color: "transparent"
-
-                            Row {
-                                id: rightContent
-                                anchors.verticalCenter: parent.verticalCenter
-                                anchors.right: parent.right
-                                anchors.rightMargin: 15
-                                spacing: 5
-
-                                Rectangle {
-                                    width: 20
-                                    height: 20
-                                    radius: 10
-                                    color: 'transparent'
+                            layoutDirection: Qt.RightToLeft
+                            Repeater {
+                                model: rightSection.circleStatsData
+                                delegate: CircleProgress {
+                                    percentage: modelData.percentage
+                                    statText: modelData.statText
+                                    iconSource: modelData.iconSource
+                                    textColor: root.base09
+                                    backgroundColor: root.base01
+                                    progressColor: root.base09
+                                    color: mainContainer.color
                                 }
                             }
                         }

@@ -12,6 +12,7 @@ let
   agsPath = /etc/nixos/dotfiles/ags;
   cavaPath = /etc/nixos/dotfiles/cava;
   scriptsPath = /etc/nixos/dotfiles/scripts;
+  nix-colors-lib = nix-colors.lib.contrib { inherit pkgs; };
   leftMonitor = "HDMI-A-1";
   rightMonitor = "DP-1";
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
@@ -26,7 +27,7 @@ let
     dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
     nm-applet --indicator & disown
     systemctl --user import-environment XDG_CURRENT_DESKTOP XDG_SESSION_TYPE & disown  
-    '';
+  '';
 in
 {
 
@@ -40,7 +41,11 @@ in
   home.username = "ianh";
   home.homeDirectory = "/home/ianh";
   #import the preferred color scheme
-  colorScheme = nix-colors.colorSchemes.tokyo-city-dark;
+  # colorScheme = nix-colors-lib.colorSchemeFromPicture {
+  #   path = ./wallpapers/frieren.png;
+  #   variant = "dark";
+  # };
+  colorScheme = import ./nix/themes/dark-ethereal;
 
   modules.neovim = {
     enable = true;
@@ -192,13 +197,15 @@ in
   '';
   services.mako = {
     enable = true;
-    defaultTimeout = 10000;
-    font = "JetBrains Mono Nerd Font Mono";
-    backgroundColor = "#${config.colorScheme.palette.base00}80";
-    borderRadius = 20;
-    padding = "10,5,10,5";
-    borderColor = "#${config.colorScheme.palette.base0C}";
-    borderSize = 2;
+    settings = {
+      defaultTimeout = 10000;
+      font = "JetBrains Mono Nerd Font Mono";
+      backgroundColor = "#${config.colorScheme.palette.base00}80";
+      borderRadius = 20;
+      padding = "10,5,10,5";
+      borderColor = "#${config.colorScheme.palette.base0C}";
+      borderSize = 2;
+    };
   };
   programs.hyprlock = {
     enable = true;
@@ -274,10 +281,10 @@ in
                 font_size = 24
                 font_family = JetBrains Mono Nerd Font Mono
                 position = 0, 30
-      	  shadow_passes = 1
-      	  shadow_boost = 1.2
-      	  shadow_size = 3
-      	  shadow_color = rgb(#${config.colorScheme.palette.base00})
+      	        shadow_passes = 1
+      	        shadow_boost = 1.2
+      	        shadow_size = 3
+      	        shadow_color = rgb(#${config.colorScheme.palette.base00})
                 halign = center
                 valign = bottom
             }
@@ -401,22 +408,40 @@ in
         no_hardware_cursors = true;
       };
       misc = {
-          disable_hyprland_logo = true;
-          disable_splash_rendering = true;
+        disable_hyprland_logo = true;
+        disable_splash_rendering = true;
       };
       animations = {
         enabled = "yes";
+# Some default animations, see https://wiki.hyprland.org/Configuring/Animations/ for more
 
-        # Some default animations, see https://wiki.hyprland.org/Configuring/Animations/ for more
-
-        bezier = "myBezier, 0.05, 0.9, 0.1, 1.05";
+        bezier = [
+	  "specialcubic, 0.34, 1.56, 0.64, 1"
+	  "specialCubicReverse2, 0, -0.07, 1, -0.35"
+          "wind, 0.05, 0.9, 0.1, 1.05"
+          "winIn, 0.1, 1.1, 0.1, 1.1"
+          "winOut, 0.3, -0.3, 0, 1"
+          "linear, 1, 1, 1, 1"
+          "Cubic, 0.1, 0.1, 0.1, 1"
+          "overshot, 0.05, 0.9, 0.1, 1.1"
+          "ease-in-out, 0.17, 0.67, 0.83, 0.67"
+          "ease-in, 0.17, 0.67, 0.83, 0.67"
+          "ease-out, 0.42, 0, 1, 1"
+          "easeInOutSine, 0.37, 0, 0.63, 1"
+          "easeInSine, 0.12, 0, 0.39, 0"
+          "easeOutSine, 0.61, 1, 0.88, 1"
+        ];
         animation = [
-          "windows, 1, 7, myBezier"
-          "windowsOut, 1, 7, default, popin 80%"
-          "border, 1, 10, default"
-          "borderangle, 1, 8, default"
-          "fade, 1, 7, default"
-          "workspaces, 1, 6, default"
+          "windowsIn, 1, 4, easeInOutSine, slide" 
+          "windowsOut, 1, 4, easeInOutSine, slide"
+          "border, 1, 3, easeInOutSine"
+          "borderangle, 1, 30, easeInOutSine, loop"
+          "workspacesIn, 1, 3, easeInOutSine, slidefade"
+          "workspacesOut, 1, 3, easeInOutSine, slidefade"
+          "specialWorkspaceIn, 1, 3, easeInOutSine, slidevert"
+          "specialWorkspaceOut, 1, 3, easeInOutSine, slidevert"
+          "layersIn, 1, 3, easeInOutSine, fade"
+          "layersOut, 1, 3, easeInOutSine, fade"
         ];
       };
     };
@@ -436,7 +461,10 @@ in
   #
   gtk = {
     enable = true;
-
+    font = {
+      name = "fira-sans";
+      size = 12;
+    };
     theme = {
       package = gtkThemeFromScheme { scheme = config.colorScheme; };
       name = "${config.colorScheme.slug}";
@@ -445,80 +473,77 @@ in
       name = "Tela-dark";
       package = pkgs.tela-icon-theme;
     };
-    #
-    #   font = {
-    #     name = "Sans";
-    #     size = 11;
-    #   };
+
   };
   programs.kitty = {
     enable = true;
     extraConfig = ''
-      		       font_family Maple Mono
-      		       bold_font Maple Mono
-      		       bold_italic_font Maple Mono
-            	               background_opacity 0.85
-                             foreground #${config.colorScheme.palette.base05} 
-                             background #${config.colorScheme.palette.base00} 
-                             
-                             # grayish
-                             color0 #${config.colorScheme.palette.base03} 
-                             color8 #${config.colorScheme.palette.base03} 
-                             
-                             # Salmon
-                             color1 #${config.colorScheme.palette.base08} 
-                             color9 #${config.colorScheme.palette.base08} 
-                             
-                             # Green
-                             color2  #${config.colorScheme.palette.base0C} 
-                             color10 #${config.colorScheme.palette.base0C} 
-                             
-                             # Yellow-brown
-                             color3  #${config.colorScheme.palette.base09} 
-                             color11 #${config.colorScheme.palette.base09} 
-                             
-                             # Blue
-                             color4  #${config.colorScheme.palette.base0D} 
-                             color12 #${config.colorScheme.palette.base0D}
-                             
-                             # Magenta
-                             color5  #${config.colorScheme.palette.base0E} 
-                             color13 #${config.colorScheme.palette.base0E}
-                             
-                             # Cyan
-                             color6  #${config.colorScheme.palette.base0C} 
-                             color14 #${config.colorScheme.palette.base0C} 
-                             
-                             # White
-                             color7  #${config.colorScheme.palette.base05} 
-                             color15 #${config.colorScheme.palette.base05} 
-                             
-                             # Cursor
-                             cursor #${config.colorScheme.palette.base05} 
-                             cursor_text_color #${config.colorScheme.palette.base00} 
-                             
-                             # Selection highlight
-                             selection_foreground none
-                             selection_background #${config.colorScheme.palette.base03}
-                             
-                             # The color for highlighting URLs on mouse-over
-                             url_color #${config.colorScheme.palette.base0B}
-                             
-                             # Window borders
-                             active_border_color #${config.colorScheme.palette.base0D}
-                             inactive_border_color #${config.colorScheme.palette.base00}
-                             bell_border_color #${config.colorScheme.palette.base09}
-                             
-                             # Tab bar
-                             tab_bar_style fade
-                             tab_fade 1
-                             active_tab_foreground   #3d59a1
-                             active_tab_background   #16161e
-                             active_tab_font_style   bold
-                             inactive_tab_foreground #787c99
-                             inactive_tab_background #16161e
-                             inactive_tab_font_style bold
-                             tab_bar_background #101014
+      font_family Maple Mono
+      bold_font Maple Mono
+      bold_italic_font Maple Mono
+      font_size 12.0
+      background_opacity 0.85
+      foreground #${config.colorScheme.palette.base05} 
+      background #${config.colorScheme.palette.base00} 
+      
+      # grayish
+      color0 #${config.colorScheme.palette.base03} 
+      color8 #${config.colorScheme.palette.base03} 
+      
+      # Salmon
+      color1 #${config.colorScheme.palette.base08} 
+      color9 #${config.colorScheme.palette.base08} 
+      
+      # Green
+      color2  #${config.colorScheme.palette.base0C} 
+      color10 #${config.colorScheme.palette.base0C} 
+      
+      # Yellow-brown
+      color3  #${config.colorScheme.palette.base09} 
+      color11 #${config.colorScheme.palette.base09} 
+      
+      # Blue
+      color4  #${config.colorScheme.palette.base0D} 
+      color12 #${config.colorScheme.palette.base0D}
+      
+      # Magenta
+      color5  #${config.colorScheme.palette.base0E} 
+      color13 #${config.colorScheme.palette.base0E}
+      
+      # Cyan
+      color6  #${config.colorScheme.palette.base0C} 
+      color14 #${config.colorScheme.palette.base0C} 
+      
+      # White
+      color7  #${config.colorScheme.palette.base05} 
+      color15 #${config.colorScheme.palette.base05} 
+      
+      # Cursor
+      cursor #${config.colorScheme.palette.base05} 
+      cursor_text_color #${config.colorScheme.palette.base00} 
+      
+      # Selection highlight
+      selection_foreground none
+      selection_background #${config.colorScheme.palette.base03}
+      
+      # The color for highlighting URLs on mouse-over
+      url_color #${config.colorScheme.palette.base0B}
+      
+      # Window borders
+      active_border_color #${config.colorScheme.palette.base0D}
+      inactive_border_color #${config.colorScheme.palette.base00}
+      bell_border_color #${config.colorScheme.palette.base09}
+      
+      # Tab bar
+      tab_bar_style fade
+      tab_fade 1
+      active_tab_foreground   #3d59a1
+      active_tab_background   #16161e
+      active_tab_font_style   bold
+      inactive_tab_foreground #787c99
+      inactive_tab_background #16161e
+      inactive_tab_font_style bold
+      tab_bar_background #101014
     '';
   };
   home.file.".config/quickshell".source = config.lib.file.mkOutOfStoreSymlink quickshellPath;
@@ -529,210 +554,209 @@ in
     source = ./wallpapers;
     recursive = true;
   };
-home.file.".config/fetch/custom-fetch.sh" = {
+  home.file.".config/fetch/custom-fetch.sh" = {
     executable = true;
     text = ''
-      #!/usr/bin/env bash
-      
-      # Get terminal dimensions
-      COLS=$(tput cols)
-      LINES=$(tput lines)
-      
-      # Calculate image size (30% of terminal width, max 20 lines)
-      IMG_WIDTH=$((600))
-      IMG_HEIGHT=$((400))
-      
-      # Resize image dynamically
-      TEMP_IMG="/tmp/resized_fetch_img.jpg"
-      convert "${config.home.homeDirectory}/Pictures/phos.jpg" \
-        -resize "''${IMG_WIDTH}x''${IMG_HEIGHT}" "$TEMP_IMG" 2>/dev/null
+          #!/usr/bin/env bash
+          
+          # Get terminal dimensions
+          COLS=$(tput cols)
+          LINES=$(tput lines)
+          
+          # Calculate image size (30% of terminal width, max 20 lines)
+          IMG_WIDTH=$((600))
+          IMG_HEIGHT=$((400))
+          
+          # Resize image dynamically
+          TEMP_IMG="/tmp/resized_fetch_img.jpg"
+          convert "${config.home.homeDirectory}/Pictures/phos.jpg" \
+            -resize "''${IMG_WIDTH}x''${IMG_HEIGHT}" "$TEMP_IMG" 2>/dev/null
 
-  # Calculate needed space for text output
+      # Calculate needed space for text output
 
-      
-      # Display image
-      kitty +kitten icat --align left --place "''${IMG_WIDTH}x''${IMG_HEIGHT}@0x0" "$TEMP_IMG"
-      
-      # System info with your layout
-      echo -e "\n\033[90m┌──────────────────────Hardware──────────────────────┐\033[0m"
-      echo -e "\033[32m PC\033[0m      $(hostnamectl --static)"
-      echo -e "\033[32m│ ├ CPU\033[0m   $(lscpu | grep 'Model name' | cut -d: -f2 | xargs)"
-      echo -e "\033[32m│ ├󰍛 GPU\033[0m   $(lspci | grep VGA | cut -d: -f3 | xargs)"
-      echo -e "\033[32m│ ├󰍛 Memory\033[0m $(free -h | awk '/^Mem:/ {print $3 "/" $2}')"
-      echo -e "\033[32m└ └ Disk\033[0m  $(df -h / | awk 'NR==2 {print $3 "/" $2}')"
-      echo -e "\033[90m└────────────────────────────────────────────────────┘\033[0m"
-      
-      echo -e "\n\033[90m┌──────────────────────Software──────────────────────┐\033[0m"
-      echo -e "\033[33m OS\033[0m      $(cat /etc/os-release | grep PRETTY_NAME | cut -d= -f2 | tr -d '"')"
-      echo -e "\033[33m│ ├ Kernel\033[0m $(uname -r)"
-      echo -e "\033[33m│ ├󰏖 Packages\033[0m $(nix-env -qa --installed 2>/dev/null | wc -l) (nix)"
-      echo -e "\033[33m└ └ Shell\033[0m $SHELL"
-      echo -e "\033[90m└────────────────────────────────────────────────────┘\033[0m"
-      
-      echo -e "\n\033[90m┌──────────────────────Desktop───────────────────────┐\033[0m"
-      echo -e "\033[34m DE\033[0m      $XDG_CURRENT_DESKTOP"
-      echo -e "\033[34m│ ├ WM\033[0m    $XDG_SESSION_TYPE"
-      echo -e "\033[34m└ └ Terminal\033[0m $TERM"
-      echo -e "\033[90m└────────────────────────────────────────────────────┘\033[0m"
-      
-      echo -e "\n\033[90m┌────────────────────Uptime / DateTime───────────────┐\033[0m"
-      echo -e "\033[35m  Uptime\033[0m   $(awk '{print int($1/3600)" hours "int(($1%3600)/60)" mins"}' /proc/uptime)"
-      echo -e "\033[35m  DateTime\033[0m $(date)"
-      echo -e "\033[90m└─────────────────────────────────────────────────────┘\033[0m"
-      
-      # Color palette
-      echo -e "\n  \033[31m●\033[32m●\033[33m●\033[34m●\033[35m●\033[36m●\033[37m●\033[30m●\033[0m"
-      
-      # Clean up
-      rm -f "$TEMP_IMG"
+          
+          # Display image
+          kitty +kitten icat --align left --place "''${IMG_WIDTH}x''${IMG_HEIGHT}@0x0" "$TEMP_IMG"
+          
+          # System info with your layout
+          echo -e "\n\033[90m┌──────────────────────Hardware──────────────────────┐\033[0m"
+          echo -e "\033[32m PC\033[0m      $(hostnamectl --static)"
+          echo -e "\033[32m│ ├ CPU\033[0m   $(lscpu | grep 'Model name' | cut -d: -f2 | xargs)"
+          echo -e "\033[32m│ ├󰍛 GPU\033[0m   $(lspci | grep VGA | cut -d: -f3 | xargs)"
+          echo -e "\033[32m│ ├󰍛 Memory\033[0m $(free -h | awk '/^Mem:/ {print $3 "/" $2}')"
+          echo -e "\033[32m└ └ Disk\033[0m  $(df -h / | awk 'NR==2 {print $3 "/" $2}')"
+          echo -e "\033[90m└────────────────────────────────────────────────────┘\033[0m"
+          
+          echo -e "\n\033[90m┌──────────────────────Software──────────────────────┐\033[0m"
+          echo -e "\033[33m OS\033[0m      $(cat /etc/os-release | grep PRETTY_NAME | cut -d= -f2 | tr -d '"')"
+          echo -e "\033[33m│ ├ Kernel\033[0m $(uname -r)"
+          echo -e "\033[33m│ ├󰏖 Packages\033[0m $(nix-env -qa --installed 2>/dev/null | wc -l) (nix)"
+          echo -e "\033[33m└ └ Shell\033[0m $SHELL"
+          echo -e "\033[90m└────────────────────────────────────────────────────┘\033[0m"
+          
+          echo -e "\n\033[90m┌──────────────────────Desktop───────────────────────┐\033[0m"
+          echo -e "\033[34m DE\033[0m      $XDG_CURRENT_DESKTOP"
+          echo -e "\033[34m│ ├ WM\033[0m    $XDG_SESSION_TYPE"
+          echo -e "\033[34m└ └ Terminal\033[0m $TERM"
+          echo -e "\033[90m└────────────────────────────────────────────────────┘\033[0m"
+          
+          echo -e "\n\033[90m┌────────────────────Uptime / DateTime───────────────┐\033[0m"
+          echo -e "\033[35m  Uptime\033[0m   $(awk '{print int($1/3600)" hours "int(($1%3600)/60)" mins"}' /proc/uptime)"
+          echo -e "\033[35m  DateTime\033[0m $(date)"
+          echo -e "\033[90m└─────────────────────────────────────────────────────┘\033[0m"
+          
+          # Color palette
+          echo -e "\n  \033[31m●\033[32m●\033[33m●\033[34m●\033[35m●\033[36m●\033[37m●\033[30m●\033[0m"
+          
+          # Clean up
+          rm -f "$TEMP_IMG"
     '';
   };
-  
-  
+
   home.file.".config/fastfetch/config.jsonc".text = ''
-     {
-    "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
-    "logo": {
-        "type": "kitty-icat",
-        "source": "${config.home.homeDirectory}/Pictures/phos.jpg",
-	"printRemaining": false,
-        "height": 15,
-        "width": 35,
-        "position": "left",
-        "preserveAspectRatio": true,
-        "padding": {
-            "top": 2,
-            "right": 4,
-            "left": 2
-        }
-    },
-    "modules": [
-        "break",
-        {
-            "type": "custom",
-            "format": "\u001b[90m┌──────────────────────Hardware──────────────────────┐"
+         {
+        "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+        "logo": {
+            "type": "kitty-icat",
+            "source": "${config.home.homeDirectory}/Pictures/phos.jpg",
+    	"printRemaining": false,
+            "height": 15,
+            "width": 35,
+            "position": "left",
+            "preserveAspectRatio": true,
+            "padding": {
+                "top": 2,
+                "right": 4,
+                "left": 2
+            }
         },
-        {
-            "type": "host",
-            "key": " PC",
-            "keyColor": "green"
-        },
-        {
-            "type": "cpu",
-            "key": "│ ├",
-            "keyColor": "green"
-        },
-        {
-            "type": "gpu",
-            "key": "│ ├󰍛",
-            "keyColor": "green"
-        },
-        {
-            "type": "memory",
-            "key": "│ ├󰍛",
-            "keyColor": "green"
-        },
-        {
-            "type": "disk",
-            "key": "└ └",
-            "keyColor": "green"
-        },
-        {
-            "type": "custom",
-            "format": "\u001b[90m└────────────────────────────────────────────────────┘"
-        },
-        "break",
-        {
-            "type": "custom",
-            "format": "\u001b[90m┌──────────────────────Software──────────────────────┐"
-        },
-        {
-            "type": "os",
-            "key": " OS",
-            "keyColor": "yellow"
-        },
-        {
-            "type": "kernel",
-            "key": "│ ├",
-            "keyColor": "yellow"
-        },
-        {
-            "type": "bios",
-            "key": "│ ├",
-            "keyColor": "yellow"
-        },
-        {
-            "type": "packages",
-            "key": "│ ├󰏖",
-            "keyColor": "yellow"
-        },
-        {
-            "type": "shell",
-            "key": "└ └",
-            "keyColor": "yellow"
-        },
-        "break",
-        {
-            "type": "de",
-            "key": " DE",
-            "keyColor": "blue"
-        },
-        {
-            "type": "lm",
-            "key": "│ ├",
-            "keyColor": "blue"
-        },
-        {
-            "type": "wm",
-            "key": "│ ├",
-            "keyColor": "blue"
-        },
-        {
-            "type": "wmtheme",
-            "key": "│ ├󰉼",
-            "keyColor": "blue"
-        },
-        {
-            "type": "terminal",
-            "key": "└ └",
-            "keyColor": "blue"
-        },
-        {
-            "type": "custom",
-            "format": "\u001b[90m└────────────────────────────────────────────────────┘"
-        },
-        "break",
-        {
-            "type": "custom",
-            "format": "\u001b[90m┌────────────────────Uptime / Age / DT────────────────────┐"
-        },
-        {
-            "type": "command",
-            "key": "  OS Age ",
-            "keyColor": "magenta",
-            "text": "birth_install=$(stat -c %W /); current=$(date +%s); time_progression=$((current - birth_install)); days_difference=$((time_progression / 86400)); echo $days_difference days"
-        },
-        {
-            "type": "uptime",
-            "key": "  Uptime ",
-            "keyColor": "magenta"
-        },
-        {
-            "type": "datetime",
-            "key": "  DateTime ",
-            "keyColor": "magenta"
-        },
-        {
-            "type": "custom",
-            "format": "\u001b[90m└─────────────────────────────────────────────────────────┘"
-        },
-        {
-            "type": "colors",
-            "paddingLeft": 2,
-            "symbol": "circle"
-        }
-    ]
-}
+        "modules": [
+            "break",
+            {
+                "type": "custom",
+                "format": "\u001b[90m┌──────────────────────Hardware──────────────────────┐"
+            },
+            {
+                "type": "host",
+                "key": " PC",
+                "keyColor": "green"
+            },
+            {
+                "type": "cpu",
+                "key": "│ ├",
+                "keyColor": "green"
+            },
+            {
+                "type": "gpu",
+                "key": "│ ├󰍛",
+                "keyColor": "green"
+            },
+            {
+                "type": "memory",
+                "key": "│ ├󰍛",
+                "keyColor": "green"
+            },
+            {
+                "type": "disk",
+                "key": "└ └",
+                "keyColor": "green"
+            },
+            {
+                "type": "custom",
+                "format": "\u001b[90m└────────────────────────────────────────────────────┘"
+            },
+            "break",
+            {
+                "type": "custom",
+                "format": "\u001b[90m┌──────────────────────Software──────────────────────┐"
+            },
+            {
+                "type": "os",
+                "key": " OS",
+                "keyColor": "yellow"
+            },
+            {
+                "type": "kernel",
+                "key": "│ ├",
+                "keyColor": "yellow"
+            },
+            {
+                "type": "bios",
+                "key": "│ ├",
+                "keyColor": "yellow"
+            },
+            {
+                "type": "packages",
+                "key": "│ ├󰏖",
+                "keyColor": "yellow"
+            },
+            {
+                "type": "shell",
+                "key": "└ └",
+                "keyColor": "yellow"
+            },
+            "break",
+            {
+                "type": "de",
+                "key": " DE",
+                "keyColor": "blue"
+            },
+            {
+                "type": "lm",
+                "key": "│ ├",
+                "keyColor": "blue"
+            },
+            {
+                "type": "wm",
+                "key": "│ ├",
+                "keyColor": "blue"
+            },
+            {
+                "type": "wmtheme",
+                "key": "│ ├󰉼",
+                "keyColor": "blue"
+            },
+            {
+                "type": "terminal",
+                "key": "└ └",
+                "keyColor": "blue"
+            },
+            {
+                "type": "custom",
+                "format": "\u001b[90m└────────────────────────────────────────────────────┘"
+            },
+            "break",
+            {
+                "type": "custom",
+                "format": "\u001b[90m┌────────────────────Uptime / Age / DT────────────────────┐"
+            },
+            {
+                "type": "command",
+                "key": "  OS Age ",
+                "keyColor": "magenta",
+                "text": "birth_install=$(stat -c %W /); current=$(date +%s); time_progression=$((current - birth_install)); days_difference=$((time_progression / 86400)); echo $days_difference days"
+            },
+            {
+                "type": "uptime",
+                "key": "  Uptime ",
+                "keyColor": "magenta"
+            },
+            {
+                "type": "datetime",
+                "key": "  DateTime ",
+                "keyColor": "magenta"
+            },
+            {
+                "type": "custom",
+                "format": "\u001b[90m└─────────────────────────────────────────────────────────┘"
+            },
+            {
+                "type": "colors",
+                "paddingLeft": 2,
+                "symbol": "circle"
+            }
+        ]
+    }
   '';
 
   programs.zsh = {
@@ -751,9 +775,9 @@ home.file.".config/fetch/custom-fetch.sh" = {
       size = 10000;
       path = "$XDG_DATA_HOME/zsh/history";
     };
-    initExtra = ''
-        bindkey '^ ' autosuggest-execute
-	fastfetch
+    initContent = ''
+              bindkey '^ ' autosuggest-execute
+      	fastfetch
     '';
     plugins = [
       {
