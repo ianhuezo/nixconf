@@ -128,15 +128,27 @@ Scope {
                             id: rightSection
                             height: parent.height
                             width: parent.width / 4
-			    property real ramPercentage: GetRam.ram
-                            property int cpuPercentage: 45
+                            property real ramPercentage: GetRam.ram
+                            property int cpuPercentage: GetCPU.cpu
                             property int gpuPercentage: GetGPU.gpu
-                            
+
                             property var circleStatsData: [
-			       { percentage: gpuPercentage, statText: gpuPercentage + "%", iconSource: '../../assets/icons/gpu.svg' },
-               		       { percentage: cpuPercentage, statText: cpuPercentage + "%", iconSource: '../../assets/icons/cpu.svg' },
-               		       { percentage: ramPercentage, statText: ramPercentage + "%", iconSource: '../../assets/icons/ram.svg' }
-			    ]
+                                {
+                                    percentage: gpuPercentage,
+                                    statText: gpuPercentage + "%",
+                                    iconSource: '../../assets/icons/gpu.svg'
+                                },
+                                {
+                                    percentage: cpuPercentage,
+                                    statText: cpuPercentage + "%",
+                                    iconSource: '../../assets/icons/cpu.svg'
+                                },
+                                {
+                                    percentage: ramPercentage,
+                                    statText: ramPercentage + "%",
+                                    iconSource: '../../assets/icons/ram.svg'
+                                }
+                            ]
                             anchors {
                                 right: parent.right
                                 top: parent.top
@@ -145,13 +157,13 @@ Scope {
                             Repeater {
                                 model: rightSection.circleStatsData
                                 delegate: CircleProgress {
-                                     percentage: modelData.percentage   
-                                     statText: modelData.statText       
-                                     iconSource: modelData.iconSource   
-                                     textColor: root.base09
-                                     backgroundColor: root.base01
-                                     progressColor: root.base09
-                                     color: mainContainer.color
+                                    percentage: modelData.percentage
+                                    statText: modelData.statText
+                                    iconSource: modelData.iconSource
+                                    textColor: root.base09
+                                    backgroundColor: root.base01
+                                    progressColor: root.base09
+                                    color: mainContainer.color
                                 }
                             }
                         }
