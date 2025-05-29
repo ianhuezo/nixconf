@@ -21,7 +21,7 @@ Singleton {
                     return;
                 }
 
-                ram = 100 - parseFloat(data) * 100;
+                ram = Math.round(100 - parseFloat(data) * 100);
             }
         }
     }
