@@ -1,5 +1,4 @@
 import Quickshell
-import Quickshell.Io
 import QtQuick
 import QtQuick.Effects
 
@@ -27,6 +26,10 @@ Scope {
     CavaDataProcessor {
         id: cavaProcessor
         onNewData: processedValues => root.cavaValues = processedValues
+    }
+    Component.onCompleted: {
+        console.log("QML Import Paths:", Qt.qmlImportPaths);
+        console.log("QT_QML_ROOT_PATH:", Qt.getenv("QT_QML_ROOT_PATH"));
     }
 
     Variants {
@@ -136,17 +139,17 @@ Scope {
                                 {
                                     percentage: gpuPercentage,
                                     statText: gpuPercentage + "%",
-                                    iconSource: '../../assets/icons/gpu.svg'
+                                    iconSource: '../../../assets/icons/gpu.svg'
                                 },
                                 {
                                     percentage: cpuPercentage,
                                     statText: cpuPercentage + "%",
-                                    iconSource: '../../assets/icons/cpu.svg'
+                                    iconSource: '../../../assets/icons/cpu.svg'
                                 },
                                 {
                                     percentage: ramPercentage,
                                     statText: ramPercentage + "%",
-                                    iconSource: '../../assets/icons/ram.svg'
+                                    iconSource: '../../../assets/icons/ram.svg'
                                 }
                             ]
                             anchors {
