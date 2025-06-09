@@ -78,6 +78,15 @@ in
             silent = true;
           };
         }
+	{
+	  mode = "n";
+	  key = "<leader>e";
+	  action = "<cmd>lua vim.diagnostic.open_float()<cr>";
+	  options = {
+	      desc = "Open diagnostic window";
+	      silent = true;
+	  };
+	}
       ]
       ++ (builtins.concatLists (
         builtins.genList (
@@ -124,7 +133,6 @@ in
         enableLspFormat = true;
       };
       lsp.servers.typos_lsp.enable = true;
-      # lsp.servers.qmlls.enable = true;
       typescript-tools = {
         enable = false;
       };
@@ -248,7 +256,7 @@ in
         };
       };
       avante = {
-        enable = true;
+        enable = false;
         settings = {
           claude = {
             endpoint = "https://api.anthropic.com";
