@@ -1,5 +1,5 @@
 import QtQuick
-import "../../config" as Config
+import "root:/config"
 
 Rectangle {
     id: leftSection
@@ -29,7 +29,7 @@ Rectangle {
                 sourceSize.width: parent.width
                 sourceSize.height: parent.height
                 fillMode: Image.PreserveAspectFit
-                source: Config.FileConfig.nixIcon
+                source: FileConfig.icons.nix
             }
         }
         Rectangle {

@@ -1,9 +1,10 @@
 import Quickshell.Io
 import QtQuick
+import "root:/config"
 
 Process {
     id: processor
-    property string scriptLocation: Qt.resolvedUrl("../../../scripts/cava_startup.sh")
+    property string scriptLocation: FileConfig.scripts.cava
     command: [scriptLocation]
     running: true
     property var lastValues: []

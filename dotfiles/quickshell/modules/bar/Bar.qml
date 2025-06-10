@@ -27,10 +27,6 @@ Scope {
         id: cavaProcessor
         onNewData: processedValues => root.cavaValues = processedValues
     }
-    Component.onCompleted: {
-        console.log("QML Import Paths:", Qt.qmlImportPaths);
-        console.log("QT_QML_ROOT_PATH:", Qt.getenv("QT_QML_ROOT_PATH"));
-    }
 
     Variants {
         model: {

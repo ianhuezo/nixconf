@@ -72,7 +72,7 @@ in
         {
           mode = "n";
           key = "<leader>q"; # or any key combination you prefer
-          action = ":bd<CR>";
+          action = ":bd!<CR>";
           options = {
             desc = "Close current buffer";
             silent = true;

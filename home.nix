@@ -827,7 +827,7 @@ in
     QML2_IMPORT_PATH = "${pkgs.qt6.qtdeclarative}/${pkgs.qt6.qtbase.qtQmlPrefix}:${
       inputs.quickshell.packages.${pkgs.system}.default
     }/lib/qt-6/qml:${config.home.homeDirectory}/.config/quickshell";
-    QML_IMPORT_PATH = "${config.home.homeDirectory}/.config/quickshell""
+    QML_IMPORT_PATH = "${config.home.homeDirectory}/.config/quickshell";
     QT_QML_ROOT_PATH = "${config.home.homeDirectory}/.config/quickshell";
   };
 
