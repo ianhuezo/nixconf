@@ -2,7 +2,7 @@ import Quickshell
 import QtQuick
 import QtQuick.Effects
 
-Scope {
+Item {
     id: root
     property var cavaValues: []
     property bool useCanvasVisualization: true

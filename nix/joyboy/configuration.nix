@@ -299,6 +299,7 @@
     treefmt
     shfmt
     black
+    gimp
     nixfmt-rfc-style
     pulseaudio
     ffmpeg
