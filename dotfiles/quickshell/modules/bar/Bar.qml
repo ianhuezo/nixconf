@@ -1,6 +1,8 @@
 import Quickshell
 import QtQuick
 import QtQuick.Effects
+import "root:/config"
+import "root:/services"
 
 Item {
     id: bar
@@ -12,28 +14,17 @@ Item {
     property var verticalPadding: 8 // Padding for top and bottom of the inner bar
     property var mainMonitor: Quickshell.screens.filter(screen => screen.name == "DP-1")
 
-    readonly property color base00: "#0D121B" // Deepest background
-    readonly property color base01: "#111A2C" // Slightly lighter background
-    readonly property color base02: "#1A263B" // Mid-dark background
-    readonly property color base03: "#2A3E5C" // Foreground Dim / Subtle border
-    readonly property color base04: "#6C8CB7" // Foreground Mid
-    readonly property color base05: "#E0F2F7" // Foreground Light / Primary text
-    readonly property color base06: "#F0F8FA" // Foreground Lighter
-    readonly property color base07: "#FDFEFF" // Foreground Lightest
-    readonly property color base09: "#FF9E64" // Foreground Lightest
-    readonly property color base0B: "#A0E6FF" // Glowing Cyan-Blue (excellent for accents)
-    readonly property color base0C: "#89DDFF" // Cyan (another great accent)
-    readonly property color base0D: "#7AA2F7" // Blue (deeper accent)
+    CavaDataProcessor {
+        id: cavaProcessor
+        onNewData: processedValues => bar.cavaValues = processedValues
+    }
     Loader {
         active: bar.active
         Variants {
             model: {
                 return bar.mainMonitor;
             }
-            CavaDataProcessor {
-                id: cavaProcessor
-                onNewData: processedValues => bar.cavaValues = processedValues
-            }
+
             delegate: PanelWindow {
                 id: panel
                 required property var modelData
@@ -64,7 +55,7 @@ Item {
                             leftMargin: bar.barOffsetX
                             rightMargin: bar.barOffsetX
                         }
-                        color: bar.base01
+                        color: Color.palette.base01
                         radius: 8 // Optional: rounded corners for the bar
 
                         layer.enabled: true
@@ -137,17 +128,17 @@ Item {
                                     {
                                         percentage: gpuPercentage,
                                         statText: gpuPercentage + "%",
-                                        iconSource: '../../../assets/icons/gpu.svg'
+                                        iconSource: FileConfig.icons.gpu
                                     },
                                     {
                                         percentage: cpuPercentage,
                                         statText: cpuPercentage + "%",
-                                        iconSource: '../../../assets/icons/cpu.svg'
+                                        iconSource: FileConfig.icons.cpu
                                     },
                                     {
                                         percentage: ramPercentage,
                                         statText: ramPercentage + "%",
-                                        iconSource: '../../../assets/icons/ram.svg'
+                                        iconSource: FileConfig.icons.ram
                                     }
                                 ]
                                 anchors {
@@ -161,9 +152,9 @@ Item {
                                         percentage: modelData.percentage
                                         statText: modelData.statText
                                         iconSource: modelData.iconSource
-                                        textColor: bar.base09
-                                        backgroundColor: bar.base01
-                                        progressColor: bar.base09
+                                        textColor: Color.palette.base09
+                                        backgroundColor: Color.palette.base01
+                                        progressColor: Color.palette.base09
                                         color: mainContainer.color
                                     }
                                 }

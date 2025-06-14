@@ -8,7 +8,7 @@ Singleton {
     function loadTheme(path: string) {
     }
 
-    component Colors: QtObject {
+    readonly property QtObject palette: QtObject {
         readonly property color base00: "#0D121B" // Deepest background
         readonly property color base01: "#111A2C" // Slightly lighter background
         readonly property color base02: "#1A263B" // Mid-dark background
