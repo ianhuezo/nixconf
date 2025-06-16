@@ -26,7 +26,8 @@ let
     # Other startup commands
     dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
     nm-applet --indicator & disown
-    systemctl --user import-environment XDG_CURRENT_DESKTOP XDG_SESSION_TYPE & disown  
+    systemctl --user import-environment XDG_CURRENT_DESKTOP XDG_SESSION_TYPE & disown
+    quickshell -p ${config.home.homeDirectory}/.config/shell.qml
   '';
 in
 {
@@ -40,11 +41,7 @@ in
   # manage.
   home.username = "ianh";
   home.homeDirectory = "/home/ianh";
-  #import the preferred color scheme
-  # colorScheme = nix-colors-lib.colorSchemeFromPicture {
-  #   path = ./wallpapers/frieren.png;
-  #   variant = "dark";
-  # };
+
   colorScheme = import ./nix/themes/dark-ethereal;
 
   modules.neovim = {
@@ -368,7 +365,7 @@ in
           "$mod SHIFT, S, exec, hyprshot -m region --clipboard-only"
           # "CTRL, TAB, overview:toggle"
           "$mod, Q, killactive"
-          "$mod, B, exec, ~/.config/custom_scripts/quickshell_toggle.sh"
+          "$mod, B, exec, qs ipc call bar toggleBar"
           "$mod SHIFT, Q, exec,loginctl terminate-user $USER"
           "$mod SHIFT, F, fullscreen"
           "$mod, N, exec, hyprctl dispatch togglefloating"
@@ -413,11 +410,11 @@ in
       };
       animations = {
         enabled = "yes";
-# Some default animations, see https://wiki.hyprland.org/Configuring/Animations/ for more
+        # Some default animations, see https://wiki.hyprland.org/Configuring/Animations/ for more
 
         bezier = [
-	  "specialcubic, 0.34, 1.56, 0.64, 1"
-	  "specialCubicReverse2, 0, -0.07, 1, -0.35"
+          "specialcubic, 0.34, 1.56, 0.64, 1"
+          "specialCubicReverse2, 0, -0.07, 1, -0.35"
           "wind, 0.05, 0.9, 0.1, 1.05"
           "winIn, 0.1, 1.1, 0.1, 1.1"
           "winOut, 0.3, -0.3, 0, 1"
@@ -432,7 +429,7 @@ in
           "easeOutSine, 0.61, 1, 0.88, 1"
         ];
         animation = [
-          "windowsIn, 1, 4, easeInOutSine, slide" 
+          "windowsIn, 1, 4, easeInOutSine, slide"
           "windowsOut, 1, 4, easeInOutSine, slide"
           "border, 1, 3, easeInOutSine"
           "borderangle, 1, 30, easeInOutSine, loop"
@@ -485,55 +482,55 @@ in
       background_opacity 0.85
       foreground #${config.colorScheme.palette.base05} 
       background #${config.colorScheme.palette.base00} 
-      
+
       # grayish
       color0 #${config.colorScheme.palette.base03} 
       color8 #${config.colorScheme.palette.base03} 
-      
+
       # Salmon
       color1 #${config.colorScheme.palette.base08} 
       color9 #${config.colorScheme.palette.base08} 
-      
+
       # Green
       color2  #${config.colorScheme.palette.base0C} 
       color10 #${config.colorScheme.palette.base0C} 
-      
+
       # Yellow-brown
       color3  #${config.colorScheme.palette.base09} 
       color11 #${config.colorScheme.palette.base09} 
-      
+
       # Blue
       color4  #${config.colorScheme.palette.base0D} 
       color12 #${config.colorScheme.palette.base0D}
-      
+
       # Magenta
       color5  #${config.colorScheme.palette.base0E} 
       color13 #${config.colorScheme.palette.base0E}
-      
+
       # Cyan
       color6  #${config.colorScheme.palette.base0C} 
       color14 #${config.colorScheme.palette.base0C} 
-      
+
       # White
       color7  #${config.colorScheme.palette.base05} 
       color15 #${config.colorScheme.palette.base05} 
-      
+
       # Cursor
       cursor #${config.colorScheme.palette.base05} 
       cursor_text_color #${config.colorScheme.palette.base00} 
-      
+
       # Selection highlight
       selection_foreground none
       selection_background #${config.colorScheme.palette.base03}
-      
+
       # The color for highlighting URLs on mouse-over
       url_color #${config.colorScheme.palette.base0B}
-      
+
       # Window borders
       active_border_color #${config.colorScheme.palette.base0D}
       inactive_border_color #${config.colorScheme.palette.base00}
       bell_border_color #${config.colorScheme.palette.base09}
-      
+
       # Tab bar
       tab_bar_style fade
       tab_fade 1
