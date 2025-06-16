@@ -1,5 +1,6 @@
-let
-  scheme = {
+# let
+  # scheme =
+  {
     # This entire attribute set defines the 'colorScheme'
     # Unique identifier for the scheme, often slug-cased version of the name
     slug = "frieren-ethereal";
@@ -27,10 +28,4 @@ let
       base0E = "#BB9AF7"; # Purple (matching Frieren's magic)
       base0F = "#BB9AF7"; # Purple (often same as base0E)
     };
-  };
-in
-scheme // {
-    Add JSON representation
-  inherit scheme;
-  json = builtins.toJSON scheme;
 }
