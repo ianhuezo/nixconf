@@ -13,11 +13,18 @@ PanelWindow {
     required property var barOffsetX
     required property var verticalPadding
     required property bool isActive
-    // property real animatedHeight: panel.isActive ? 54 : 0
+    property real animatedHeight: panel.isActive ? 54 : 0
 
     screen: modelData
-    implicitHeight: 54
+    implicitHeight: animatedHeight
     color: '#00000000' // Transparent main panel
+
+    // Behavior on animatedHeight {
+    //     NumberAnimation {
+    //         duration: 300
+    //         easing.type: Easing.OutCubic
+    //     }
+    // }
 
     anchors {
         top: true
