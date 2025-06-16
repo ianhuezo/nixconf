@@ -1,13 +1,12 @@
-{
-  # This entire attribute set defines the 'colorScheme'
-  
+let
+  scheme = {
+    # This entire attribute set defines the 'colorScheme'
     # Unique identifier for the scheme, often slug-cased version of the name
     slug = "frieren-ethereal";
     # Human-readable name of the theme
     name = "Frieren Ethereal";
     # Author(s) of the theme
     author = "AI Gemini (inspired by Frieren artwork)";
-
     # The core Base16 palette
     palette = {
       base00 = "#0D121B"; # Deepest background
@@ -18,7 +17,6 @@
       base05 = "#E0F2F7"; # Foreground Light / Primary text
       base06 = "#F0F8FA"; # Foreground Lighter
       base07 = "#FDFEFF"; # Foreground Lightest
-
       # Accent Colors (Base16 standard)
       base08 = "#F7768E"; # Red
       base09 = "#FF9E64"; # Orange
@@ -29,4 +27,10 @@
       base0E = "#BB9AF7"; # Purple (matching Frieren's magic)
       base0F = "#BB9AF7"; # Purple (often same as base0E)
     };
-  }
+  };
+in
+scheme // {
+    Add JSON representation
+  inherit scheme;
+  json = builtins.toJSON scheme;
+}

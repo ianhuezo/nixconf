@@ -26,7 +26,8 @@ let
     # Other startup commands
     dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
     nm-applet --indicator & disown
-    systemctl --user import-environment XDG_CURRENT_DESKTOP XDG_SESSION_TYPE & disown  
+    systemctl --user import-environment XDG_CURRENT_DESKTOP XDG_SESSION_TYPE & disown
+    quickshell -p ${config.home.homeDirectory}/.config/shell.qml
   '';
 in
 {
@@ -40,11 +41,7 @@ in
   # manage.
   home.username = "ianh";
   home.homeDirectory = "/home/ianh";
-  #import the preferred color scheme
-  # colorScheme = nix-colors-lib.colorSchemeFromPicture {
-  #   path = ./wallpapers/frieren.png;
-  #   variant = "dark";
-  # };
+
   colorScheme = import ./nix/themes/dark-ethereal;
 
   modules.neovim = {
@@ -368,7 +365,7 @@ in
           "$mod SHIFT, S, exec, hyprshot -m region --clipboard-only"
           # "CTRL, TAB, overview:toggle"
           "$mod, Q, killactive"
-          "$mod, B, exec, ~/.config/custom_scripts/quickshell_toggle.sh"
+          "$mod, B, exec, qs ipc call bar toggleBar"
           "$mod SHIFT, Q, exec,loginctl terminate-user $USER"
           "$mod SHIFT, F, fullscreen"
           "$mod, N, exec, hyprctl dispatch togglefloating"

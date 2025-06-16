@@ -78,15 +78,15 @@ in
             silent = true;
           };
         }
-	{
-	  mode = "n";
-	  key = "<leader>e";
-	  action = "<cmd>lua vim.diagnostic.open_float()<cr>";
-	  options = {
-	      desc = "Open diagnostic window";
-	      silent = true;
-	  };
-	}
+        {
+          mode = "n";
+          key = "<leader>e";
+          action = "<cmd>lua vim.diagnostic.open_float()<cr>";
+          options = {
+            desc = "Open diagnostic window";
+            silent = true;
+          };
+        }
       ]
       ++ (builtins.concatLists (
         builtins.genList (
