@@ -12,6 +12,8 @@ PanelWindow {
     required property var barOffsetY
     required property var barOffsetX
     required property var verticalPadding
+    required property bool isActive
+    // property real animatedHeight: panel.isActive ? 54 : 0
 
     screen: modelData
     implicitHeight: 54
@@ -42,6 +44,32 @@ PanelWindow {
             }
             color: Color.palette.base01
             radius: 8 // Optional: rounded corners for the bar
+
+            // Animation properties for expand/collapse
+            property real scaleX: panel.isActive ? 1.0 : 0.0
+            property real scaleY: panel.isActive ? 1.0 : 0.0
+
+            transform: Scale {
+                xScale: offsetContainer.scaleX
+                yScale: offsetContainer.scaleY
+                origin.x: offsetContainer.width / 2
+                origin.y: offsetContainer.height / 2
+            }
+
+            // Smooth animations for scale changes
+            Behavior on scaleX {
+                NumberAnimation {
+                    duration: 300
+                    easing.type: Easing.OutCubic
+                }
+            }
+
+            Behavior on scaleY {
+                NumberAnimation {
+                    duration: 300
+                    easing.type: Easing.OutCubic
+                }
+            }
 
             layer.enabled: true
             layer.effect: MultiEffect {

@@ -1,5 +1,7 @@
 import Quickshell
 import QtQuick
+import Quickshell
+import QtQuick
 import Quickshell.Io
 import "root:/config"
 import "root:/services"
@@ -30,7 +32,7 @@ Item {
 
     Variants {
         model: {
-            return bar.active ? bar.mainMonitor : [];
+            return bar.mainMonitor;
         }
 
         delegate: BarPanelWindow {
@@ -40,6 +42,7 @@ Item {
             barOffsetY: bar.barOffsetY
             barOffsetX: bar.barOffsetX
             verticalPadding: bar.verticalPadding
+            isActive: bar.active
         }
     }
 }
