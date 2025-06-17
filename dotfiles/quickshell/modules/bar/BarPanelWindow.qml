@@ -19,12 +19,12 @@ PanelWindow {
     implicitHeight: animatedHeight
     color: '#00000000' // Transparent main panel
 
-    // Behavior on animatedHeight {
-    //     NumberAnimation {
-    //         duration: 300
-    //         easing.type: Easing.OutCubic
-    //     }
-    // }
+    Behavior on animatedHeight {
+        NumberAnimation {
+            duration: 300
+            easing.type: Easing.OutCubic
+        }
+    }
 
     anchors {
         top: true
@@ -87,7 +87,7 @@ PanelWindow {
                 anchors.fill: parent
                 anchors.margins: -1 // Extends slightly outward for the highlight border
                 color: "transparent"
-                border.color: "#2A3E5C" // A mid-tone blue from the wallpaper's spectrum
+                border.color: Color.palette.base08 // A mid-tone blue from the wallpaper's spectrum
                 border.width: 1
                 radius: parent.radius + 1
             }
@@ -97,7 +97,7 @@ PanelWindow {
                 anchors.fill: parent
                 anchors.margins: 1 // Inset for a fine line
                 color: "transparent"
-                border.color: "#A0E6FF" // Bright, ethereal blue/cyan for accent (like the flowers)
+                border.color: Color.palette.base0B // Bright, ethereal blue/cyan for accent (like the flowers)
                 border.width: 0 // Slightly thicker for more glow
                 radius: parent.radius - 1
             }
@@ -129,7 +129,7 @@ PanelWindow {
                         anchors.centerIn: parent
                         cavaValues: panel.cavaValues
                         useCanvas: panel.useCanvasVisualization
-                        waveColor: '#FF9E64'
+                        waveColor: Color.palette.base09
                         barColor: "transparent" // Use transparent for bar background
                         onToggleVisualization: panel.useCanvasVisualization = !panel.useCanvasVisualization
                     }

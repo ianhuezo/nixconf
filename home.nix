@@ -27,7 +27,7 @@ let
     dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
     nm-applet --indicator & disown
     systemctl --user import-environment XDG_CURRENT_DESKTOP XDG_SESSION_TYPE & disown
-    quickshell -p ${config.home.homeDirectory}/.config/shell.qml
+    quickshell & disown
   '';
 in
 {
