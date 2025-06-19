@@ -3,6 +3,8 @@ import QtQuick
 import Quickshell.Io
 import Quickshell.Hyprland
 
+
+
 Item {
     id: dashboard
     property bool active: false
@@ -13,24 +15,17 @@ Item {
             dashboard.active = !dashboard.active;
         }
     }
-    implicitWidth: 200
-    implicitHeight: 150
+    implicitWidth: 800
+    implicitHeight: 600
     Variants {
         model: {
-            if (dashboard.active != true) {
+            if (!dashboard.active) {
                 return [];
             }
             Hyprland.focusedWorkspace ? [Hyprland.focusedWorkspace.monitor] : [];
         }
-        delegate: PanelWindow {
-            color: 'transparent'
-            Rectangle {
-                implicitHeight: parent.implicitHeight
-                implicitWidth: parent.implicitWidth
-                anchors.fill: parent
-                border.color: 'red'
-                border.width: 1
-            }
+        delegate: DashboardWindow {
+            parentId: dashboard
         }
     }
 }
