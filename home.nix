@@ -369,6 +369,7 @@ in
           "$mod SHIFT, Q, exec,loginctl terminate-user $USER"
           "$mod SHIFT, F, fullscreen"
           "$mod, N, exec, hyprctl dispatch togglefloating"
+	  "$mod, U, exec, qs ipc call dashboard toggleDashboard"
           #mod with left mouse moves windows
           ", Print, exec, grimblast copy area"
         ]

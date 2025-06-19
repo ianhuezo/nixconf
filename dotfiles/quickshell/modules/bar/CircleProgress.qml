@@ -2,6 +2,8 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Effects
+import "root:/config"
+import "root:/services"
 
 Rectangle {
     id: circleProgressRoot
@@ -13,9 +15,9 @@ Rectangle {
     property real percentage: 0
     property string statText: "0%"
     property url iconSource: ""
-    property color progressColor: "#FF9E64" // base09 orange
-    property color backgroundColor: "#111A2C" // base01 background color
-    property color textColor: "#FF9E64" // base09
+    property color progressColor: Color.palette.base09 // base09 orange
+    property color backgroundColor: Color.palette.base01 // base01 background color
+    property color textColor: Color.palette.base09 // base09
 
     Rectangle {
         id: statTextContainer

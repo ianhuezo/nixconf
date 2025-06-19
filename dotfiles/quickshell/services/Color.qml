@@ -17,6 +17,7 @@ Singleton {
         property color base05: "#E0F2F7" // Foreground Light / Primary text
         property color base06: "#F0F8FA" // Foreground Lighter
         property color base07: "#FDFEFF" // Foreground Lightest
+        property color base08: "#F7768E" //
         property color base09: "#FF9E64" // Foreground Lightest
         property color base0B: "#A0E6FF" // Glowing Cyan-Blue (excellent for accents)
         property color base0C: "#89DDFF" // Cyan (another great accent)

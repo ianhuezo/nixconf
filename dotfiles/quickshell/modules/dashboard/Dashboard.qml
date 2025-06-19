@@ -23,12 +23,13 @@ Item {
             Hyprland.focusedWorkspace ? [Hyprland.focusedWorkspace.monitor] : [];
         }
         delegate: PanelWindow {
-
+            color: 'transparent'
             Rectangle {
                 implicitHeight: parent.implicitHeight
                 implicitWidth: parent.implicitWidth
                 anchors.fill: parent
-                color: 'red'
+                border.color: 'red'
+                border.width: 1
             }
         }
     }

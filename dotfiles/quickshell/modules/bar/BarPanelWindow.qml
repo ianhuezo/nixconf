@@ -87,8 +87,8 @@ PanelWindow {
                 anchors.fill: parent
                 anchors.margins: -1 // Extends slightly outward for the highlight border
                 color: "transparent"
-                border.color: Color.palette.base00 // A mid-tone blue from the wallpaper's spectrum
-                border.width: 1
+                // border.color: Color.palette.base08 // A mid-tone blue from the wallpaper's spectrum
+                // border.width: 1
                 radius: parent.radius + 1
             }
 
