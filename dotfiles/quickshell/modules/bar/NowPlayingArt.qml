@@ -17,34 +17,28 @@ Image {
     layer.smooth: true
     layer.samples: 4  // Antialiasing samples
 
-    source: ''
-    Binding {
-        id: urlTrackBinding
-        target: Mpris.players
-        art.source: {
-            const players = Array.from(Mpris.players.values);
-            let activePlayer = null;
-            // 1. Find playing Spotify
-            activePlayer = players.find(p => p.identity === "Spotify" && p.playbackState === MprisPlaybackState.Playing);
+    source: {
+        const players = Array.from(Mpris.players.values);
+        let activePlayer = null;
 
-            // 2. If no playing Spotify, find first playing player
-            if (!activePlayer) {
-                activePlayer = players.find(p => p.playbackState === MprisPlaybackState.Playing);
-            }
-            if (activePlayer) {
-                return activePlayer.trackArtUrl;
-            }
+        // 1. Find playing Spotify
+        activePlayer = players.find(p => p.identity === "Spotify" && p.playbackState === MprisPlaybackState.Playing);
 
-            // 3. Fallback to original behavior: Spotify or first player
-            if (!activePlayer) {
-                activePlayer = players.find(p => p.identity === "Spotify") || players[0];
-            }
-
-            if (activePlayer?.trackArtUrl) {
-                return activePlayer.trackArtUrl;
-            }
-            return '';
+        // 2. If no playing Spotify, find first playing player
+        if (!activePlayer) {
+            activePlayer = players.find(p => p.playbackState === MprisPlaybackState.Playing);
         }
+
+        if (activePlayer) {
+            return activePlayer.trackArtUrl || '';
+        }
+
+        // 3. Fallback to original behavior: Spotify or first player
+        if (!activePlayer) {
+            activePlayer = players.find(p => p.identity === "Spotify") || players[0];
+        }
+
+        return activePlayer?.trackArtUrl || '';
     }
 
     Process {

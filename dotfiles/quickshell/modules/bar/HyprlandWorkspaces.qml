@@ -9,7 +9,7 @@ Column {
     anchors.fill: parent
     spacing: 10
 
-    property int activeWsId: Hyprland.focusedMonitor.activeWorkspace ? Hyprland.focusedMonitor.activeWorkspace.id : 1
+    property int activeWsId: Hyprland.focusedMonitor?.activeWorkspace ? Hyprland.focusedMonitor?.activeWorkspace.id : 1
     property var workspaceMap: {
         let map = {};
         Hyprland.workspaces.values.forEach(w => map[w.id] = w);

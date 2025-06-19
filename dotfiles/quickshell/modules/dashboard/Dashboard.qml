@@ -1,6 +1,7 @@
 import Quickshell
 import QtQuick
 import Quickshell.Io
+import Quickshell.Hyprland
 
 Item {
     id: dashboard
@@ -14,16 +15,21 @@ Item {
     }
     implicitWidth: 200
     implicitHeight: 150
-    // Loader {
-    //     active: dashboard.active
-    //     PanelWindow {
-    //
-    //         Rectangle {
-    //             implicitHeight: parent.implicitHeight
-    //             implicitWidth: parent.implicitWidth
-    //             anchors.fill: parent
-    //             color: 'red'
-    //         }
-    //     }
-    // }
+    Variants {
+        model: {
+            if (dashboard.active != true) {
+                return [];
+            }
+            Hyprland.focusedWorkspace ? [Hyprland.focusedWorkspace.monitor] : [];
+        }
+        delegate: PanelWindow {
+
+            Rectangle {
+                implicitHeight: parent.implicitHeight
+                implicitWidth: parent.implicitWidth
+                anchors.fill: parent
+                color: 'red'
+            }
+        }
+    }
 }
