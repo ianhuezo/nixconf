@@ -227,6 +227,13 @@ in
       conform-nvim = {
 
       };
+      presence-nvim = {
+	enable = true;
+	debounceTimeout = 30;
+	blacklist = [
+	  "^%.env"
+	];
+      };
       bufferline = {
         enable = true;
         settings = {
