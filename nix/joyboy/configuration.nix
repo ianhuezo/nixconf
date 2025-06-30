@@ -278,10 +278,10 @@
     zsh
     nixfmt-rfc-style
     home-manager
-    vesktop
     webcord
     gnumake
     gcc
+    vesktop
     noisetorch
     protonup
     kitty

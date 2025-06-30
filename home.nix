@@ -12,6 +12,7 @@ let
   agsPath = /etc/nixos/dotfiles/ags;
   cavaPath = /etc/nixos/dotfiles/cava;
   scriptsPath = /etc/nixos/dotfiles/scripts;
+  vesktopThemePath = /etc/nixos/dotfiles/vesktop/themes;
   nix-colors-lib = nix-colors.lib.contrib { inherit pkgs; };
   leftMonitor = "HDMI-A-1";
   rightMonitor = "DP-1";
@@ -72,11 +73,8 @@ in
     qbittorrent
     zoxide
     zsh
-    discord
-    webcord
     imagemagick
     kitty
-    vesktop
     bash
     spotify
     gh
@@ -548,6 +546,7 @@ in
   home.file.".config/ags".source = config.lib.file.mkOutOfStoreSymlink agsPath;
   home.file.".config/custom_scripts".source = config.lib.file.mkOutOfStoreSymlink scriptsPath;
   home.file.".config/cava_conf".source = config.lib.file.mkOutOfStoreSymlink cavaPath;
+  home.file.".config/vesktop/themes".source = config.lib.file.mkOutOfStoreSymlink.vesktopThemePath;
   home.file."${config.home.homeDirectory}/Pictures" = {
     source = ./wallpapers;
     recursive = true;
