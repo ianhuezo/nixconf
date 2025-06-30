@@ -546,7 +546,7 @@ in
   home.file.".config/ags".source = config.lib.file.mkOutOfStoreSymlink agsPath;
   home.file.".config/custom_scripts".source = config.lib.file.mkOutOfStoreSymlink scriptsPath;
   home.file.".config/cava_conf".source = config.lib.file.mkOutOfStoreSymlink cavaPath;
-  home.file.".config/vesktop/themes".source = config.lib.file.mkOutOfStoreSymlink.vesktopThemePath;
+  home.file.".config/vesktop/themes".source = config.lib.file.mkOutOfStoreSymlink vesktopThemePath;
   home.file."${config.home.homeDirectory}/Pictures" = {
     source = ./wallpapers;
     recursive = true;
