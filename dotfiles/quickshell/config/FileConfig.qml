@@ -8,6 +8,9 @@ Singleton {
     readonly property string assetsRootPath: '../../assets'
     readonly property string themesRootPath: '../../themes'
 
+
+    readonly property string splashArtPath: Qt.resolvedUrl(`${themesRootPath}/frieren-camp-crop.jpg`)
+
     function getIconPath(iconName) {
         //for icons that are not from font packages
         return Qt.resolvedUrl(`${assetsRootPath}/icons/${iconName}`);

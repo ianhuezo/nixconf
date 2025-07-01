@@ -14,22 +14,28 @@ PanelWindow {
         id: mainDrawArea
         anchors.fill: parent
         color: Color.palette.base00
-        border.color: 'red'
-        border.width: 1
+        radius: 25
 
         Rectangle {
             id: rightSplashPanel
-            color: 'blue'
+            color: 'transparent'
             anchors.right: parent.right
-            width: parent.width * 0.1
+            width: parent.width * 0.2
             height: parent.height
+
+            Image {
+                id: splashArt
+                source: FileConfig.splashArtPath
+            }
         }
         Rectangle {
             id: topWallpaperChooser
-            color: 'green'
+            color: 'transparent'
             anchors.top: parent.top
             height: parent.height * 0.2
-            width: parent.width * 0.9
+            width: parent.width * 0.8
+            topLeftRadius: mainDrawArea.radius
+            bottomLeftRadius: mainDrawArea.radius
 
             Rectangle {
                 id: previewChooser
@@ -37,6 +43,15 @@ PanelWindow {
                 anchors.left: parent.left
                 height: parent.height
                 width: parent.width * 0.05
+                topLeftRadius: mainDrawArea.radius
+                bottomLeftRadius: mainDrawArea.radius
+            }
+            Rectangle {
+                id: carousel
+                anchors.left: parent.left
+                x: parent.x + previewChooser.width
+                width: (1 - previewChooser.width) * parent.width
+                height: parent.height
             }
         }
     }
