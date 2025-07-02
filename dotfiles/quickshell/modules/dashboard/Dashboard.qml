@@ -3,8 +3,6 @@ import QtQuick
 import Quickshell.Io
 import Quickshell.Hyprland
 
-
-
 Item {
     id: dashboard
     property bool active: false

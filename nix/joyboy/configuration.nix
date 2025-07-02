@@ -54,7 +54,7 @@
   networking.networkmanager.enable = true;
   systemd.services.systemd-networkd.enable = false;
   systemd.services.systemd-resolved.enable = false;
-  # networking.hostName = "joyboy";
+  networking.hostName = "joyboy";
 
   nix.gc = {
     automatic = true;
