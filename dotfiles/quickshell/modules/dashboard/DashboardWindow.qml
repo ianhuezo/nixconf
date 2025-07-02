@@ -98,22 +98,6 @@ PanelWindow {
             topLeftRadius: mainDrawArea.radius
             bottomLeftRadius: mainDrawArea.radius
 
-            Rectangle {
-                id: previewChooser
-                color: 'transparent'
-                anchors.left: parent.left
-                height: parent.height
-                width: parent.width * 0.05
-                topLeftRadius: mainDrawArea.radius
-                bottomLeftRadius: mainDrawArea.radius
-            }
-            Rectangle {
-                id: carousel
-                anchors.left: parent.left
-                x: parent.x + previewChooser.width
-                width: (1 - previewChooser.width) * parent.width
-                height: parent.height
-            }
         }
     }
 }
