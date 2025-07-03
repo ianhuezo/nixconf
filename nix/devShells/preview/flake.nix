@@ -23,9 +23,21 @@
             gdb
             valgrind
             
-            # Basic Wayland/Hyprland dependencies (we'll expand this later)
+            # Wayland core libraries
             wayland
             wayland-protocols
+            wayland-scanner
+            
+            # Graphics and rendering
+            cairo
+            pango
+            
+            # Hyprland and related
+            hyprland
+            hyprland-protocols
+            
+            # JSON parsing (for Hyprland IPC)
+            nlohmann_json
             
             # Useful utilities
             tree
@@ -39,10 +51,15 @@
             echo "  - cmake $(cmake --version | head -n1)"
             echo "  - pkg-config $(pkg-config --version)"
             echo ""
+            echo "Wayland/Hyprland libraries available:"
+            echo "  - wayland-client: $(pkg-config --modversion wayland-client 2>/dev/null || echo 'not found')"
+            echo "  - cairo: $(pkg-config --modversion cairo 2>/dev/null || echo 'not found')"
+            echo "  - nlohmann_json available"
+            echo ""
             echo "Next steps:"
-            echo "  1. Create a simple C++ hello world"
-            echo "  2. Set up CMake build system"
-            echo "  3. Test compilation"
+            echo "  1. Test Wayland client connection"
+            echo "  2. Set up Hyprland IPC communication"
+            echo "  3. Create basic workspace enumeration"
             echo ""
           '';
         };
