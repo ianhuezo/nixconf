@@ -28,9 +28,9 @@
             wayland-protocols
             wayland-scanner
             
-            # Graphics and rendering
-            cairo
-            pango
+            # Qt for graphics and rendering
+            qt6.full
+            qt6.qtwayland
             
             # Hyprland and related
             hyprland
@@ -51,13 +51,13 @@
             echo "  - cmake $(cmake --version | head -n1)"
             echo "  - pkg-config $(pkg-config --version)"
             echo ""
-            echo "Wayland/Hyprland libraries available:"
+            echo "Qt/Wayland libraries available:"
+            echo "  - Qt6: $(qmake6 -query QT_VERSION 2>/dev/null || echo 'not found')"
             echo "  - wayland-client: $(pkg-config --modversion wayland-client 2>/dev/null || echo 'not found')"
-            echo "  - cairo: $(pkg-config --modversion cairo 2>/dev/null || echo 'not found')"
             echo "  - nlohmann_json available"
             echo ""
             echo "Next steps:"
-            echo "  1. Test Wayland client connection"
+            echo "  1. Test Qt Wayland integration"
             echo "  2. Set up Hyprland IPC communication"
             echo "  3. Create basic workspace enumeration"
             echo ""
