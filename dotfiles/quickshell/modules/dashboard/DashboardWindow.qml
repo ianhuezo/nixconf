@@ -111,13 +111,22 @@ PanelWindow {
                 }
             }
             Rectangle {
-                id: topWallpaperChooser
+                id: appChooser
                 color: 'transparent'
                 anchors.top: parent.top
                 height: parent.height * 0.2
                 width: parent.width * 0.8
                 topLeftRadius: mainDrawArea.radius
+                // bottomLeftRadius: mainDrawArea.radius
+            }
+            Rectangle {
+                id: mainApplication
+                color: 'transparent'
+                height: parent.height - appChooser.height
+                width: parent.width - splashPanel.width
+                y: parent.y + appChooser.height
                 bottomLeftRadius: mainDrawArea.radius
+		AppViewer {}
             }
         }
     }
