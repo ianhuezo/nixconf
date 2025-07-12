@@ -2,6 +2,7 @@ import Quickshell
 import QtQuick
 import Quickshell.Io
 import Quickshell.Hyprland
+import Quickshell.Wayland
 
 Item {
     id: dashboard
@@ -13,6 +14,7 @@ Item {
             dashboard.active = !dashboard.active;
         }
     }
+
     implicitWidth: 800
     implicitHeight: 600
     Variants {
@@ -22,8 +24,13 @@ Item {
             }
             Hyprland.focusedWorkspace ? [Hyprland.focusedWorkspace.monitor] : [];
         }
+
         delegate: DashboardWindow {
             parentId: dashboard
+
+            onCloseRequested: {
+                dashboard.active = false;
+            }
         }
     }
 }
