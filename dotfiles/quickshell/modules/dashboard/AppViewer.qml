@@ -1,5 +1,8 @@
 import Quickshell
 import QtQuick
+import QtQuick.Controls
+import "root:/config"
+import "root:/services"
 import "root:/libs/fuzzysort/fuzzysort.js" as Fuzzy
 
 Item {
@@ -21,10 +24,9 @@ Item {
     Rectangle {
         id: content
         anchors.fill: parent
-        Component.onCompleted: {
-            fuzzyQuery("").forEach(result => {
-                console.log(result.name);
-            });
+        color: 'transparent'
+        SearchBar {
+            id: searchBar
         }
     }
 }

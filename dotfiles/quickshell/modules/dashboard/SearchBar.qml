@@ -1,0 +1,72 @@
+import Quickshell
+import QtQuick
+import QtQuick.Controls
+import "root:/config"
+import "root:/services"
+import "root:/libs/fuzzysort/fuzzysort.js" as Fuzzy
+
+Rectangle {
+    id: searchBarContainer
+    property var leftMargin: parent.width * 0.1
+    property var topMargin: parent.height * 0.05
+    property var containerHeight: parent.height * 0.1
+    property var containerWidth: parent.width * 0.8
+
+    width: containerWidth
+    x: leftMargin + parent.x
+    y: parent.y + topMargin
+    height: containerHeight
+    radius: 10
+    color: '#1e262e'
+    Text {
+        id: searchIcon
+        text: "⚲"
+        color: '#828282'
+        font.pixelSize: parent.height * 0.4
+        anchors.left: parent.left
+        anchors.leftMargin: parent.width * 0.03
+        anchors.verticalCenter: parent.verticalCenter
+        rotation: 45
+    }
+    TextField {
+        id: textInput
+        placeholderText: qsTr("Search Applications...")
+        placeholderTextColor: '#828282'
+        onFocusChanged: {
+            textInput.forceActiveFocus();
+        }
+        anchors.fill: parent
+        anchors.leftMargin: searchIcon.width + parent.width * 0.04
+        width: parent.width
+        height: parent.height
+        text: ''
+        readOnly: false
+        color: 'white'
+        cursorDelegate: Rectangle {
+            width: 1
+            height: textInput.font.pixelSize
+            color: Color.palette.base07
+            visible: textInput.activeFocus
+
+            SequentialAnimation on opacity {
+                loops: Animation.Infinite
+                running: textInput.activeFocus
+                PropertyAnimation {
+                    to: 1.0
+                    duration: 500
+                }
+                PropertyAnimation {
+                    to: 0.0
+                    duration: 500
+                }
+            }
+        }
+        background: Rectangle {
+            color: '#1e262e'
+            radius: 10
+        }
+        Component.onCompleted: {
+            textInput.forceActiveFocus();
+        }
+    }
+}
