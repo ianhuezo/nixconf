@@ -59,7 +59,7 @@ Rectangle {
                 // Draw inset track with simple inner shadow
                 ctx.beginPath();
                 ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-                ctx.strokeStyle = Qt.darker(Color.palette.base03, 1.3);
+                ctx.strokeStyle = Color.palette.base03;
                 ctx.lineWidth = trackWidth;
                 ctx.stroke();
 

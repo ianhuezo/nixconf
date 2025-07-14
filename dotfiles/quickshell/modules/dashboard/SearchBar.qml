@@ -3,7 +3,6 @@ import QtQuick
 import QtQuick.Controls
 import "root:/config"
 import "root:/services"
-import "root:/libs/fuzzysort/fuzzysort.js" as Fuzzy
 
 Rectangle {
     id: searchBarContainer
@@ -20,11 +19,11 @@ Rectangle {
     y: parent.y + topMargin
     height: containerHeight
     radius: 10
-    color: '#1e262e'
+    color: Color.palette.base03//'#1e262e'
     Text {
         id: searchIcon
         text: "⚲"
-        color: '#828282'
+        color: Color.palette.base04//'#828282'
         font.pixelSize: parent.height * 0.4
         anchors.left: parent.left
         anchors.leftMargin: parent.width * 0.03
@@ -34,7 +33,7 @@ Rectangle {
     TextField {
         id: textInput
         placeholderText: qsTr("Search Applications...")
-        placeholderTextColor: '#828282'
+        placeholderTextColor: Color.palette.base04//'#828282'
         onFocusChanged: {
             textInput.forceActiveFocus();
         }
@@ -44,10 +43,10 @@ Rectangle {
         height: parent.height
         text: ''
         readOnly: false
-        color: 'white'
-	onTextChanged: {
-	  searchBarContainer.searchText(textInput.text)
-	}
+        color: Color.palette.base07
+        onTextChanged: {
+            searchBarContainer.searchText(textInput.text);
+        }
 
         cursorDelegate: Rectangle {
             width: 1
@@ -69,7 +68,7 @@ Rectangle {
             }
         }
         background: Rectangle {
-            color: '#1e262e'
+            color: Color.palette.base03//'#1e262e'
             radius: 10
         }
         Component.onCompleted: {
