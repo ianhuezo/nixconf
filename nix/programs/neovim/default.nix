@@ -132,6 +132,10 @@ in
         enable = true;
         enableLspFormat = true;
       };
+      colorizer.enable = true;
+      colorizer.settings = {
+	RRGGBBAA = true;
+      };
       lsp.servers.typos_lsp.enable = true;
       typescript-tools = {
         enable = false;
