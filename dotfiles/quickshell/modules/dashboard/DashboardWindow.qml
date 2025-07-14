@@ -126,7 +126,12 @@ PanelWindow {
                 width: parent.width - splashPanel.width
                 y: parent.y + appChooser.height
                 bottomLeftRadius: mainDrawArea.radius
-		AppViewer {}
+                AppViewer {
+                    id: mainAppViewer
+                    onAppSelected: {
+                        root.closeRequested();
+                    }
+                }
             }
         }
     }

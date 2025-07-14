@@ -11,6 +11,9 @@ Rectangle {
     property var topMargin: parent.height * 0.05
     property var containerHeight: parent.height * 0.1
     property var containerWidth: parent.width * 0.8
+    property string currentText: ''
+
+    signal searchText(string text)
 
     width: containerWidth
     x: leftMargin + parent.x
@@ -42,6 +45,10 @@ Rectangle {
         text: ''
         readOnly: false
         color: 'white'
+	onTextChanged: {
+	  searchBarContainer.searchText(textInput.text)
+	}
+
         cursorDelegate: Rectangle {
             width: 1
             height: textInput.font.pixelSize
