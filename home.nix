@@ -126,70 +126,6 @@ in
       "version" : 1
     }
   '';
-  programs.wofi.enable = true;
-  programs.wofi.settings = {
-    width = 300;
-    height = 350;
-    always_parse_args = true;
-    hide_scroll = true;
-    show_all = false;
-    insensitive = true;
-  };
-  programs.wofi.style = ''
-        #window {
-           border-radius: 15px;
-           background-color: #${config.colorScheme.palette.base00};
-           padding: 5px;
-        }
-        #outer-box {
-    	border: 1px solid #${config.colorScheme.palette.base0E};
-    	border-radius:15px;
-        }
-        #img {
-    	margin-left: 16px;
-        }
-        #input{
-        	margin: 15px;
-    	box-shadow: none;
-    	border: none;
-    	opacity: 0.9;
-    	background-color: #${config.colorScheme.palette.base00};
-        }
-        #input:focus{
-    	border-image: none;
-        }
-        #text {
-    	margin-left: 10px;
-        }
-        #entry:selected {
-          all: unset;
-          background-color: #${config.colorScheme.palette.base0D};
-          border-radius: 5px;
-          font-size: 0.8em;
-        }
-        #entry:selected:last-child {
-    	border-bottom-right-radius: 15px;
-    	border-bottom-left-radius: 15px;
-        }
-        #entry {
-          border-radius: 5px;
-          font-size: 0.8em;
-        }
-        #scroll {
-            all: unset;
-    	border: none;
-        }
-        #entry:focus {
-            background: #${config.colorScheme.palette.base0D};
-    	font-size: 0.8em;
-        }
-        *{
-          font-family: monospace;
-          font-size: 1.04em;
-          font-weight: bold;
-          color: #${config.colorScheme.palette.base07};
-        }
-  '';
   services.mako = {
     enable = true;
     settings = {
@@ -341,7 +277,7 @@ in
         "10,monitor:${leftMonitor}"
       ];
       "$mod" = "SUPER";
-      "$menu" = "wofi -a --allow-images --show drun";
+      "$menu" = "qs ipc call dashboard toggleDashboard";
       binds.allow_workspace_cycles = true;
       # binds.allow_pin_fullscreen = false;
       bindm = [
@@ -350,7 +286,7 @@ in
       bind =
         [
           #search with wofi
-          "ALT_L, SPACE, exec, $menu"
+          "$mod, SPACE, exec, $menu"
           #mod key opens general applications
           "$mod, F, exec, firefox"
           "$mod, K, exec, kitty"
@@ -367,7 +303,6 @@ in
           "$mod SHIFT, Q, exec,loginctl terminate-user $USER"
           "$mod SHIFT, F, fullscreen"
           "$mod, N, exec, hyprctl dispatch togglefloating"
-	  "$mod, U, exec, qs ipc call dashboard toggleDashboard"
           #mod with left mouse moves windows
           ", Print, exec, grimblast copy area"
         ]
