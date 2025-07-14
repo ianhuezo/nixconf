@@ -285,7 +285,6 @@ in
       ];
       bind =
         [
-          #search with wofi
           "$mod, SPACE, exec, $menu"
           #mod key opens general applications
           "$mod, F, exec, firefox"

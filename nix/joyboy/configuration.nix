@@ -290,7 +290,6 @@
     dunst
     swaylock-effects
     btop
-    wofi
     hyprshot
     playerctl
     dracula-theme
