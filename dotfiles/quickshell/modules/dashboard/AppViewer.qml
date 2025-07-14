@@ -60,7 +60,9 @@ Item {
             scrollUp();
         } else if (event.key == Qt.Key_Enter || event.key == Qt.Key_Return) {
             if (appViewer.currentResults.length > 0 && appViewer.userSelectedIndex < appViewer.currentResults.length) {
-                appViewer.currentResults[appViewer.userSelectedIndex].execute();
+                const execCmd = appViewer.currentResults[appViewer.userSelectedIndex].execString;
+
+                Quickshell.execDetached(["sh", "-c", `cd ~ && ${execCmd.trim()}`]);
                 appViewer.appSelected();
             }
         }
