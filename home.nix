@@ -13,6 +13,7 @@ let
   cavaPath = /etc/nixos/dotfiles/cava;
   scriptsPath = /etc/nixos/dotfiles/scripts;
   vesktopThemePath = /etc/nixos/dotfiles/vesktop/themes;
+  fastfetchConfigPath = /etc/nixos/dotfiles/fastfetch/fastfetch-config.jsonc;
   nix-colors-lib = nix-colors.lib.contrib { inherit pkgs; };
   leftMonitor = "HDMI-A-1";
   rightMonitor = "DP-1";
@@ -544,151 +545,7 @@ in
     '';
   };
 
-  home.file.".config/fastfetch/config.jsonc".text = ''
-         {
-        "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
-        "logo": {
-            "type": "kitty-icat",
-            "source": "${config.home.homeDirectory}/Pictures/phos.jpg",
-    	"printRemaining": false,
-            "height": 15,
-            "width": 35,
-            "position": "left",
-            "preserveAspectRatio": true,
-            "padding": {
-                "top": 2,
-                "right": 4,
-                "left": 2
-            }
-        },
-        "modules": [
-            "break",
-            {
-                "type": "custom",
-                "format": "\u001b[90m┌──────────────────────Hardware──────────────────────┐"
-            },
-            {
-                "type": "host",
-                "key": " PC",
-                "keyColor": "green"
-            },
-            {
-                "type": "cpu",
-                "key": "│ ├",
-                "keyColor": "green"
-            },
-            {
-                "type": "gpu",
-                "key": "│ ├󰍛",
-                "keyColor": "green"
-            },
-            {
-                "type": "memory",
-                "key": "│ ├󰍛",
-                "keyColor": "green"
-            },
-            {
-                "type": "disk",
-                "key": "└ └",
-                "keyColor": "green"
-            },
-            {
-                "type": "custom",
-                "format": "\u001b[90m└────────────────────────────────────────────────────┘"
-            },
-            "break",
-            {
-                "type": "custom",
-                "format": "\u001b[90m┌──────────────────────Software──────────────────────┐"
-            },
-            {
-                "type": "os",
-                "key": " OS",
-                "keyColor": "yellow"
-            },
-            {
-                "type": "kernel",
-                "key": "│ ├",
-                "keyColor": "yellow"
-            },
-            {
-                "type": "bios",
-                "key": "│ ├",
-                "keyColor": "yellow"
-            },
-            {
-                "type": "packages",
-                "key": "│ ├󰏖",
-                "keyColor": "yellow"
-            },
-            {
-                "type": "shell",
-                "key": "└ └",
-                "keyColor": "yellow"
-            },
-            "break",
-            {
-                "type": "de",
-                "key": " DE",
-                "keyColor": "blue"
-            },
-            {
-                "type": "lm",
-                "key": "│ ├",
-                "keyColor": "blue"
-            },
-            {
-                "type": "wm",
-                "key": "│ ├",
-                "keyColor": "blue"
-            },
-            {
-                "type": "wmtheme",
-                "key": "│ ├󰉼",
-                "keyColor": "blue"
-            },
-            {
-                "type": "terminal",
-                "key": "└ └",
-                "keyColor": "blue"
-            },
-            {
-                "type": "custom",
-                "format": "\u001b[90m└────────────────────────────────────────────────────┘"
-            },
-            "break",
-            {
-                "type": "custom",
-                "format": "\u001b[90m┌────────────────────Uptime / Age / DT────────────────────┐"
-            },
-            {
-                "type": "command",
-                "key": "  OS Age ",
-                "keyColor": "magenta",
-                "text": "birth_install=$(stat -c %W /); current=$(date +%s); time_progression=$((current - birth_install)); days_difference=$((time_progression / 86400)); echo $days_difference days"
-            },
-            {
-                "type": "uptime",
-                "key": "  Uptime ",
-                "keyColor": "magenta"
-            },
-            {
-                "type": "datetime",
-                "key": "  DateTime ",
-                "keyColor": "magenta"
-            },
-            {
-                "type": "custom",
-                "format": "\u001b[90m└─────────────────────────────────────────────────────────┘"
-            },
-            {
-                "type": "colors",
-                "paddingLeft": 2,
-                "symbol": "circle"
-            }
-        ]
-    }
-  '';
+  home.file.".config/fastfetch/config.jsonc".source = fastfetchConfigPath;
 
   programs.zsh = {
     enable = true;
@@ -707,7 +564,7 @@ in
       path = "$XDG_DATA_HOME/zsh/history";
     };
     initContent = ''
-              bindkey '^ ' autosuggest-execute
+        bindkey '^ ' autosuggest-execute
       	fastfetch
     '';
     plugins = [
