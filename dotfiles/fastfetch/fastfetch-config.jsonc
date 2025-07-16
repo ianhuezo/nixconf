@@ -25,12 +25,13 @@
         "break",
         {
             "type": "command",
-            "key": "",
-            "text": "cols=$(tput cols); available=$((cols - 40)); if [ $available -lt 30 ]; then available=30; fi; hw_text='Hardware'; hw_len=${#hw_text}; total_dashes=$((available - hw_len - 2)); left_dashes=$((total_dashes / 2)); right_dashes=$((total_dashes - left_dashes)); printf '\\033[90m┌'; printf '%.0s─' $(seq 1 $left_dashes); printf '%s' \"$hw_text\"; printf '%.0s─' $(seq 1 $right_dashes); printf '┐\\033[0m'"
+            "key": " ",
+            "showErrors": false,
+            "text": "printf '\\033[90m┌──────────Hardware────────────────────┐\\033[0m'"
         },
         {
             "type": "host",
-            "key": " PC",
+            "key": "PC",
             "keyColor": "green"
         },
         {
@@ -55,18 +56,20 @@
         },
         {
             "type": "command",
-            "key": "",
-            "text": "cols=$(tput cols); available=$((cols - 40)); if [ $available -lt 30 ]; then available=30; fi; printf '\\033[90m└'; printf '%.0s─' $(seq 1 $((available - 2))); printf '┘\\033[0m'"
+            "key": " ",
+            "showErrors": false,
+            "text": "printf '\\033[90m└──────────────────────────────────────┘\\033[0m'"
         },
         "break",
         {
             "type": "command",
-            "key": "",
-            "text": "cols=$(tput cols); available=$((cols - 40)); if [ $available -lt 30 ]; then available=30; fi; sw_text='Software'; sw_len=${#sw_text}; total_dashes=$((available - sw_len - 2)); left_dashes=$((total_dashes / 2)); right_dashes=$((total_dashes - left_dashes)); printf '\\033[90m┌'; printf '%.0s─' $(seq 1 $left_dashes); printf '%s' \"$sw_text\"; printf '%.0s─' $(seq 1 $right_dashes); printf '┐\\033[0m'"
+            "key": " ",
+            "showErrors": false,
+            "text": "printf '\\033[90m┌──────────Software──────────────┐\\033[0m'"
         },
         {
             "type": "os",
-            "key": " OS",
+            "key": "OS",
             "keyColor": "yellow"
         },
         {
@@ -91,10 +94,17 @@
         },
         {
             "type": "command",
-            "key": "",
-            "text": "cols=$(tput cols); available=$((cols - 40)); if [ $available -lt 30 ]; then available=30; fi; printf '\\033[90m└'; printf '%.0s─' $(seq 1 $((available - 2))); printf '┘\\033[0m'"
+            "key": " ",
+            "showErrors": false,
+            "text": "printf '\\033[90m└────────────────────────────────┘\\033[0m'"
         },
         "break",
+        {
+            "type": "command",
+            "key": " ",
+            "showErrors": false,
+            "text": "printf '\\033[90m┌──────────Startup───────────┐\\033[0m'"
+        },
         {
             "type": "de",
             "key": " DE",
@@ -120,16 +130,24 @@
             "key": "└ └",
             "keyColor": "blue"
         },
+        {
+            "type": "command",
+            "key": " ",
+            "showErrors": false,
+            "text": "printf '\\033[90m└────────────────────────────┘\\033[0m'"
+        },
         "break",
         {
             "type": "command",
-            "key": "",
-            "text": "cols=$(tput cols); available=$((cols - 40)); if [ $available -lt 30 ]; then available=30; fi; ut_text='Uptime / Age / DT'; ut_len=${#ut_text}; total_dashes=$((available - ut_len - 2)); left_dashes=$((total_dashes / 2)); right_dashes=$((total_dashes - left_dashes)); printf '\\033[90m┌'; printf '%.0s─' $(seq 1 $left_dashes); printf '%s' \"$ut_text\"; printf '%.0s─' $(seq 1 $right_dashes); printf '┐\\033[0m'"
+            "key": " ",
+            "showErrors": false,
+            "text": "printf '\\033[90m┌──────────Uptime / Age / DT─────────┐\\033[0m'"
         },
         {
             "type": "command",
             "key": "  OS Age ",
             "keyColor": "magenta",
+            "showErrors": false,
             "text": "birth_install=$(stat -c %W /); current=$(date +%s); time_progression=$((current - birth_install)); days_difference=$((time_progression / 86400)); echo $days_difference days"
         },
         {
@@ -144,8 +162,9 @@
         },
         {
             "type": "command",
-            "key": "",
-            "text": "cols=$(tput cols); available=$((cols - 40)); if [ $available -lt 30 ]; then available=30; fi; printf '\\033[90m└'; printf '%.0s─' $(seq 1 $((available - 2))); printf '┘\\033[0m'"
+            "key": " ",
+            "showErrors": false,
+            "text": "printf '\\033[90m└────────────────────────────────────┘\\033[0m'"
         },
         {
             "type": "colors",

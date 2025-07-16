@@ -293,9 +293,6 @@ in
           "$mod, S, exec, spotify --enable-features=UseOzonePlatform --ozone-platform=x11 --uri=%U"
           "$mod, D, exec, vesktop --enable-features=UseOzonePlatform --ozone-platform=x11 --uri=%U"
           "$mod SHIFT, L, exec, hyprlock"
-          #mod shift does things to workspaces, monitors, etc
-          "$mod SHIFT, N, cyclenext"
-          "$mod SHIFT, P, cyclenext, prev"
           "$mod SHIFT, S, exec, hyprshot -m region --clipboard-only"
           # "CTRL, TAB, overview:toggle"
           "$mod, Q, killactive"
@@ -305,6 +302,10 @@ in
           "$mod, N, exec, hyprctl dispatch togglefloating"
           #mod with left mouse moves windows
           ", Print, exec, grimblast copy area"
+	  #Kitty specific open another kitty terminal instead of splitting the kitty terminal
+	  "CTRL_SHIFT, Return, exec, kitty --directory=$HOME"
+	  "CTRL_SHIFT, bracketleft, cyclenext, prev"
+	  "CTRL_SHIFT, bracketright, cyclenext"
         ]
         ++ (
           # binds $mod + [shift +] {Q,W,E,R,T,Y,U,I,O} to [move to] workspace {1..9}
@@ -413,6 +414,9 @@ in
       bold_font Maple Mono
       bold_italic_font Maple Mono
       font_size 12.0
+      map ctrl+shift+enter no_op
+      map ctrl+shift+[ no_op
+      map ctrl+shift+] no_op
       background_opacity 0.85
       foreground #${config.colorScheme.palette.base05} 
       background #${config.colorScheme.palette.base00} 
