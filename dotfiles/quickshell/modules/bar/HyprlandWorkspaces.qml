@@ -3,6 +3,8 @@ import QtQuick
 import Quickshell
 import Qt.labs.platform 1.1
 import QtQuick.Effects
+import "root:/config"
+import "root:/services"
 
 Column {
     id: hyprlandWindowDisplay
@@ -121,7 +123,7 @@ Column {
                     source: lampIcon
                     anchors.fill: lampIcon
                     colorization: 1
-                    colorizationColor: "#AA3333"  // Red tint for inactive lamps
+                    colorizationColor: Color.palette.base08  // Red tint for inactive lamps
                     blur: 0.1
                     blurMax: 4
                     shadowEnabled: true
@@ -137,7 +139,7 @@ Column {
                     source: lampIcon
                     anchors.fill: lampIcon
                     colorization: 1
-                    colorizationColor: "#CC3333"
+                    colorizationColor: Color.palette.base08
                     visible: (index + 1) !== activeWsId
                 }
 
@@ -149,7 +151,7 @@ Column {
                     blurMax: 8
                     brightness: 0.1
                     shadowEnabled: true
-                    shadowColor: "#ffdd55"
+                    shadowColor: Color.palette.base09
                     shadowHorizontalOffset: 0
                     shadowVerticalOffset: 0
                     shadowBlur: 1.0
