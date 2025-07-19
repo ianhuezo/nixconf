@@ -167,17 +167,31 @@ Item {
                         delegate: appList
 
                         // populate: Transition {
-                        //     ParallelAnimation {
-                        //         NumberAnimation {
-                        //             property: "x"
-                        //             from: -width
-                        //             duration: 300
-                        //             easing.type: Easing.InOutCubic
+                        //     id: populateTrans
+                        //     SequentialAnimation {
+                        //         // Stagger delay for cascading effect
+                        //         PauseAnimation {
+                        //             duration: (populateTrans.ViewTransition.index - populateTrans.ViewTransition.targetIndexes[0]) * 60
                         //         }
-                        //         NumberAnimation {
-                        //             property: "opacity"
-                        //             from: 0
-                        //             duration: 200
+                        //
+                        //         ParallelAnimation {
+                        //             // Smooth opacity fade-in
+                        //             NumberAnimation {
+                        //                 property: "opacity"
+                        //                 from: 0
+                        //                 to: 1
+                        //                 duration: 350
+                        //                 easing.type: Easing.InCirc
+                        //             }
+                        //
+                        //             // Gentle horizontal slide (optional)
+                        //             NumberAnimation {
+                        //                 property: "x"
+                        //                 from: 30
+                        //                 to: 0
+                        //                 duration: 300
+                        //                 easing.type: Easing.OutCubic
+                        //             }
                         //         }
                         //     }
                         // }
