@@ -60,8 +60,8 @@ Item {
             scrollUp();
         } else if (event.key == Qt.Key_Enter || event.key == Qt.Key_Return) {
             if (appViewer.currentResults.length > 0 && appViewer.userSelectedIndex < appViewer.currentResults.length) {
-                const execCmd = appViewer.currentResults[appViewer.userSelectedIndex].execString;
-
+                let execCmd = appViewer.currentResults[appViewer.userSelectedIndex].execString;
+                execCmd = execCmd.replace(/\s?%[fFuUdDnNiCkvm]/g, ''); //this gets rid of weird %U or other characters
                 Quickshell.execDetached(["sh", "-c", `cd ~ && ${execCmd.trim()}`]);
                 appViewer.appSelected();
             }
