@@ -41,6 +41,9 @@ Rectangle {
         anchors.leftMargin: searchIcon.width + parent.width * 0.04
         width: parent.width
         height: parent.height
+        font.family: 'JetBrains Mono Nerd Font'
+        font.weight: 400
+        font.pixelSize: 16
         text: ''
         readOnly: false
         color: Color.palette.base07

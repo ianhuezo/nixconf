@@ -110,21 +110,16 @@ PanelWindow {
                     }
                 }
             }
-            Rectangle {
-                id: appChooser
-                color: 'transparent'
-                anchors.top: parent.top
-                height: parent.height * 0.2
-                width: parent.width * 0.8
-                topLeftRadius: mainDrawArea.radius
-                // bottomLeftRadius: mainDrawArea.radius
+            AppChooser {
+                id: appChooserContainer
             }
+
             Rectangle {
                 id: mainApplication
                 color: 'transparent'
-                height: parent.height - appChooser.height
+                height: parent.height - appChooserContainer.height
                 width: parent.width - splashPanel.width
-                y: parent.y + appChooser.height
+                y: parent.y + appChooserContainer.height
                 bottomLeftRadius: mainDrawArea.radius
                 AppViewer {
                     id: mainAppViewer

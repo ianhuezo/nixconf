@@ -121,6 +121,9 @@ Item {
                                 text: modelData.name
                                 anchors.verticalCenter: parent.verticalCenter
                                 color: Color.palette.base07
+                                font.family: 'JetBrains Mono Nerd Font'
+                                font.weight: 400
+                                font.pixelSize: 16
                             }
                         }
 

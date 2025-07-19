@@ -131,7 +131,7 @@ in
     enable = true;
     settings = {
       defaultTimeout = 10000;
-      font = "JetBrains Mono Nerd Font Mono";
+      font = "JetBrains Mono Nerd Font";
       backgroundColor = "#${config.colorScheme.palette.base00}80";
       borderRadius = 20;
       padding = "10,5,10,5";
@@ -394,7 +394,7 @@ in
   gtk = {
     enable = true;
     font = {
-      name = "fira-sans";
+      name = "JetBrains Mono Nerd Font";
       size = 12;
     };
     theme = {
