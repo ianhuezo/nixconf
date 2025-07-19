@@ -14,16 +14,16 @@ Item {
     signal appSelected
     property var blacklistedApps: ["Advanced Network Configuration", "Volume Control"]
     readonly property list<DesktopEntry> list: DesktopEntries.applications.values.filter(a => !a.noDisplay).sort((a, b) => a.name.localeCompare(b.name))
-    readonly property list<var> preppedApps: list.map(a => ({
+    readonly property list<var> preppedApps: list.filter(a => !blacklistedApps.includes(a.name))  // Filter blacklist here
+    .map(a => ({
                 name: Fuzzy.prepare(a.name),
                 comment: Fuzzy.prepare(a.comment),
                 entry: a
             }))
 
-    // Add property to store current filtered results
+    // Use the filtered list from preppedApps for the fallback
     property var currentResults: {
-        let results = userText ? fuzzyQuery(userText) : list;
-        return results.filter(app => !blacklistedApps.includes(app.name));
+        return userText ? fuzzyQuery(userText) : preppedApps.map(p => p.entry);
     }
     function fuzzyQuery(search: string): var {
         return Fuzzy.go(search, preppedApps, {
@@ -159,9 +159,28 @@ Item {
                 contentWidth: parent.width
                 Column {
                     width: parent.width
-                    Repeater {
-                        model: appViewer.currentResults  // Use filtered results instead of preppedApps
+                    ListView {
+                        width: parent.width
+                        height: contentHeight  // This might not update properly
+                        interactive: true
+                        model: appViewer.currentResults
                         delegate: appList
+
+                        // populate: Transition {
+                        //     ParallelAnimation {
+                        //         NumberAnimation {
+                        //             property: "x"
+                        //             from: -width
+                        //             duration: 300
+                        //             easing.type: Easing.InOutCubic
+                        //         }
+                        //         NumberAnimation {
+                        //             property: "opacity"
+                        //             from: 0
+                        //             duration: 200
+                        //         }
+                        //     }
+                        // }
                     }
                 }
             }
