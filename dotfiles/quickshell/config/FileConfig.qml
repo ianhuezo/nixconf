@@ -10,7 +10,7 @@ Singleton {
 
     readonly property string splashArtPath: Qt.resolvedUrl(`${assetsRootPath}/transparent/frieren-camp-crop.jpg`)
     readonly property string dashboardAppLauncher: Qt.resolvedUrl(`${assetsRootPath}/transparent/mimic.png`)
-
+    readonly property string musicAppLauncher: Qt.resolvedUrl(`${assetsRootPath}/transparent/frieren-wand.png`)
 
     function getIconPath(iconName) {
         //for icons that are not from font packages
