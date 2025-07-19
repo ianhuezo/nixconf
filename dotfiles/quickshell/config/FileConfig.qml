@@ -8,9 +8,9 @@ Singleton {
     readonly property string assetsRootPath: '../../assets'
     readonly property string themesRootPath: '../../themes'
 
-    readonly property string splashArtPath: Qt.resolvedUrl(`${assetsRootPath}/transparent/frieren-camp-crop.jpg`)
-    readonly property string dashboardAppLauncher: Qt.resolvedUrl(`${assetsRootPath}/transparent/mimic.png`)
-    readonly property string musicAppLauncher: Qt.resolvedUrl(`${assetsRootPath}/transparent/frieren-wand.png`)
+    readonly property string splashArtPath: Qt.resolvedUrl(`${assetsRootPath}/frieren/camp-crop.jpg`)
+    readonly property string dashboardAppLauncher: Qt.resolvedUrl(`${assetsRootPath}/frieren/mimic.png`)
+    readonly property string musicAppLauncher: Qt.resolvedUrl(`${assetsRootPath}/frieren/wand.png`)
 
     function getIconPath(iconName) {
         //for icons that are not from font packages
