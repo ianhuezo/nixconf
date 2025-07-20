@@ -35,7 +35,7 @@ Rectangle {
         return diff;
     }
 
-    property real angle: (relativePosition / totalItems) * 2 * Math.PI
+    property real angle: totalItems > 2 ? (relativePosition / totalItems) * 2 * Math.PI : (relativePosition / totalItems) * 1 * Math.PI
     property real normalizedDistance: Math.abs(relativePosition) / (totalItems / 2)
 
     property real targetScale: {
