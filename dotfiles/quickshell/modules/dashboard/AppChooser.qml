@@ -10,23 +10,96 @@ Rectangle {
     width: parent.width * 0.8
     topLeftRadius: mainDrawArea.radius
 
+    signal appRequested(var appName)
+    readonly property var unfocusedScale: 0.6
     readonly property var topLevelModel: [
         {
             appName: 'Applications',
             iconLocation: FileConfig.dashboardAppLauncher,
-            selected: true
+            selected: true,
+            mipmap: false
+        },
+        {
+            appName: 'Youtube Convert',
+            iconLocation: FileConfig.youtubeConverter,
+            selected: false,
+            mipmap: true
+        },
+        {
+            appName: 'Music',
+            iconLocation: FileConfig.youtubeConverter,
+            selected: false,
+            mipmap: true
+        },
+        {
+            appName: 'Music',
+            iconLocation: FileConfig.youtubeConverter,
+            selected: false,
+            mipmap: true
         }
-        // {
-        //     appName: 'Music',
-        //     iconLocation: FileConfig.musicAppLauncher,
-        //     selected: true
-        // }
-        // {
-        //     appName: 'Music',
-        //     iconLocation: FileConfig.musicAppLauncher,
-        //     selected: false
-        // }
     ]
+
+    property var carouselModel: {
+        // Find the selected item index in topLevelModel
+        let selectedIndex = -1;
+        for (let i = 0; i < appChooserContainer.topLevelModel.length; i++) {
+            if (appChooserContainer.topLevelModel[i].selected) {
+                selectedIndex = i;
+                break;
+            }
+        }
+
+        if (selectedIndex === -1)
+            return []; // No selected item found
+
+        // Get previous, current, and next items (with wrapping)
+        const totalItems = appChooserContainer.topLevelModel.length;
+        const prevIndex = (selectedIndex - 1 + totalItems) % totalItems;
+        const nextIndex = (selectedIndex + 1) % totalItems;
+
+        return [appChooserContainer.topLevelModel[prevIndex], appChooserContainer.topLevelModel[selectedIndex], appChooserContainer.topLevelModel[nextIndex]];
+    }
+    function moveCarouselPrevious() {
+        // Find current selected index
+        let currentIndex = -1;
+        for (let i = 0; i < appChooserContainer.topLevelModel.length; i++) {
+            if (appChooserContainer.topLevelModel[i].selected) {
+                currentIndex = i;
+                break;
+            }
+        }
+
+        if (currentIndex === -1)
+            return;
+
+        // Calculate previous index with wrapping
+        const totalItems = appChooserContainer.topLevelModel.length;
+        const prevIndex = (currentIndex - 1 + totalItems) % totalItems;
+
+        // Update selection
+        appChooserContainer.topLevelModel[currentIndex].selected = false;
+        appChooserContainer.topLevelModel[prevIndex].selected = true;
+    }
+    function moveCarouselNext() {
+        // Find current selected index
+        let currentIndex = -1;
+        for (let i = 0; i < appChooserContainer.topLevelModel.length; i++) {
+            if (appChooserContainer.topLevelModel[i].selected) {
+                currentIndex = i;
+                break;
+            }
+        }
+
+        if (currentIndex === -1)
+            return;
+
+        // Calculate next index with wrapping
+        const nextIndex = (currentIndex + 1) % appChooserContainer.topLevelModel.length;
+
+        // Update selection
+        appChooserContainer.topLevelModel[currentIndex].selected = false;
+        appChooserContainer.topLevelModel[nextIndex].selected = true;
+    }
 
     Rectangle {
         id: narrowedAppChooser
@@ -46,12 +119,83 @@ Rectangle {
             // spacing: 2
 
             Repeater {
-                model: appChooserContainer.topLevelModel
+                model: carouselModel
                 Rectangle {
                     id: app
-                    width: (parent.width - (appChooserContainer.topLevelModel.length - 1) * parent.spacing) / appChooserContainer.topLevelModel.length
+                    width: (parent.width - (appChooserContainer.carouselModel.length - 1) * parent.spacing) / appChooserContainer.carouselModel.length
                     height: parent.height
                     color: 'transparent'
+
+                    // Transform properties for carousel effect
+                    property bool isSelected: modelData.selected
+                    property int itemIndex: index
+                    property int selectedIndex: 1 // Always the middle item in our 3-item carousel
+
+                    // In a 3-item carousel, the selected item is always at index 1
+                    property int relativePosition: itemIndex - 1
+
+                    // Scale and offset calculations
+                    property real targetScale: isSelected ? 1.0 : appChooserContainer.unfocusedScale
+                    property real targetYOffset: isSelected ? 0 : height * 0.1
+                    property real targetXOffset: {
+                        if (isSelected)
+                            return 0;
+                        return relativePosition < 0 ? -width * 0.05 : width * 0.05;
+                    }
+
+                    transform: [
+                        Scale {
+                            id: scaleTransform
+                            origin.x: app.width / 2
+                            origin.y: app.height / 2
+                            xScale: app.targetScale
+                            yScale: app.targetScale
+
+                            Behavior on xScale {
+                                NumberAnimation {
+                                    duration: 300
+                                    easing.type: Easing.OutCubic
+                                }
+                            }
+
+                            Behavior on yScale {
+                                NumberAnimation {
+                                    duration: 300
+                                    easing.type: Easing.OutCubic
+                                }
+                            }
+                        },
+                        Translate {
+                            id: translateTransform
+                            x: app.targetXOffset
+                            y: app.targetYOffset
+
+                            Behavior on x {
+                                NumberAnimation {
+                                    duration: 300
+                                    easing.type: Easing.OutCubic
+                                }
+                            }
+
+                            Behavior on y {
+                                NumberAnimation {
+                                    duration: 300
+                                    easing.type: Easing.OutCubic
+                                }
+                            }
+                        }
+                    ]
+
+                    // Optional: Add opacity fade for non-selected items
+                    opacity: isSelected ? 1.0 : 0.7
+
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 300
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+
                     Rectangle {
                         id: appIcon
                         width: parent.width
@@ -65,15 +209,10 @@ Rectangle {
                             source: modelData.iconLocation
                             anchors.fill: parent
                             fillMode: Image.PreserveAspectFit
-                            // mipmap: true
-                            smooth: true                        // Enable smooth scaling
-                            antialiasing: true                  // Improved rendering quality
-                            sourceSize.width: width     // Use 2x resolution for crisp rendering
+                            antialiasing: true
+                            mipmap: modelData.mipmap
+                            sourceSize.width: width
                             sourceSize.height: height
-                            // layer.enabled: true
-                            // layer.smooth: true
-                            // layer.samples: 8  // Antialiasing samples
-
                         }
                     }
                     Rectangle {
@@ -102,6 +241,13 @@ Rectangle {
                             y: appText.y + appText.height + appTextContainer.underlineMargin
                             radius: 3
                             color: modelData.selected ? Color.palette.base08 : 'transparent'
+
+                            Behavior on color {
+                                ColorAnimation {
+                                    duration: 300
+                                    easing.type: Easing.OutCubic
+                                }
+                            }
                         }
                     }
                 }
