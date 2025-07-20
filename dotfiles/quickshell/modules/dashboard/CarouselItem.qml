@@ -2,9 +2,10 @@ import QtQuick
 import "root:/config"
 import "root:/services"
 
+
 Rectangle {
     id: carouselItem
-
+    
     // Public properties - inputs to the component
     property string appName: ""
     property string iconLocation: ""
@@ -12,25 +13,57 @@ Rectangle {
     property bool isSelected: false
     property int itemIndex: 0
     property int selectedIndex: 1
+    property int totalItems: 3
     property real unfocusedScale: 0.8
-    property color textColor: Color.palette.base07
-    property color underlineColor: Color.palette.base08
+    property real carouselRadius: 200 // Radius of the circular path
+    property color textColor: "white" // Default color, was Color.palette.base07
+    property color underlineColor: "red" // Default color, was Color.palette.base08
     property string fontFamily: "JetBrains Mono Nerd Font"
     property int fontSize: 18
     property int fontWeight: 500
-
+    
     color: 'transparent'
-
-    // Private properties - internal calculations
-    property int relativePosition: itemIndex - selectedIndex
-    property real targetScale: isSelected ? 1.0 : unfocusedScale
-    property real targetYOffset: isSelected ? 0 : height * 0.1
+    
+    // Private properties - circular carousel calculations
+    property int relativePosition: {
+        let diff = itemIndex - selectedIndex;
+        let halfTotal = totalItems / 2;
+        // Wrap around for circular behavior
+        if (diff > halfTotal) diff -= totalItems;
+        else if (diff < -halfTotal) diff += totalItems;
+        return diff;
+    }
+    
+    property real angle: (relativePosition / totalItems) * 2 * Math.PI
+    property real normalizedDistance: Math.abs(relativePosition) / (totalItems / 2)
+    
+    property real targetScale: {
+        if (isSelected) return 1.0;
+        // Scale decreases with distance, using cosine for smooth falloff
+        return unfocusedScale + (1.0 - unfocusedScale) * Math.cos(Math.abs(angle));
+    }
+    
     property real targetXOffset: {
-        if (isSelected)
-            return 0;
-        return relativePosition < 0 ? -width * 0.05 : width * 0.05;
+        if (totalItems <= 1) return 0;
+        // Sinusoidal horizontal positioning
+        return Math.sin(angle) * carouselRadius * 0.3;
+    }
+    
+    property real targetYOffset: {
+        if (isSelected) return 0;
+        // Slight vertical arc effect
+        return Math.abs(Math.sin(angle)) * height * 0.15;
+    }
+    
+    property real targetOpacity: {
+        if (isSelected) return 1.0;
+        // Opacity fades with distance using cosine curve
+        return 0.3 + 0.7 * Math.max(0, Math.cos(Math.abs(angle)));
     }
 
+    // Use z property for depth layering instead of transform
+    z: 100 - Math.abs(relativePosition) * 10
+    
     transform: [
         Scale {
             id: scaleTransform
@@ -41,15 +74,15 @@ Rectangle {
 
             Behavior on xScale {
                 NumberAnimation {
-                    duration: 300
-                    easing.type: Easing.OutCubic
+                    duration: 400
+                    easing.type: Easing.InOutQuart
                 }
             }
 
             Behavior on yScale {
                 NumberAnimation {
-                    duration: 300
-                    easing.type: Easing.OutCubic
+                    duration: 400
+                    easing.type: Easing.InOutQuart
                 }
             }
         },
@@ -60,27 +93,27 @@ Rectangle {
 
             Behavior on x {
                 NumberAnimation {
-                    duration: 300
-                    easing.type: Easing.OutCubic
+                    duration: 400
+                    easing.type: Easing.InOutQuart
                 }
             }
 
             Behavior on y {
                 NumberAnimation {
-                    duration: 300
-                    easing.type: Easing.OutCubic
+                    duration: 400
+                    easing.type: Easing.InOutQuart
                 }
             }
         }
     ]
 
-    // Opacity fade for non-selected items
-    opacity: isSelected ? 1.0 : 0.7
+    // Sinusoidal opacity fade
+    opacity: targetOpacity
 
     Behavior on opacity {
         NumberAnimation {
-            duration: 300
-            easing.type: Easing.OutCubic
+            duration: 400
+            easing.type: Easing.InOutQuart
         }
     }
 
@@ -92,7 +125,7 @@ Rectangle {
         anchors.left: parent.left
         anchors.right: parent.right
         color: 'transparent'
-
+        
         Image {
             anchors.centerIn: parent
             source: carouselItem.iconLocation
@@ -104,7 +137,7 @@ Rectangle {
             sourceSize.height: height
         }
     }
-
+    
     Rectangle {
         id: appTextContainer
         property var underlineMargin: 2
@@ -114,7 +147,7 @@ Rectangle {
         anchors.left: parent.left
         anchors.right: parent.right
         color: 'transparent'
-
+        
         Text {
             id: appText
             anchors.centerIn: parent
@@ -124,7 +157,7 @@ Rectangle {
             font.pixelSize: carouselItem.fontSize
             color: carouselItem.textColor
         }
-
+        
         Rectangle {
             id: appUnderliner
             width: appText.width * 0.75
