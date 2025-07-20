@@ -38,9 +38,9 @@ PanelWindow {
             color: Color.palette.base00
             radius: 20
 
-	    SplashPanel {
-	      id: splashPanel
-	    }
+            SplashPanel {
+                id: splashPanel
+            }
             AppChooser {
                 id: appChooserContainer
             }

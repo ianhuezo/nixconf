@@ -33,16 +33,32 @@ Item {
         }).map(r => r.obj.entry);
     }
     function scrollDown() {
+        let currentIndex = appViewer.userSelectedIndex;
+        let maxIndex = Math.max(0, appViewer.currentResults.length - 1);
+        currentIndex += 1;
+        appViewer.userSelectedIndex = Math.min(currentIndex, maxIndex);
+
         const currentSelectionHeight = selectionHeight * (userSelectedIndex + 1);
         if (currentSelectionHeight > flickable.height) {
             scrollBarVertical.increase();
         }
     }
     function scrollUp() {
+        let currentIndex = appViewer.userSelectedIndex;
+        currentIndex -= 1;
+        appViewer.userSelectedIndex = Math.max(0, currentIndex);
         const selectedItemTop = selectionHeight * userSelectedIndex;
         const visibleTop = flickable.contentY;
         if (selectedItemTop < visibleTop) {
             scrollBarVertical.decrease();
+        }
+    }
+    function selectApplication() {
+        if (appViewer.currentResults.length > 0 && appViewer.userSelectedIndex < appViewer.currentResults.length) {
+            let execCmd = appViewer.currentResults[appViewer.userSelectedIndex].execString;
+            execCmd = execCmd.replace(/\s?%[fFuUdDnNiCkvm]/g, ''); //this gets rid of weird %U or other characters
+            Quickshell.execDetached(["sh", "-c", `cd ~ && ${execCmd.trim()}`]);
+            appViewer.appSelected();
         }
     }
 
@@ -51,20 +67,11 @@ Item {
         let maxIndex = Math.max(0, appViewer.currentResults.length - 1);
 
         if (event.key == Qt.Key_Down) {
-            currentIndex += 1;
-            appViewer.userSelectedIndex = Math.min(currentIndex, maxIndex);
             scrollDown();
         } else if (event.key == Qt.Key_Up) {
-            currentIndex -= 1;
-            appViewer.userSelectedIndex = Math.max(0, currentIndex);
             scrollUp();
         } else if (event.key == Qt.Key_Enter || event.key == Qt.Key_Return) {
-            if (appViewer.currentResults.length > 0 && appViewer.userSelectedIndex < appViewer.currentResults.length) {
-                let execCmd = appViewer.currentResults[appViewer.userSelectedIndex].execString;
-                execCmd = execCmd.replace(/\s?%[fFuUdDnNiCkvm]/g, ''); //this gets rid of weird %U or other characters
-                Quickshell.execDetached(["sh", "-c", `cd ~ && ${execCmd.trim()}`]);
-                appViewer.appSelected();
-            }
+            selectApplication();
         }
     }
 
