@@ -32,6 +32,20 @@ PanelWindow {
         anchors.fill: parent
         focus: true
         Keys.onEscapePressed: root.closeRequested()
+        Keys.onPressed: event => {
+            switch (event.key) {
+            case Qt.Key_Left:
+                appChooserContainer.moveCarouselPrevious();
+                event.accepted = true;
+                break;
+            case Qt.Key_Right:
+                appChooserContainer.moveCarouselNext();
+                event.accepted = true;
+                break;
+            default:
+                break;
+            }
+        }
         Rectangle {
             id: mainDrawArea
             anchors.fill: parent
