@@ -1,10 +1,8 @@
 import Quickshell
 import QtQuick
-import Quickshell.Io
 import Quickshell.Wayland
 import "root:/config"
 import "root:/services"
-import QtQuick.Effects
 
 PanelWindow {
     id: root

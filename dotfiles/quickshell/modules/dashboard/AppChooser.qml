@@ -17,23 +17,11 @@ Item {
             mipmap: false
         },
         {
-            appName: 'Youtube Convert',
+            appName: 'Youtube Converter',
             iconLocation: FileConfig.youtubeConverter,
             selected: false,
             mipmap: true
         },
-        {
-            appName: 'Music',
-            iconLocation: FileConfig.youtubeConverter,
-            selected: false,
-            mipmap: true
-        },
-        {
-            appName: 'Music 2',
-            iconLocation: FileConfig.youtubeConverter,
-            selected: false,
-            mipmap: true
-        }
     ]
 
     // Get the currently selected index
@@ -107,7 +95,7 @@ Item {
 
                     // Pass styling properties
                     unfocusedScale: root.unfocusedScale
-                    carouselRadius: narrowedAppChooser.width * 0.8
+                    carouselRadius: narrowedAppChooser.width * 1
                     textColor: Color.palette.base07
                     underlineColor: Color.palette.base08
                     fontFamily: 'JetBrains Mono Nerd Font'
