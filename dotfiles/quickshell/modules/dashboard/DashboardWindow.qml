@@ -1,8 +1,10 @@
 import Quickshell
 import QtQuick
 import Quickshell.Wayland
+import QtQuick.Layouts
 import "root:/config"
 import "root:/services"
+import "root:/modules/music-popup"
 
 PanelWindow {
     id: root
@@ -55,6 +57,9 @@ PanelWindow {
             }
             AppChooser {
                 id: appChooserContainer
+                onAppRequested: appName => {
+                    stack.componentType = appName;
+                }
             }
 
             Rectangle {
@@ -64,10 +69,38 @@ PanelWindow {
                 width: parent.width - splashPanel.width
                 y: parent.y + appChooserContainer.height
                 bottomLeftRadius: mainDrawArea.radius
-                AppViewer {
-                    id: mainAppViewer
-                    onAppSelected: {
-                        root.closeRequested();
+                StackLayout {
+                    id: stack
+                    anchors.fill: parent
+                    property string componentType: "Applications"
+
+                    currentIndex: {
+                        switch (componentType) {
+                        case "Applications":
+                            return 0;
+                        case "Youtube Converter":
+                            return 1;
+                        default:
+                            return 0;
+                        }
+                    }
+                    Item {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+
+                        AppViewer {
+                            id: mainAppViewer
+                            onAppSelected: {
+                                root.closeRequested();
+                            }
+                        }
+                    }
+                    Item {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        YoutubeConversionContainer {
+                            id: youtubeConverter
+                        }
                     }
                 }
             }

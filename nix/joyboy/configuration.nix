@@ -311,6 +311,9 @@
         pillow
       ]
     ))
+    #wifi hotspot
+    hostapd
+    dnsmasq
     # glxinfo # Provides glxinfo command
     # mesa-demos # Provides additional OpenGL utilities
   ];

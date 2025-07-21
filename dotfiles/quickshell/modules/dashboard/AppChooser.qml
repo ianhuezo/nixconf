@@ -46,6 +46,7 @@ Item {
         // Force property binding update
         topLevelModelChanged();
         selectedIndexChanged();
+        appRequested(topLevelModel[prevIndex].appName);
     }
 
     function moveCarouselNext() {
@@ -59,6 +60,7 @@ Item {
         // Force property binding update
         topLevelModelChanged();
         selectedIndexChanged();
+        appRequested(topLevelModel[nextIndex].appName);
     }
 
     Rectangle {
