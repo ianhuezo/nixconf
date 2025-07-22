@@ -4,7 +4,7 @@ import QtQuick.Controls
 import "root:/config"
 import "root:/services"
 
-Rectangle {
+FocusScope {
     id: searchBarContainer
     property var leftMargin: parent.width * 0.1
     property var topMargin: parent.height * 0.05
@@ -13,71 +13,81 @@ Rectangle {
     property string currentText: ''
     property string placeholderText: "Search Applications..."
     property bool readOnly: false
-
     signal searchText(string text)
 
     width: containerWidth
     x: leftMargin + parent.x
     y: parent.y + topMargin
     height: containerHeight
-    radius: 10
-    color: Color.palette.base03//'#1e262e'
-    Text {
-        id: searchIcon
-        text: "⚲"
-        color: Color.palette.base04//'#828282'
-        font.pixelSize: parent.height * 0.4
-        anchors.left: parent.left
-        anchors.leftMargin: parent.width * 0.03
-        anchors.verticalCenter: parent.verticalCenter
-        rotation: 45
-    }
-    TextField {
-        id: textInput
-        placeholderText: qsTr(searchBarContainer.placeholderText)
-        placeholderTextColor: Color.palette.base04//'#828282'
-        onFocusChanged: {
-            textInput.forceActiveFocus();
-        }
+    focus: true  // Important!
+
+    Rectangle {
+        id: background
         anchors.fill: parent
-        anchors.leftMargin: searchIcon.width + parent.width * 0.04
-        width: parent.width
-        height: parent.height
-        font.family: 'JetBrains Mono Nerd Font'
-        font.weight: 400
-        font.pixelSize: 16
-        text: ''
-        readOnly: searchBarContainer.readOnly
-        color: Color.palette.base07
-        onTextChanged: {
-            searchBarContainer.searchText(textInput.text);
+        radius: 10
+        color: Color.palette.base03
+
+        Text {
+            id: searchIcon
+            text: "⚲"
+            color: Color.palette.base04
+            font.pixelSize: parent.height * 0.4
+            anchors.left: parent.left
+            anchors.leftMargin: parent.width * 0.03
+            anchors.verticalCenter: parent.verticalCenter
+            rotation: 45
         }
 
-        cursorDelegate: Rectangle {
-            width: 1
-            height: textInput.font.pixelSize
-            color: Color.palette.base07
-            visible: textInput.activeFocus
+        TextField {
+            id: textInput
+            placeholderText: qsTr(searchBarContainer.placeholderText)
+            placeholderTextColor: Color.palette.base04
 
-            SequentialAnimation on opacity {
-                loops: Animation.Infinite
-                running: textInput.activeFocus
-                PropertyAnimation {
-                    to: 1.0
-                    duration: 500
-                }
-                PropertyAnimation {
-                    to: 0.0
-                    duration: 500
+            anchors.fill: parent
+            anchors.leftMargin: searchIcon.width + parent.width * 0.04
+
+            font.family: 'JetBrains Mono Nerd Font'
+            font.weight: 400
+            font.pixelSize: 16
+            text: ''
+            readOnly: searchBarContainer.readOnly
+            color: Color.palette.base07
+            focus: true  // Important!
+
+            onTextChanged: {
+                searchBarContainer.searchText(textInput.text);
+            }
+
+            cursorDelegate: Rectangle {
+                width: 1
+                height: textInput.contentHeight || textInput.font.pixelSize
+                color: Color.palette.base07
+                visible: textInput.activeFocus
+                SequentialAnimation on opacity {
+                    loops: Animation.Infinite
+                    running: textInput.activeFocus
+                    PropertyAnimation {
+                        to: 1.0
+                        duration: 500
+                    }
+                    PropertyAnimation {
+                        to: 0.0
+                        duration: 500
+                    }
                 }
             }
+
+            background: Rectangle {
+                color: Color.palette.base03
+                radius: 10
+            }
         }
-        background: Rectangle {
-            color: Color.palette.base03//'#1e262e'
-            radius: 10
-        }
-        Component.onCompleted: {
-            textInput.forceActiveFocus();
-        }
+    }
+
+    Component.onCompleted: {
+        // Use Qt.callLater to ensure proper focus timing
+        Qt.callLater(function () {
+            searchBarContainer.forceActiveFocus();
+        });
     }
 }

@@ -61,7 +61,11 @@ Item {
             appViewer.appSelected();
         }
     }
-
+    onActiveFocusChanged: {
+        if (activeFocus) {
+            searchBar.forceActiveFocus();
+        }
+    }
     Keys.onPressed: event => {
         let currentIndex = appViewer.userSelectedIndex;
         let maxIndex = Math.max(0, appViewer.currentResults.length - 1);
@@ -85,6 +89,7 @@ Item {
                 appViewer.userText = text;
             }
         }
+
         Rectangle {
             id: appListContainer
             property real verticalMargin: 30

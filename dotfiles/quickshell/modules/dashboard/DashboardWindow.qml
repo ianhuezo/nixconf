@@ -33,21 +33,56 @@ PanelWindow {
         focus: true
         Keys.onEscapePressed: root.closeRequested()
         Keys.onPressed: event => {
+            let activeComponent = null;
             switch (event.key) {
             case Qt.Key_Left:
-                if (mainAppViewer.userText.length > 0) {
+                // Check the currently active loader's component for text
+                if (appLoader.componentType === "Applications" && appViewerLoader.item) {
+                    activeComponent = appViewerLoader.item;
+                } else if (appLoader.componentType === "Youtube Converter" && youtubeLoader.item) {
+                    activeComponent = youtubeLoader.item;
+                }
+
+                if (activeComponent && activeComponent.userText && activeComponent.userText.length > 0) {
                     event.accepted = false;
                     return;
                 }
+
+                appChooserContainer.forceActiveFocus();
                 appChooserContainer.moveCarouselPrevious();
+
+                // Restore focus to the active component after navigation
+                Qt.callLater(function () {
+                    if (activeComponent) {
+                        activeComponent.forceActiveFocus();
+                    }
+                });
+
                 event.accepted = true;
                 break;
             case Qt.Key_Right:
-                if (mainAppViewer.userText.length > 0) {
+                // Similar logic for right key
+                if (appLoader.componentType === "Applications" && appViewerLoader.item) {
+                    activeComponent = appViewerLoader.item;
+                } else if (appLoader.componentType === "Youtube Converter" && youtubeLoader.item) {
+                    activeComponent = youtubeLoader.item;
+                }
+
+                if (activeComponent && activeComponent.userText && activeComponent.userText.length > 0) {
                     event.accepted = false;
                     return;
                 }
+
+                appChooserContainer.forceActiveFocus();
                 appChooserContainer.moveCarouselNext();
+
+                // Restore focus to the active component after navigation
+                Qt.callLater(function () {
+                    if (activeComponent) {
+                        activeComponent.forceActiveFocus();
+                    }
+                });
+
                 event.accepted = true;
                 break;
             default:
@@ -66,7 +101,7 @@ PanelWindow {
             AppChooser {
                 id: appChooserContainer
                 onAppRequested: appName => {
-                    stack.componentType = appName;
+                    appLoader.componentType = appName;
                 }
             }
 
@@ -77,38 +112,61 @@ PanelWindow {
                 width: parent.width - splashPanel.width
                 y: parent.y + appChooserContainer.height
                 bottomLeftRadius: mainDrawArea.radius
-                StackLayout {
-                    id: stack
-                    anchors.fill: parent
+                Item {
+                    id: appLoader
                     property string componentType: "Applications"
+                    anchors.fill: parent
 
-                    currentIndex: {
-                        switch (componentType) {
-                        case "Applications":
-                            return 0;
-                        case "Youtube Converter":
-                            return 1;
-                        default:
-                            return 0;
-                        }
+                    // Add this to manage focus when componentType changes
+                    onComponentTypeChanged: {
+                        Qt.callLater(function () {
+                            if (componentType === "Applications" && appViewerLoader.item) {
+                                appViewerLoader.item.forceActiveFocus();
+                            } else if (componentType === "Youtube Converter" && youtubeLoader.item) {
+                                youtubeLoader.item.forceActiveFocus();
+                            }
+                        });
                     }
-                    Item {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
 
-                        AppViewer {
-                            id: mainAppViewer
-                            onAppSelected: {
-                                root.closeRequested();
+                    Loader {
+                        id: appViewerLoader
+                        anchors.fill: parent
+                        visible: appLoader.componentType === "Applications"
+                        active: visible || appLoader.componentType === "Applications"
+
+                        sourceComponent: Component {
+                            AppViewer {
+                                id: mainAppViewer
+                            }
+                        }
+
+                        onItemChanged: {
+                            if (item && visible) {
+                                Qt.callLater(function () {
+                                    item.forceActiveFocus();
+                                });
                             }
                         }
                     }
-                    Item {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
 
-                        YoutubeConversionContainer {
-                            id: youtubeConverter
+                    Loader {
+                        id: youtubeLoader
+                        anchors.fill: parent
+                        visible: appLoader.componentType === "Youtube Converter"
+                        active: visible || appLoader.componentType === "Youtube Converter"
+
+                        sourceComponent: Component {
+                            YoutubeConversionContainer {
+                                id: youtubeConverter
+                            }
+                        }
+
+                        onItemChanged: {
+                            if (item && visible) {
+                                Qt.callLater(function () {
+                                    item.forceActiveFocus();
+                                });
+                            }
                         }
                     }
                 }
