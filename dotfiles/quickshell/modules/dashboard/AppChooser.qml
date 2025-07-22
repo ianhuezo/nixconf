@@ -21,7 +21,7 @@ Item {
             iconLocation: FileConfig.youtubeConverter,
             selected: false,
             mipmap: true
-        },
+        }
     ]
 
     // Get the currently selected index
