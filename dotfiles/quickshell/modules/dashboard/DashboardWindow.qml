@@ -35,10 +35,18 @@ PanelWindow {
         Keys.onPressed: event => {
             switch (event.key) {
             case Qt.Key_Left:
+                if (mainAppViewer.userText.length > 0) {
+                    event.accepted = false;
+                    return;
+                }
                 appChooserContainer.moveCarouselPrevious();
                 event.accepted = true;
                 break;
             case Qt.Key_Right:
+                if (mainAppViewer.userText.length > 0) {
+                    event.accepted = false;
+                    return;
+                }
                 appChooserContainer.moveCarouselNext();
                 event.accepted = true;
                 break;
@@ -98,6 +106,7 @@ PanelWindow {
                     Item {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
+
                         YoutubeConversionContainer {
                             id: youtubeConverter
                         }

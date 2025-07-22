@@ -11,6 +11,8 @@ Rectangle {
     property var containerHeight: parent.height * 0.1
     property var containerWidth: parent.width * 0.8
     property string currentText: ''
+    property string placeholderText: "Search Applications..."
+    property bool readOnly: false
 
     signal searchText(string text)
 
@@ -32,7 +34,7 @@ Rectangle {
     }
     TextField {
         id: textInput
-        placeholderText: qsTr("Search Applications...")
+        placeholderText: qsTr(searchBarContainer.placeholderText)
         placeholderTextColor: Color.palette.base04//'#828282'
         onFocusChanged: {
             textInput.forceActiveFocus();
@@ -45,7 +47,7 @@ Rectangle {
         font.weight: 400
         font.pixelSize: 16
         text: ''
-        readOnly: false
+        readOnly: searchBarContainer.readOnly
         color: Color.palette.base07
         onTextChanged: {
             searchBarContainer.searchText(textInput.text);

@@ -4,12 +4,13 @@ import QtQuick.Controls
 import QtQuick.Effects
 
 Rectangle {
-    id: popupContainer
+    id: root
     anchors.fill: parent
-    color: '#171D23'
-    border.color: '#FF9E64'
+    color: 'transparent'
+
+    border.color: 'orange'
     border.width: 1
-    radius: 10
+    property string userText: ''
 
     Rectangle {
         id: imageUploadedArea
