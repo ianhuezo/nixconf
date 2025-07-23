@@ -137,6 +137,9 @@ PanelWindow {
                         sourceComponent: Component {
                             AppViewer {
                                 id: mainAppViewer
+                                onAppSelected: {
+                                    root.closeRequested();
+                                }
                             }
                         }
 
