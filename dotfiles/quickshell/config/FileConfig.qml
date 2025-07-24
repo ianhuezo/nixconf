@@ -27,6 +27,7 @@ Singleton {
         readonly property string gpu: root.getIconPath("gpu.svg")
         readonly property string cpu: root.getIconPath("cpu.svg")
         readonly property string ram: root.getIconPath("ram.svg")
+	readonly property string media: root.getIconPath("media.svg")
     }
 
     readonly property QtObject scripts: QtObject {

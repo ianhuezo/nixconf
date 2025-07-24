@@ -3,6 +3,7 @@ import QtQuick.Window
 import QtQuick.Controls
 import QtQuick.Effects
 import "root:/modules/dashboard"
+import "root:/config"
 
 FocusScope {
     id: root
@@ -22,6 +23,39 @@ FocusScope {
             placeholderText: 'Enter Youtube URL and Press Enter...'
             onSearchText: text => {
                 root.userText = text;
+            }
+        }
+        Image {
+            id: youtubeMediaSvg
+            anchors.centerIn: parent
+            width: parent.width
+            height: parent.height
+            fillMode: Image.PreserveAspectFit
+            source: FileConfig.icons.media
+            layer.enabled: true
+            layer.effect: MultiEffect {
+                brightness: 1.0
+                colorization: 1.0
+                colorizationColor: '#efefef'
+            }
+            visible: !youtubeThumbnail.visible
+        }
+        Rectangle {
+            id: clippingRectangle
+            width: 150
+            height: 150
+            y: (parent.height - height) / 2
+            x: (parent.width - width) / 2
+            color: "transparent"
+            visible: youtubeThumbnail.source.toString().length > 0
+            clip: true
+
+            Image {
+                id: youtubeThumbnail
+                anchors.fill: parent
+                fillMode: Image.PreserveAspectCrop
+                source: ''
+                visible: source.toString().length > 0
             }
         }
     }
