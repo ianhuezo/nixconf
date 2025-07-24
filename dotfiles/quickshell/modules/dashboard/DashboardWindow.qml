@@ -32,57 +32,31 @@ PanelWindow {
         anchors.fill: parent
         focus: true
         Keys.onEscapePressed: root.closeRequested()
-        Keys.onPressed: event => {
+        function isSearchBarActiveForComponent() {
             let activeComponent = null;
+            if (appLoader.componentType === "Applications" && appViewerLoader.item) {
+                activeComponent = appViewerLoader.item;
+            } else if (appLoader.componentType === "Youtube Converter" && youtubeLoader.item) {
+                activeComponent = youtubeLoader.item;
+            }
+            return activeComponent && activeComponent.userText && activeComponent.userText.length > 0;
+        }
+        Keys.onPressed: event => {
             switch (event.key) {
             case Qt.Key_Left:
-                // Check the currently active loader's component for text
-                if (appLoader.componentType === "Applications" && appViewerLoader.item) {
-                    activeComponent = appViewerLoader.item;
-                } else if (appLoader.componentType === "Youtube Converter" && youtubeLoader.item) {
-                    activeComponent = youtubeLoader.item;
-                }
-
-                if (activeComponent && activeComponent.userText && activeComponent.userText.length > 0) {
+                if (isSearchBarActiveForComponent()) {
                     event.accepted = false;
                     return;
                 }
-
-                appChooserContainer.forceActiveFocus();
                 appChooserContainer.moveCarouselPrevious();
-
-                // Restore focus to the active component after navigation
-                Qt.callLater(function () {
-                    if (activeComponent) {
-                        activeComponent.forceActiveFocus();
-                    }
-                });
-
                 event.accepted = true;
                 break;
             case Qt.Key_Right:
-                // Similar logic for right key
-                if (appLoader.componentType === "Applications" && appViewerLoader.item) {
-                    activeComponent = appViewerLoader.item;
-                } else if (appLoader.componentType === "Youtube Converter" && youtubeLoader.item) {
-                    activeComponent = youtubeLoader.item;
-                }
-
-                if (activeComponent && activeComponent.userText && activeComponent.userText.length > 0) {
+                if (isSearchBarActiveForComponent()) {
                     event.accepted = false;
                     return;
                 }
-
-                appChooserContainer.forceActiveFocus();
                 appChooserContainer.moveCarouselNext();
-
-                // Restore focus to the active component after navigation
-                Qt.callLater(function () {
-                    if (activeComponent) {
-                        activeComponent.forceActiveFocus();
-                    }
-                });
-
                 event.accepted = true;
                 break;
             default:
@@ -117,17 +91,6 @@ PanelWindow {
                     property string componentType: "Applications"
                     anchors.fill: parent
 
-                    // Add this to manage focus when componentType changes
-                    onComponentTypeChanged: {
-                        Qt.callLater(function () {
-                            if (componentType === "Applications" && appViewerLoader.item) {
-                                appViewerLoader.item.forceActiveFocus();
-                            } else if (componentType === "Youtube Converter" && youtubeLoader.item) {
-                                youtubeLoader.item.forceActiveFocus();
-                            }
-                        });
-                    }
-
                     Loader {
                         id: appViewerLoader
                         anchors.fill: parent
@@ -142,14 +105,6 @@ PanelWindow {
                                 }
                             }
                         }
-
-                        onItemChanged: {
-                            if (item && visible) {
-                                Qt.callLater(function () {
-                                    item.forceActiveFocus();
-                                });
-                            }
-                        }
                     }
 
                     Loader {
@@ -161,14 +116,6 @@ PanelWindow {
                         sourceComponent: Component {
                             YoutubeConversionContainer {
                                 id: youtubeConverter
-                            }
-                        }
-
-                        onItemChanged: {
-                            if (item && visible) {
-                                Qt.callLater(function () {
-                                    item.forceActiveFocus();
-                                });
                             }
                         }
                     }
