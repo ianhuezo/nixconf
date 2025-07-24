@@ -9,7 +9,7 @@ Item {
     width: parent.width * 0.8
     signal appRequested(var appName)
     readonly property var unfocusedScale: 0.6
-    readonly property var topLevelModel: [
+    property var topLevelModel: [
         {
             appName: 'Applications',
             iconLocation: FileConfig.dashboardAppLauncher,

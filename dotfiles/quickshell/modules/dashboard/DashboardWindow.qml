@@ -1,7 +1,6 @@
 import Quickshell
 import QtQuick
 import Quickshell.Wayland
-import QtQuick.Layouts
 import "root:/config"
 import "root:/services"
 import "root:/modules/music-popup"
@@ -48,7 +47,7 @@ PanelWindow {
                     event.accepted = false;
                     return;
                 }
-                appChooserContainer.moveCarouselPrevious();
+                appCarousel.moveCarouselPrevious();
                 event.accepted = true;
                 break;
             case Qt.Key_Right:
@@ -56,7 +55,7 @@ PanelWindow {
                     event.accepted = false;
                     return;
                 }
-                appChooserContainer.moveCarouselNext();
+                appCarousel.moveCarouselNext();
                 event.accepted = true;
                 break;
             default:
@@ -72,8 +71,8 @@ PanelWindow {
             SplashPanel {
                 id: splashPanel
             }
-            AppChooser {
-                id: appChooserContainer
+            Carousel {
+                id: appCarousel
                 onAppRequested: appName => {
                     appLoader.componentType = appName;
                 }
@@ -82,9 +81,9 @@ PanelWindow {
             Rectangle {
                 id: mainApplication
                 color: 'transparent'
-                height: parent.height - appChooserContainer.height
+                height: parent.height - appCarousel.height
                 width: parent.width - splashPanel.width
-                y: parent.y + appChooserContainer.height
+                y: parent.y + appCarousel.height
                 bottomLeftRadius: mainDrawArea.radius
                 Item {
                     id: appLoader
