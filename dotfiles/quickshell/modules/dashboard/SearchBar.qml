@@ -13,6 +13,8 @@ FocusScope {
     property string currentText: ''
     property string placeholderText: "Search Applications..."
     property bool readOnly: false
+    property string icon: "⚲"
+    property int iconRotation: 45
     signal searchText(string text)
 
     width: containerWidth
@@ -29,13 +31,13 @@ FocusScope {
 
         Text {
             id: searchIcon
-            text: "⚲"
+            text: searchBarContainer.icon
             color: Color.palette.base04
             font.pixelSize: parent.height * 0.4
             anchors.left: parent.left
             anchors.leftMargin: parent.width * 0.03
             anchors.verticalCenter: parent.verticalCenter
-            rotation: 45
+            rotation: searchBarContainer.iconRotation
         }
 
         TextField {

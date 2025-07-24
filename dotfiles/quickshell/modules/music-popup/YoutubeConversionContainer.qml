@@ -15,18 +15,13 @@ FocusScope {
         id: background
         anchors.fill: parent
         color: 'transparent'
-        border.color: 'orange'
-        border.width: 1
 
         SearchBar {
             id: searchBar
+            icon: '⇅'
+            placeholderText: 'Enter Youtube URL and Press Enter...'
             onSearchText: text => {
                 root.userText = text;
-            }
-        }
-        onActiveFocusChanged: {
-            if (activeFocus) {
-                searchBar.forceActiveFocus();
             }
         }
     }
