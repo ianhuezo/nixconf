@@ -27,10 +27,11 @@ Singleton {
         readonly property string gpu: root.getIconPath("gpu.svg")
         readonly property string cpu: root.getIconPath("cpu.svg")
         readonly property string ram: root.getIconPath("ram.svg")
-	readonly property string media: root.getIconPath("media.svg")
+        readonly property string media: root.getIconPath("media.svg")
     }
 
     readonly property QtObject scripts: QtObject {
         readonly property string cava: root.getScriptPath('cava_startup.sh')
+        readonly property string downloadYoutube: root.getScriptPath('yt_to_mp3/youtube_dl.sh')
     }
 }

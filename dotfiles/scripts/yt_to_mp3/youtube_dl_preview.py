@@ -135,16 +135,22 @@ def main():
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=True)
             
-            # Get final processed filename
-            base_name = info["title"].lstrip()
-            audio_path = f"/tmp/{base_name}_{sha_hash}.mp3"
-            thumbnail_path = f"/tmp/{base_name}_{sha_hash}.jpg"
+            # Use yt-dlp's sanitize_filename function to match actual filenames
+            sanitized_title = sanitize_filename(info["title"].lstrip())
+            audio_path = f"/tmp/{sanitized_title}_{sha_hash}.mp3"
+            thumbnail_path = f"/tmp/{sanitized_title}_{sha_hash}.jpg"
 
-            # Verify files exist (handle edge cases)
+            # Alternative approach: scan the /tmp directory for files with the hash
+            import glob
             if not os.path.exists(audio_path):
-                audio_path = ""
+                # Look for any mp3 file with our hash
+                mp3_files = glob.glob(f"/tmp/*_{sha_hash}.mp3")
+                audio_path = mp3_files[0] if mp3_files else ""
+            
             if not os.path.exists(thumbnail_path):
-                thumbnail_path = ""
+                # Look for any jpg file with our hash
+                jpg_files = glob.glob(f"/tmp/*_{sha_hash}.jpg")
+                thumbnail_path = jpg_files[0] if jpg_files else ""
 
             # Update status with verified paths
             status.update({
@@ -158,6 +164,6 @@ def main():
         status["error"] = f"Processing error: {str(e)}"
         print(json.dumps(status, ensure_ascii=False))
         sys.exit(1)
-
+        
 if __name__ == "__main__":
     main()

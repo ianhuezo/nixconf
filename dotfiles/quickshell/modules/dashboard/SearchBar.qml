@@ -17,6 +17,13 @@ FocusScope {
     property int iconRotation: 45
     signal searchText(string text)
 
+    function setSearchText(text: string) {
+        textInput.text = text;
+    }
+    function setInitialCursorPosition(){
+	textInput.cursorPosition= 0
+    }
+
     width: containerWidth
     x: leftMargin + parent.x
     y: parent.y + topMargin
@@ -64,7 +71,7 @@ FocusScope {
                 width: 1
                 height: textInput.contentHeight || textInput.font.pixelSize
                 color: Color.palette.base07
-                visible: textInput.activeFocus
+                visible: textInput.activeFocus && !searchBarContainer.readOnly
                 SequentialAnimation on opacity {
                     loops: Animation.Infinite
                     running: textInput.activeFocus

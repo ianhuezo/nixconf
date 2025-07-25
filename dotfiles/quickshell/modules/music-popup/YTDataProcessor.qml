@@ -1,9 +1,10 @@
 import Quickshell.Io
 import QtQuick
+import "root:/config"
 
 Process {
     id: mediaDownloadProcess
-    property string scriptLocation: Qt.resolvedUrl("../scripts/yt_to_mp3/youtube_dl.sh")
+    property string scriptLocation: FileConfig.scripts.downloadYoutube
     property string bitrate: "192"  // Default value
     property string downloadUrl: ""
 
