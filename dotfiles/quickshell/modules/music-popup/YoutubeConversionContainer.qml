@@ -154,6 +154,26 @@ FocusScope {
                 }
             }
         }
+        Rectangle {
+            id: acceptSelection
+            height: 80
+            width: 130
+            x: dashedBorderRectangle.x
+            y: dashedBorderRectangle.y + dashedBorderRectangle.height + 32
+            visible: youtubeThumbnail.visible
+            radius: 10
+            MouseArea {
+                id: acceptMouseClick
+                anchors.fill: parent
+
+                onClicked: {
+                    background.saveToMusicFolder();
+                }
+            }
+        }
+        // Rectangle {
+        //   id: clearSelection
+        // }
         CreateMP3Processor {
             id: tagMP3FileProcess
             onError: error => {
@@ -179,11 +199,11 @@ FocusScope {
                 if (thumbnail_path.length > 0 && percent == 100) {
                     youtubeThumbnail.source = '/tmp/' + encodeURIComponent(thumbnail_path.replace('/tmp/', ''));
 
-                    downloadProgress.hide();
                     tagMP3FileProcess.mp3Path = audio_path;
                     tagMP3FileProcess.albumName = title;
                     tagMP3FileProcess.albumArtist = uploader;
                     tagMP3FileProcess.albumArtPath = thumbnail_path;
+                    downloadProgress.hide();
                 }
             }
             onError: error => {
