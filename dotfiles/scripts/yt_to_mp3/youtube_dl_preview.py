@@ -104,7 +104,7 @@ def main():
         "postprocessors": [
             {
                 "key": "FFmpegThumbnailsConvertor",
-                "format": "jpg",
+                "format": "png",
                 "when": "before_dl"
             },
             {
@@ -138,7 +138,7 @@ def main():
             # Use yt-dlp's sanitize_filename function to match actual filenames
             sanitized_title = sanitize_filename(info["title"].lstrip())
             audio_path = f"/tmp/{sanitized_title}_{sha_hash}.mp3"
-            thumbnail_path = f"/tmp/{sanitized_title}_{sha_hash}.jpg"
+            thumbnail_path = f"/tmp/{sanitized_title}_{sha_hash}.png"
 
             # Alternative approach: scan the /tmp directory for files with the hash
             import glob
@@ -149,8 +149,8 @@ def main():
             
             if not os.path.exists(thumbnail_path):
                 # Look for any jpg file with our hash
-                jpg_files = glob.glob(f"/tmp/*_{sha_hash}.jpg")
-                thumbnail_path = jpg_files[0] if jpg_files else ""
+                png_giles = glob.glob(f"/tmp/*_{sha_hash}.png")
+                thumbnail_path = png_files[0] if png_files else ""
 
             # Update status with verified paths
             status.update({
