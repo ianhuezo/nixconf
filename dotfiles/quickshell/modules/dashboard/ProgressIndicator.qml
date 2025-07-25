@@ -2,9 +2,9 @@ import QtQuick
 
 Item {
     id: root
-    
+
     // Public properties
-    property bool visible: false
+    property bool isVisible: false
     property real progress: 0  // 0-100
     property string title: "Processing..."
     property string progressColor: "#4CAF50"
@@ -14,32 +14,32 @@ Item {
     property bool enablePulseAnimation: true
     property real containerWidth: parent ? parent.width * 0.7 : 300
     property real containerHeight: 120
-    
+
     // Signals
-    signal clicked()
-    signal progressComplete()
-    
+    signal clicked
+    signal progressComplete
+
     // Auto-emit completion signal when progress reaches 100
     onProgressChanged: {
         if (progress >= 100) {
             progressComplete();
         }
     }
-    
+    visible: root.isVisible
+
     anchors.fill: parent
-    visible: root.visible
-    
+
     // Semi-transparent background overlay
     Rectangle {
         anchors.fill: parent
         color: root.overlayColor
-        
+
         MouseArea {
             anchors.fill: parent
             onClicked: root.clicked()
         }
     }
-    
+
     // Progress container
     Rectangle {
         id: progressContainer
@@ -50,12 +50,12 @@ Item {
         radius: 12
         border.color: Qt.lighter(root.backgroundColor, 1.5)
         border.width: 1
-        
+
         Column {
             anchors.centerIn: parent
             spacing: 15
             width: parent.width - 40
-            
+
             // Title text
             Text {
                 id: titleText
@@ -69,7 +69,7 @@ Item {
                 maximumLineCount: 2
                 elide: Text.ElideRight
             }
-            
+
             // Progress bar background
             Rectangle {
                 id: progressBarBg
@@ -79,7 +79,7 @@ Item {
                 radius: 4
                 border.color: Qt.lighter(root.backgroundColor, 1.2)
                 border.width: 1
-                
+
                 // Progress bar fill
                 Rectangle {
                     id: progressBarFill
@@ -87,14 +87,14 @@ Item {
                     height: parent.height
                     color: root.progressColor
                     radius: parent.radius
-                    
+
                     Behavior on width {
                         NumberAnimation {
                             duration: 200
                             easing.type: Easing.OutQuad
                         }
                     }
-                    
+
                     // Subtle glow effect
                     Rectangle {
                         anchors.fill: parent
@@ -104,7 +104,7 @@ Item {
                     }
                 }
             }
-            
+
             // Percentage text
             Text {
                 text: Math.round(Math.max(0, Math.min(100, root.progress))) + "%"
@@ -114,12 +114,12 @@ Item {
                 visible: root.showPercentage
             }
         }
-        
+
         // Pulsing animation
         SequentialAnimation {
             running: root.visible && root.enablePulseAnimation
             loops: Animation.Infinite
-            
+
             PropertyAnimation {
                 target: progressContainer
                 property: "opacity"
@@ -138,7 +138,7 @@ Item {
             }
         }
     }
-    
+
     // Convenience functions
     function show(initialTitle) {
         if (initialTitle !== undefined) {
@@ -147,18 +147,18 @@ Item {
         root.visible = true;
         root.progress = 0;
     }
-    
+
     function hide() {
         root.visible = false;
     }
-    
+
     function updateProgress(newProgress, newTitle) {
         root.progress = newProgress;
         if (newTitle !== undefined) {
             root.title = newTitle;
         }
     }
-    
+
     function reset() {
         root.progress = 0;
         root.title = "Processing...";
