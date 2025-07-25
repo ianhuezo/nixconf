@@ -57,24 +57,24 @@ FocusScope {
             }
             visible: !youtubeThumbnail.visible
         }
-        // ProgressIndicator {
-        //             id: downloadProgress
-        //
-        //             // Customize appearance if needed
-        //             progressColor: "#4CAF50"
-        //             backgroundColor: "#2a2a2a"
-        //             containerWidth: parent.width * 0.7
-        //
-        //             onProgressComplete: {
-        //                 console.log("Download completed!")
-        //                 // Handle completion if needed
-        //             }
-        //
-        //             onClicked: {
-        //                 // Handle overlay clicks if needed (e.g., cancel download)
-        //                 console.log("Progress overlay clicked")
-        //             }
-        //         }
+        ProgressIndicator {
+            id: downloadProgress
+
+            // Customize appearance if needed
+            progressColor: "#4CAF50"
+            backgroundColor: "#2a2a2a"
+            containerWidth: parent.width * 0.7
+
+            onProgressComplete: {
+                console.log("Download completed!");
+                // Handle completion if needed
+            }
+
+            onClicked: {
+                // Handle overlay clicks if needed (e.g., cancel download)
+                console.log("Progress overlay clicked");
+            }
+        }
         ClippingRectangle {
             id: clippingRectangle
             width: parent.width * 0.5
@@ -158,6 +158,7 @@ FocusScope {
             id: tagMP3FileProcess
             onError: error => {
                 console.log(error);
+                downloadProgress.hide();
             }
         }
         YTDataProcessor {
@@ -177,6 +178,8 @@ FocusScope {
                 }
                 if (thumbnail_path.length > 0 && percent == 100) {
                     youtubeThumbnail.source = '/tmp/' + encodeURIComponent(thumbnail_path.replace('/tmp/', ''));
+
+                    downloadProgress.hide();
                     tagMP3FileProcess.mp3Path = audio_path;
                     tagMP3FileProcess.albumName = title;
                     tagMP3FileProcess.albumArtist = uploader;
@@ -185,6 +188,7 @@ FocusScope {
             }
             onError: error => {
                 console.log(error);
+                downloadProgress.hide();
             }
             onFinished: {}
         }
@@ -193,6 +197,7 @@ FocusScope {
             if (currentUrl == "") {
                 return;
             }
+            downloadProgress.show("Starting download...");
             ytDataProcessor.downloadUrl = currentUrl;
             ytDataProcessor.running = true;
         }
