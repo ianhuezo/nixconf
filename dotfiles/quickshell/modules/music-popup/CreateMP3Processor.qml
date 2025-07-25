@@ -1,9 +1,10 @@
 import Quickshell.Io
 import QtQuick
+import "root:/config"
 
 Process {
     id: metadataMP3Attachment
-    property string scriptLocation: Qt.resolvedUrl("../scripts/yt_to_mp3/create_mp3_metadata.sh")
+    property string scriptLocation: FileConfig.scripts.saveMP3
     property string albumArtPath: ""
     property string mp3Path: ""
     property string outputPath: "/home/ianh/Music"
