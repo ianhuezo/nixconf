@@ -158,8 +158,8 @@ FocusScope {
             id: acceptSelection
             height: 80
             width: 130
-            x: dashedBorderRectangle.x
-            y: dashedBorderRectangle.y + dashedBorderRectangle.height + 32
+            anchors.horizontalCenter: dashedBorderRectangle.horizontalCenter
+            y: dashedBorderRectangle.y + dashedBorderRectangle.height + 8
             visible: youtubeThumbnail.visible
             radius: 10
             MouseArea {

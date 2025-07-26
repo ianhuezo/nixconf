@@ -7,7 +7,7 @@ Singleton {
     readonly property string scriptRootPath: '../../scripts'
     readonly property string assetsRootPath: '../../assets'
     readonly property string themesRootPath: '../../themes'
-    readonly property string homePath: '/home/ianh'
+    readonly property string homePath: 'Music'
 
     readonly property string splashArtPath: Qt.resolvedUrl(`${assetsRootPath}/frieren/camp-crop.jpg`)
     readonly property string dashboardAppLauncher: Qt.resolvedUrl(`${assetsRootPath}/frieren/mimic.png`)

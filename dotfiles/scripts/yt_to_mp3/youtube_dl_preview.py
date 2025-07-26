@@ -97,7 +97,6 @@ def progress_hook(d):
 def main():
     start, end, quality, url = parse_arguments()
     extract_metadata(url)
-
     # Configure sanitized output templates
     ydl_opts = {
         "format": "bestaudio/best",
@@ -123,23 +122,21 @@ def main():
         "restrictfilenames": False,  # Allow Unicode in sanitized names
         "windowsfilenames": False
     }
-
     # Add time restrictions if specified
     if start is not None or end is not None:
         ydl_opts["postprocessor_args"] = [
             f"-ss {start}" if start else "",
             f"-to {end}" if end else ""
         ]
-
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=True)
             
-            # Use yt-dlp's sanitize_filename function to match actual filenames
-            sanitized_title = sanitize_filename(info["title"].lstrip())
+            # Use yt-dlp's sanitize_filename function and replace "/" with space
+            sanitized_title = sanitize_filename(info["title"].lstrip()).replace("/", " ")
             audio_path = f"/tmp/{sanitized_title}_{sha_hash}.mp3"
             thumbnail_path = f"/tmp/{sanitized_title}_{sha_hash}.png"
-
+            
             # Alternative approach: scan the /tmp directory for files with the hash
             import glob
             if not os.path.exists(audio_path):
@@ -148,10 +145,10 @@ def main():
                 audio_path = mp3_files[0] if mp3_files else ""
             
             if not os.path.exists(thumbnail_path):
-                # Look for any jpg file with our hash
-                png_giles = glob.glob(f"/tmp/*_{sha_hash}.png")
+                # Look for any png file with our hash (fixed typo: png_giles -> png_files)
+                png_files = glob.glob(f"/tmp/*_{sha_hash}.png")
                 thumbnail_path = png_files[0] if png_files else ""
-
+            
             # Update status with verified paths
             status.update({
                 "audio_path": audio_path if os.path.exists(audio_path) else "",
