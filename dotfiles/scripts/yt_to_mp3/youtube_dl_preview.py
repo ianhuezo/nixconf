@@ -132,6 +132,7 @@ def main():
     
     # Collapse multiple spaces
     sanitized_title = re.sub(r'\s+', ' ', sanitized_title).strip()
+    status["title"] = sanitized_title
     
     # Configure sanitized output templates using the pre-sanitized title
     ydl_opts = {

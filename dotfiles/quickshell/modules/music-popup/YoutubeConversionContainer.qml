@@ -192,13 +192,13 @@ FocusScope {
                     audio_path,
                     thumbnail_path
                 } = info;
+		downloadProgress.updateProgress(percent, title || "Downloading...");
                 if (userText != title.trim()) {
                     searchBar.setSearchText(title.trim());
                     searchBar.setInitialCursorPosition();
                 }
                 if (thumbnail_path.length > 0 && percent == 100) {
                     youtubeThumbnail.source = '/tmp/' + encodeURIComponent(thumbnail_path.replace('/tmp/', ''));
-
                     tagMP3FileProcess.mp3Path = audio_path;
                     tagMP3FileProcess.albumName = title;
                     tagMP3FileProcess.albumArtist = uploader;
