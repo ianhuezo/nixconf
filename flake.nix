@@ -27,16 +27,16 @@
     nix-colors.url = "github:misterio77/nix-colors";
     swww.url = "github:LGFae/swww/412326e40a399e61e15a31147569e97c69900dba";
     quickshell = {
-      url = "git+https://git.outfoxxed.me/outfoxxed/quickshell";
+      url = "git+https://git.outfoxxed.me/outfoxxed/quickshell?ref=0499518143b232b949a177c5fea929f2ceed58ec";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     hyprland-qtutils = {
       url = "github:hyprwm/hyprland-qtutils";
     };
-    stylix = {
-      url = "github:danth/stylix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # stylix = {
+    #   url = "github:danth/stylix";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
     # nixpkgs-xr = {
     #   url = "github:nix-community/nixpkgs-xr";
     # };
