@@ -44,7 +44,7 @@ FocusScope {
         Image {
             id: youtubeMediaSvg
             anchors.centerIn: parent
-            width: clippingRectangle.width
+            width: clippingRectangle.width * 0.75
             height: clippingRectangle.height
             fillMode: Image.PreserveAspectFit
             source: FileConfig.icons.media
@@ -53,9 +53,10 @@ FocusScope {
             layer.effect: MultiEffect {
                 brightness: 1.0
                 colorization: 1.0
-                colorizationColor: Color.palette.base07
+                opacity: 0.2
+                colorizationColor: Color.palette.base04
             }
-            visible: !youtubeThumbnail.visible
+            visible: false
         }
         ProgressIndicator {
             id: downloadProgress
@@ -79,7 +80,8 @@ FocusScope {
             id: clippingRectangle
             width: parent.width * 0.5
             height: parent.height * 0.5
-            anchors.centerIn: youtubeMediaSvg
+            anchors.horizontalCenter: youtubeMediaSvg.horizontalCenter
+            y: youtubeMediaSvg.y - 24
             visible: youtubeThumbnail.source.toString().length > 0
             clip: true
             radius: 10
@@ -92,82 +94,286 @@ FocusScope {
                 visible: source.toString().length > 0
             }
         }
-        Rectangle {
-            id: dashedBorderRectangle
-            // Use paintedWidth/paintedHeight which represent the actual visible size
-            // after PreserveAspectFit is applied
-            width: youtubeMediaSvg.paintedWidth * 1.1  // 10% larger than actual visible content
-            height: youtubeMediaSvg.paintedHeight * 1.1  // 10% larger than actual visible content
-
-            // Center on the actual painted content, not the entire Image component
-            x: youtubeMediaSvg.x + (youtubeMediaSvg.width - youtubeMediaSvg.paintedWidth) / 2 - (width - youtubeMediaSvg.paintedWidth) / 2
-            y: youtubeMediaSvg.y + (youtubeMediaSvg.height - youtubeMediaSvg.paintedHeight) / 2 - (height - youtubeMediaSvg.paintedHeight) / 2 + 10
-            color: "transparent"
-            radius: clippingRectangle.radius + 5  // Slightly larger radius to match the scaling
-
-            border.width: 0  // Remove solid border
-
-            // Create dashed border using Canvas
-            Canvas {
-                id: dashedBorder
-                anchors.fill: parent
-                visible: tagMP3FileProcess.albumArtPath.length == 0
-
-                onPaint: {
-                    var ctx = getContext("2d");
-                    ctx.clearRect(0, 0, width, height);
-
-                    // Set dash pattern - long dashes with spacing
-                    ctx.setLineDash([15, 8]);  // 15px dash, 8px gap
-                    ctx.strokeStyle = Color.palette.base07;
-                    ctx.lineWidth = 2;
-
-                    // Draw rounded rectangle border
-                    var x = ctx.lineWidth / 2;
-                    var y = ctx.lineWidth / 2;
-                    var w = width - ctx.lineWidth;
-                    var h = height - ctx.lineWidth;
-                    var r = parent.radius;
-
-                    ctx.beginPath();
-                    ctx.moveTo(x + r, y);
-                    ctx.lineTo(x + w - r, y);
-                    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-                    ctx.lineTo(x + w, y + h - r);
-                    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-                    ctx.lineTo(x + r, y + h);
-                    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-                    ctx.lineTo(x, y + r);
-                    ctx.quadraticCurveTo(x, y, x + r, y);
-                    ctx.closePath();
-                    ctx.stroke();
-                }
-
-                // Repaint when visibility changes
-                Connections {
-                    target: dashedBorderRectangle
-                    function onVisibleChanged() {
-                        if (dashedBorderRectangle.visible) {
-                            dashedBorder.requestPaint();
-                        }
-                    }
-                }
-            }
-        }
+        // Rectangle {
+        //     id: dashedBorderRectangle
+        //     // Use paintedWidth/paintedHeight which represent the actual visible size
+        //     // after PreserveAspectFit is applied
+        //     width: youtubeMediaSvg.paintedWidth * 1.1  // 10% larger than actual visible content
+        //     height: youtubeMediaSvg.paintedHeight * 1.1  // 10% larger than actual visible content
+        //
+        //     // Center on the actual painted content, not the entire Image component
+        //     x: youtubeMediaSvg.x + (youtubeMediaSvg.width - youtubeMediaSvg.paintedWidth) / 2 - (width - youtubeMediaSvg.paintedWidth) / 2
+        //     y: youtubeMediaSvg.y + (youtubeMediaSvg.height - youtubeMediaSvg.paintedHeight) / 2 - (height - youtubeMediaSvg.paintedHeight) / 2 + 10
+        //     color: "transparent"
+        //     radius: clippingRectangle.radius + 5  // Slightly larger radius to match the scaling
+        //
+        //     border.width: 0  // Remove solid border
+        //
+        //     // Create dashed border using Canvas
+        //     Canvas {
+        //         id: dashedBorder
+        //         anchors.fill: parent
+        //         visible: tagMP3FileProcess.albumArtPath.length == 0
+        //
+        //         onPaint: {
+        //             var ctx = getContext("2d");
+        //             ctx.clearRect(0, 0, width, height);
+        //
+        //             // Set dash pattern - long dashes with spacing
+        //             ctx.setLineDash([15, 8]);  // 15px dash, 8px gap
+        //             ctx.strokeStyle = Color.palette.base07;
+        //             ctx.lineWidth = 2;
+        //
+        //             // Draw rounded rectangle border
+        //             var x = ctx.lineWidth / 2;
+        //             var y = ctx.lineWidth / 2;
+        //             var w = width - ctx.lineWidth;
+        //             var h = height - ctx.lineWidth;
+        //             var r = parent.radius;
+        //
+        //             ctx.beginPath();
+        //             ctx.moveTo(x + r, y);
+        //             ctx.lineTo(x + w - r, y);
+        //             ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+        //             ctx.lineTo(x + w, y + h - r);
+        //             ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        //             ctx.lineTo(x + r, y + h);
+        //             ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+        //             ctx.lineTo(x, y + r);
+        //             ctx.quadraticCurveTo(x, y, x + r, y);
+        //             ctx.closePath();
+        //             ctx.stroke();
+        //         }
+        //
+        //         // Repaint when visibility changes
+        //         Connections {
+        //             target: dashedBorderRectangle
+        //             function onVisibleChanged() {
+        //                 if (dashedBorderRectangle.visible) {
+        //                     dashedBorder.requestPaint();
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
         Rectangle {
             id: acceptSelection
-            height: 80
-            width: 130
-            anchors.horizontalCenter: dashedBorderRectangle.horizontalCenter
-            y: dashedBorderRectangle.y + dashedBorderRectangle.height + 8
+            height: 50
+            width: 180
+            anchors.horizontalCenter: clippingRectangle.horizontalCenter
+            y: clippingRectangle.y + clippingRectangle.height + 16
             visible: youtubeThumbnail.visible
+            color: animationRunning ? Color.palette.base0B : Color.palette.base0D
             radius: 10
+
+            property bool animationRunning: false
+
             MouseArea {
                 id: acceptMouseClick
                 anchors.fill: parent
-
+                enabled: !parent.animationRunning
                 onClicked: {
-                    background.saveToMusicFolder();
+                    parent.animationRunning = true;
+                    buttonText.text = '';
+                    circleAnimation.start();
+                }
+            }
+
+            Text {
+                id: buttonText
+                anchors.centerIn: parent
+                text: "♪ Add to Music Library"
+                color: Color.palette.base07
+                font.family: 'JetBrains Mono Nerd Font'
+                opacity: animationRunning ? 0 : 1
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 150
+                    }
+                }
+            }
+
+            // Animation container
+            Item {
+                id: animationContainer
+                anchors.centerIn: parent
+                width: 24
+                height: 24
+                opacity: animationRunning ? 1 : 0
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 150
+                    }
+                }
+
+                // Progressive circle drawing
+                Canvas {
+                    id: progressCircle
+                    anchors.centerIn: parent
+                    width: 24
+                    height: 24
+
+                    property real progress: 0  // 0 to 1
+                    property real radius: 10
+                    property real lineWidth: 2
+
+                    onPaint: {
+                        var ctx = getContext("2d");
+                        ctx.clearRect(0, 0, width, height);
+
+                        if (progress > 0) {
+                            var centerX = width / 2;
+                            var centerY = height / 2;
+                            var startAngle = -Math.PI / 2; // Start from top
+                            var endAngle = startAngle + (progress * 2 * Math.PI);
+
+                            ctx.strokeStyle = Color.palette.base07;
+                            ctx.lineWidth = lineWidth;
+                            ctx.lineCap = "round";
+
+                            // Draw the arc with varying opacity based on position
+                            var segments = 36; // Smooth drawing
+                            var angleStep = (2 * Math.PI) / segments;
+                            var currentProgress = progress * segments;
+
+                            for (var i = 0; i < currentProgress && i < segments; i++) {
+                                var segmentAngle = startAngle + (i * angleStep);
+                                var nextAngle = startAngle + ((i + 1) * angleStep);
+
+                                // Calculate opacity based on how far around we are
+                                var segmentProgress = i / segments;
+                                var opacity = 1.0;
+
+                                if (segmentProgress >= 0.25)
+                                    opacity = 0.8;
+                                if (segmentProgress >= 0.5)
+                                    opacity = 0.6;
+                                if (segmentProgress >= 0.75)
+                                    opacity = 0.4;
+
+                                ctx.globalAlpha = opacity;
+                                ctx.beginPath();
+                                ctx.arc(centerX, centerY, radius, segmentAngle, Math.min(nextAngle, endAngle));
+                                ctx.stroke();
+                            }
+
+                            ctx.globalAlpha = 1.0; // Reset for next drawings
+                        }
+                    }
+
+                    onProgressChanged: requestPaint()
+                }
+
+                // Checkmark
+                Canvas {
+                    id: checkmark
+                    anchors.centerIn: parent
+                    width: 16
+                    height: 16
+                    opacity: 0
+
+                    property real progress: 0
+
+                    onPaint: {
+                        var ctx = getContext("2d");
+                        ctx.clearRect(0, 0, width, height);
+
+                        if (progress > 0) {
+                            ctx.strokeStyle = Color.palette.base07;
+                            ctx.lineWidth = 2.5;
+                            ctx.lineCap = "round";
+                            ctx.lineJoin = "round";
+
+                            ctx.beginPath();
+
+                            // First stroke of checkmark (short line)
+                            if (progress <= 0.5) {
+                                var firstProgress = progress * 2;
+                                ctx.moveTo(4, 8);
+                                ctx.lineTo(4 + (3 * firstProgress), 8 + (3 * firstProgress));
+                            } else {
+                                // Complete first stroke
+                                ctx.moveTo(4, 8);
+                                ctx.lineTo(7, 11);
+
+                                // Second stroke of checkmark (long line)
+                                var secondProgress = (progress - 0.5) * 2;
+                                ctx.lineTo(7 + (5 * secondProgress), 11 - (5 * secondProgress));
+                            }
+
+                            ctx.stroke();
+                        }
+                    }
+
+                    onProgressChanged: requestPaint()
+                }
+            }
+
+            // Animation sequence
+            SequentialAnimation {
+                id: circleAnimation
+
+                // Draw the circle progressively with fading opacity
+                NumberAnimation {
+                    target: progressCircle
+                    property: "progress"
+                    from: 0
+                    to: 1
+                    duration: 800
+                    easing.type: Easing.OutQuad
+                }
+
+                // Brief pause
+                PauseAnimation {
+                    duration: 100
+                }
+
+                // Show and animate checkmark
+                ParallelAnimation {
+                    NumberAnimation {
+                        target: checkmark
+                        property: "opacity"
+                        from: 0
+                        to: 1
+                        duration: 100
+                    }
+
+                    NumberAnimation {
+                        target: checkmark
+                        property: "progress"
+                        from: 0
+                        to: 1
+                        duration: 400
+                        easing.type: Easing.OutQuad
+                    }
+                }
+
+                // Wait then call the method and reset
+                PauseAnimation {
+                    duration: 200
+                }
+
+                ScriptAction {
+                    script: {
+                        background.saveToMusicFolder();
+
+                        // Reset animation state after a delay
+                        resetTimer.start();
+                    }
+                }
+            }
+
+            Timer {
+                id: resetTimer
+                interval: 500
+                onTriggered: {
+                    acceptSelection.animationRunning = false;
+                    progressCircle.progress = 0;
+                    checkmark.opacity = 0;
+                    checkmark.progress = 0;
+                    buttonText.text = "Upload Complete!";
                 }
             }
         }
@@ -192,7 +398,7 @@ FocusScope {
                     audio_path,
                     thumbnail_path
                 } = info;
-		downloadProgress.updateProgress(percent, title || "Downloading...");
+                downloadProgress.updateProgress(percent, title || "Downloading...");
                 if (userText != title.trim()) {
                     searchBar.setSearchText(title.trim());
                     searchBar.setInitialCursorPosition();
