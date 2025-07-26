@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell.Services.Mpris
 import Quickshell.Io
+import "root:/services"
 
 Image {
     id: art
@@ -58,14 +59,14 @@ Image {
     Rectangle {
         id: placeholder
         anchors.fill: parent
-        color: "#303030"  // Darker gray for better contrast
+        color: Color.palette.base03// Darker gray for better contrast
         visible: art.status !== Image.Ready
 
         // Music note icon as placeholder
         Text {
             anchors.centerIn: parent
             text: "♪"  // Music note symbol
-            color: "#808080"
+            color: Color.palette.base09
             font.pixelSize: parent.height * 0.6
         }
 
