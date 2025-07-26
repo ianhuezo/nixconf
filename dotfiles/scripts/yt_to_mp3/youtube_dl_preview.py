@@ -7,6 +7,7 @@ import re
 from datetime import datetime
 import hashlib
 import re
+import glob
 
 current_time = datetime.now().strftime("%Y%m%d%H%M%S")
 hash_input = current_time.encode()
@@ -98,7 +99,41 @@ def progress_hook(d):
 def main():
     start, end, quality, url = parse_arguments()
     extract_metadata(url)
-    # Configure sanitized output templates
+    
+    # Pre-sanitize the title for the output template
+    raw_title = status["title"]  # Get the title from extract_metadata
+    sanitized_title = sanitize_filename(raw_title.lstrip())
+    
+    # Replace problematic characters that yt-dlp converts to Unicode equivalents
+    char_replacements = {
+        "/": " ",   # Forward slash
+        "⧸": " ",   # Division slash (Unicode replacement for /)
+        "|": " ",   # Pipe
+        "｜": " ",  # Fullwidth pipe (Unicode replacement for |)
+        "?": " ",   # Question mark  
+        "？": " ",  # Fullwidth question mark (Unicode replacement for ?)
+        "*": " ",   # Asterisk
+        "＊": " ",  # Fullwidth asterisk (Unicode replacement for *)
+        "<": " ",   # Less than
+        "＜": " ",  # Fullwidth less than (Unicode replacement for <)
+        ">": " ",   # Greater than
+        "＞": " ",  # Fullwidth greater than (Unicode replacement for >)
+        ":": " ",   # Colon
+        "：": " ",  # Fullwidth colon (Unicode replacement for :)
+        '"': " ",   # Quote
+        "＂": " ",  # Fullwidth quote (Unicode replacement for ")
+        "\\": " ",  # Backslash
+        "＼": " ",  # Fullwidth backslash (Unicode replacement for \)
+    }
+    
+    # Apply all character replacements
+    for old_char, new_char in char_replacements.items():
+        sanitized_title = sanitized_title.replace(old_char, new_char)
+    
+    # Collapse multiple spaces
+    sanitized_title = re.sub(r'\s+', ' ', sanitized_title).strip()
+    
+    # Configure sanitized output templates using the pre-sanitized title
     ydl_opts = {
         "format": "bestaudio/best",
         "postprocessors": [
@@ -115,8 +150,8 @@ def main():
         ],
         "writethumbnail": True,
         "outtmpl": {
-            "default": f"/tmp/%(title)s_{sha_hash}.%(ext)s",
-            "thumbnail": f"/tmp/%(title)s_{sha_hash}.%(ext)s"
+            "default": f"/tmp/{sanitized_title}_{sha_hash}.%(ext)s",
+            "thumbnail": f"/tmp/{sanitized_title}_{sha_hash}.%(ext)s"
         },
         "progress_hooks": [progress_hook],
         "quiet": True,
@@ -133,46 +168,18 @@ def main():
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=True)
             
-            # Use yt-dlp's sanitize_filename function and replace "/" with space
-            sanitized_title = sanitize_filename(info["title"].lstrip())
-            
-            # Replace problematic characters that yt-dlp converts to Unicode equivalents
-            char_replacements = {
-                "/": " ",   # Forward slash
-                "⧸": " ",   # Division slash (Unicode replacement for /)
-                "|": " ",   # Pipe
-                "｜": " ",  # Fullwidth pipe (Unicode replacement for |)
-                "?": " ",   # Question mark  
-                "？": " ",  # Fullwidth question mark (Unicode replacement for ?)
-                "*": " ",   # Asterisk
-                "＊": " ",  # Fullwidth asterisk (Unicode replacement for *)
-                "<": " ",   # Less than
-                "＜": " ",  # Fullwidth less than (Unicode replacement for <)
-                ">": " ",   # Greater than
-                "＞": " ",  # Fullwidth greater than (Unicode replacement for >)
-                ":": " ",   # Colon
-                "：": " ",  # Fullwidth colon (Unicode replacement for :)
-                '"': " ",   # Quote
-                "＂": " ",  # Fullwidth quote (Unicode replacement for ")
-                "\\": " ",  # Backslash
-                "＼": " ",  # Fullwidth backslash (Unicode replacement for \)
-            }
-            
-            for old_char, new_char in char_replacements.items():
-                sanitized_title = sanitized_title.replace(old_char, new_char) 
-                sanitized_title = re.sub(r'\s+', ' ', sanitized_title).strip()
+            # The files should now be created with the sanitized filename
             audio_path = f"/tmp/{sanitized_title}_{sha_hash}.mp3"
             thumbnail_path = f"/tmp/{sanitized_title}_{sha_hash}.png"
             
-            # Alternative approach: scan the /tmp directory for files with the hash
-            import glob
+            # Fallback: scan the /tmp directory for files with the hash if direct path doesn't work
             if not os.path.exists(audio_path):
                 # Look for any mp3 file with our hash
                 mp3_files = glob.glob(f"/tmp/*_{sha_hash}.mp3")
                 audio_path = mp3_files[0] if mp3_files else ""
             
             if not os.path.exists(thumbnail_path):
-                # Look for any png file with our hash (fixed typo: png_giles -> png_files)
+                # Look for any png file with our hash
                 png_files = glob.glob(f"/tmp/*_{sha_hash}.png")
                 thumbnail_path = png_files[0] if png_files else ""
             
