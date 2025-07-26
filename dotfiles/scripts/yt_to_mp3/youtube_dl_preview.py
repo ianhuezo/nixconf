@@ -6,6 +6,7 @@ from yt_dlp.utils import sanitize_filename
 import re
 from datetime import datetime
 import hashlib
+import re
 
 current_time = datetime.now().strftime("%Y%m%d%H%M%S")
 hash_input = current_time.encode()
@@ -133,7 +134,33 @@ def main():
             info = ydl.extract_info(url, download=True)
             
             # Use yt-dlp's sanitize_filename function and replace "/" with space
-            sanitized_title = sanitize_filename(info["title"].lstrip()).replace("/", " ")
+            sanitized_title = sanitize_filename(info["title"].lstrip())
+            
+            # Replace problematic characters that yt-dlp converts to Unicode equivalents
+            char_replacements = {
+                "/": " ",   # Forward slash
+                "⧸": " ",   # Division slash (Unicode replacement for /)
+                "|": " ",   # Pipe
+                "｜": " ",  # Fullwidth pipe (Unicode replacement for |)
+                "?": " ",   # Question mark  
+                "？": " ",  # Fullwidth question mark (Unicode replacement for ?)
+                "*": " ",   # Asterisk
+                "＊": " ",  # Fullwidth asterisk (Unicode replacement for *)
+                "<": " ",   # Less than
+                "＜": " ",  # Fullwidth less than (Unicode replacement for <)
+                ">": " ",   # Greater than
+                "＞": " ",  # Fullwidth greater than (Unicode replacement for >)
+                ":": " ",   # Colon
+                "：": " ",  # Fullwidth colon (Unicode replacement for :)
+                '"': " ",   # Quote
+                "＂": " ",  # Fullwidth quote (Unicode replacement for ")
+                "\\": " ",  # Backslash
+                "＼": " ",  # Fullwidth backslash (Unicode replacement for \)
+            }
+            
+            for old_char, new_char in char_replacements.items():
+                sanitized_title = sanitized_title.replace(old_char, new_char) 
+                sanitized_title = re.sub(r'\s+', ' ', sanitized_title).strip()
             audio_path = f"/tmp/{sanitized_title}_{sha_hash}.mp3"
             thumbnail_path = f"/tmp/{sanitized_title}_{sha_hash}.png"
             
