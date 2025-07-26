@@ -163,7 +163,7 @@ FocusScope {
             anchors.horizontalCenter: clippingRectangle.horizontalCenter
             y: clippingRectangle.y + clippingRectangle.height + 16
             visible: youtubeThumbnail.visible
-            color: animationRunning ? Color.palette.base0B : Color.palette.base0D
+            color: acceptSelection.animationRunning ? Color.palette.base0B : Color.palette.base0D
             radius: 10
 
             property bool animationRunning: false
@@ -171,9 +171,9 @@ FocusScope {
             MouseArea {
                 id: acceptMouseClick
                 anchors.fill: parent
-                enabled: !parent.animationRunning
+                enabled: !acceptSelection.animationRunning
                 onClicked: {
-                    parent.animationRunning = true;
+                    acceptSelection.animationRunning = true;
                     buttonText.text = '';
                     circleAnimation.start();
                 }
@@ -185,7 +185,7 @@ FocusScope {
                 text: "♪ Add to Music Library"
                 color: Color.palette.base07
                 font.family: 'JetBrains Mono Nerd Font'
-                opacity: animationRunning ? 0 : 1
+                opacity: acceptSelection.animationRunning ? 0 : 1
 
                 Behavior on opacity {
                     NumberAnimation {
@@ -200,7 +200,7 @@ FocusScope {
                 anchors.centerIn: parent
                 width: 24
                 height: 24
-                opacity: animationRunning ? 1 : 0
+                opacity: acceptSelection.animationRunning ? 1 : 0
 
                 Behavior on opacity {
                     NumberAnimation {

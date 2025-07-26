@@ -68,7 +68,7 @@ Column {
                     sourceSize.height: parent.height * 1.5
                     fillMode: Image.PreserveAspectFit
                     mipmap: true
-                    source: "../../../assets/icons/lamp_on.png"
+                    source: FileConfig.icons.workspace
                     visible: true // Always visible - effects will handle inactive state
 
                     // Swing animation

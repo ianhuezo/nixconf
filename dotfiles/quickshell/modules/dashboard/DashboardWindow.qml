@@ -3,7 +3,7 @@ import QtQuick
 import Quickshell.Wayland
 import "root:/config"
 import "root:/services"
-import "root:/modules/music-popup"
+import "root:/modules/music_popup"
 
 PanelWindow {
     id: root

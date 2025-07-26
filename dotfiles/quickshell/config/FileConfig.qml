@@ -4,9 +4,11 @@ import QtQuick
 
 Singleton {
     id: root
-    readonly property string scriptRootPath: '../../scripts'
-    readonly property string assetsRootPath: '../../assets'
-    readonly property string themesRootPath: '../../themes'
+    //
+    readonly property string rootPath: "file:///etc/nixos/dotfiles"
+    readonly property string scriptRootPath: rootPath + '/scripts'
+    readonly property string assetsRootPath: rootPath + '/assets'
+    readonly property string themesRootPath: rootPath + '/themes'
     readonly property string homePath: 'Music'
 
     readonly property string splashArtPath: Qt.resolvedUrl(`${assetsRootPath}/frieren/camp-crop.jpg`)
@@ -29,6 +31,7 @@ Singleton {
         readonly property string cpu: root.getIconPath("cpu.svg")
         readonly property string ram: root.getIconPath("ram.svg")
         readonly property string media: root.getIconPath("media.svg")
+        readonly property string workspace: root.getIconPath("lamp_on.png")
     }
 
     readonly property QtObject scripts: QtObject {
