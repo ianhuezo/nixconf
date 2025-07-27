@@ -15,6 +15,16 @@ FocusScope {
     property string userText: ''
     signal refreshFocus
 
+    function clearSelection() {
+        searchBar.readOnly = false;
+        searchBar.setSearchText('');
+        youtubeThumbnail.source = '';
+        tagMP3FileProcess.mp3Path = '';
+        tagMP3FileProcess.albumName = '';
+        tagMP3FileProcess.albumArtist = '';
+        tagMP3FileProcess.albumArtPath = '';
+    }
+
     Rectangle {
         id: background
         anchors.fill: parent
@@ -94,74 +104,101 @@ FocusScope {
                 visible: source.toString().length > 0
             }
         }
-        // Rectangle {
-        //     id: dashedBorderRectangle
-        //     // Use paintedWidth/paintedHeight which represent the actual visible size
-        //     // after PreserveAspectFit is applied
-        //     width: youtubeMediaSvg.paintedWidth * 1.1  // 10% larger than actual visible content
-        //     height: youtubeMediaSvg.paintedHeight * 1.1  // 10% larger than actual visible content
-        //
-        //     // Center on the actual painted content, not the entire Image component
-        //     x: youtubeMediaSvg.x + (youtubeMediaSvg.width - youtubeMediaSvg.paintedWidth) / 2 - (width - youtubeMediaSvg.paintedWidth) / 2
-        //     y: youtubeMediaSvg.y + (youtubeMediaSvg.height - youtubeMediaSvg.paintedHeight) / 2 - (height - youtubeMediaSvg.paintedHeight) / 2 + 10
-        //     color: "transparent"
-        //     radius: clippingRectangle.radius + 5  // Slightly larger radius to match the scaling
-        //
-        //     border.width: 0  // Remove solid border
-        //
-        //     // Create dashed border using Canvas
-        //     Canvas {
-        //         id: dashedBorder
-        //         anchors.fill: parent
-        //         visible: tagMP3FileProcess.albumArtPath.length == 0
-        //
-        //         onPaint: {
-        //             var ctx = getContext("2d");
-        //             ctx.clearRect(0, 0, width, height);
-        //
-        //             // Set dash pattern - long dashes with spacing
-        //             ctx.setLineDash([15, 8]);  // 15px dash, 8px gap
-        //             ctx.strokeStyle = Color.palette.base07;
-        //             ctx.lineWidth = 2;
-        //
-        //             // Draw rounded rectangle border
-        //             var x = ctx.lineWidth / 2;
-        //             var y = ctx.lineWidth / 2;
-        //             var w = width - ctx.lineWidth;
-        //             var h = height - ctx.lineWidth;
-        //             var r = parent.radius;
-        //
-        //             ctx.beginPath();
-        //             ctx.moveTo(x + r, y);
-        //             ctx.lineTo(x + w - r, y);
-        //             ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-        //             ctx.lineTo(x + w, y + h - r);
-        //             ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-        //             ctx.lineTo(x + r, y + h);
-        //             ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-        //             ctx.lineTo(x, y + r);
-        //             ctx.quadraticCurveTo(x, y, x + r, y);
-        //             ctx.closePath();
-        //             ctx.stroke();
-        //         }
-        //
-        //         // Repaint when visibility changes
-        //         Connections {
-        //             target: dashedBorderRectangle
-        //             function onVisibleChanged() {
-        //                 if (dashedBorderRectangle.visible) {
-        //                     dashedBorder.requestPaint();
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
+        Rectangle {
+            id: dashedBorderRectangle
+            // Use paintedWidth/paintedHeight which represent the actual visible size
+            // after PreserveAspectFit is applied
+            width: youtubeMediaSvg.paintedWidth * 1.1  // 10% larger than actual visible content
+            height: youtubeMediaSvg.paintedHeight * 1.1  // 10% larger than actual visible content
+
+            // Center on the actual painted content, not the entire Image component
+            x: youtubeMediaSvg.x + (youtubeMediaSvg.width - youtubeMediaSvg.paintedWidth) / 2 - (width - youtubeMediaSvg.paintedWidth) / 2
+            y: youtubeMediaSvg.y + (youtubeMediaSvg.height - youtubeMediaSvg.paintedHeight) / 2 - (height - youtubeMediaSvg.paintedHeight) / 2 + 10
+            color: "transparent"
+            radius: clippingRectangle.radius + 5  // Slightly larger radius to match the scaling
+
+            border.width: 0  // Remove solid border
+
+            // Create dashed border using Canvas
+            Canvas {
+                id: dashedBorder
+                anchors.fill: parent
+                visible: tagMP3FileProcess.albumArtPath.length == 0
+
+                onPaint: {
+                    var ctx = getContext("2d");
+                    ctx.clearRect(0, 0, width, height);
+
+                    // Set dash pattern - long dashes with spacing
+                    ctx.setLineDash([15, 8]);  // 15px dash, 8px gap
+                    ctx.strokeStyle = Color.palette.base07;
+                    ctx.lineWidth = 2;
+
+                    // Draw rounded rectangle border
+                    var x = ctx.lineWidth / 2;
+                    var y = ctx.lineWidth / 2;
+                    var w = width - ctx.lineWidth;
+                    var h = height - ctx.lineWidth;
+                    var r = parent.radius;
+
+                    ctx.beginPath();
+                    ctx.moveTo(x + r, y);
+                    ctx.lineTo(x + w - r, y);
+                    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+                    ctx.lineTo(x + w, y + h - r);
+                    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+                    ctx.lineTo(x + r, y + h);
+                    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+                    ctx.lineTo(x, y + r);
+                    ctx.quadraticCurveTo(x, y, x + r, y);
+                    ctx.closePath();
+                    ctx.stroke();
+                }
+
+                // Repaint when visibility changes
+                Connections {
+                    target: dashedBorderRectangle
+                    function onVisibleChanged() {
+                        if (dashedBorderRectangle.visible) {
+                            dashedBorder.requestPaint();
+                        }
+                    }
+                }
+            }
+        }
+        Rectangle {
+            id: clearSelection
+            height: 40
+            width: 40
+            radius: 3
+            x: acceptSelection.x - 50
+            y: acceptSelection.y
+            color: Color.palette.base02
+            visible: youtubeThumbnail.visible
+
+            Text {
+                anchors.centerIn: parent
+                color: Color.palette.base05
+                font.pixelSize: 24
+                font.weight: 800
+                text: '⟳'
+                font.family: 'JetBrains Mono Nerd Font'
+            }
+            MouseArea {
+                id: resetArea
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                onClicked: {
+                    root.clearSelection();
+                }
+            }
+        }
         Rectangle {
             id: acceptSelection
-            height: 50
-            width: 180
+            height: 40
+            width: 160
             anchors.horizontalCenter: clippingRectangle.horizontalCenter
-            y: clippingRectangle.y + clippingRectangle.height + 16
+            y: clippingRectangle.y + clippingRectangle.height + 32
             visible: youtubeThumbnail.visible
             color: acceptSelection.animationRunning ? Color.palette.base0B : Color.palette.base0D
             radius: 10
@@ -172,7 +209,12 @@ FocusScope {
                 id: acceptMouseClick
                 anchors.fill: parent
                 enabled: !acceptSelection.animationRunning
+                cursorShape: Qt.PointingHandCursor
+
                 onClicked: {
+                    if (buttonText.text == 'Upload Complete!') {
+                        return;
+                    }
                     acceptSelection.animationRunning = true;
                     buttonText.text = '';
                     circleAnimation.start();
@@ -182,9 +224,10 @@ FocusScope {
             Text {
                 id: buttonText
                 anchors.centerIn: parent
-                text: "♪ Add to Music Library"
-                color: Color.palette.base07
+                text: "♪ Add to Library"
+                color: Color.palette.base05
                 font.family: 'JetBrains Mono Nerd Font'
+                font.pixelSize: 16
                 opacity: acceptSelection.animationRunning ? 0 : 1
 
                 Behavior on opacity {
