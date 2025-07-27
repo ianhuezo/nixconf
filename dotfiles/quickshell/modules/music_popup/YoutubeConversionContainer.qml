@@ -27,7 +27,7 @@ FocusScope {
     Rectangle {
         id: background
         anchors.fill: parent
-        color: 'red'
+        color: 'transparent'
 
         SearchBar {
             id: searchBar
