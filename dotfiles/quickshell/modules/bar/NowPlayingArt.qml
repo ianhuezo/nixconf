@@ -47,7 +47,7 @@ Image {
         property string mp3File: ""
         property string finalPath: ""
         property int counter: 0
-        command: ["rm", "/tmp/FRONT_COVER.jpg", "&&", "eyeD3", "--write-images=/tmp/", "/home/ianh/Music/" + mp3File + ".mp3"]
+        command: []
         running: false
         onRunningChanged: {
             if (running == false) {
