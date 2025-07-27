@@ -20,6 +20,8 @@ Rectangle {
     property string fontFamily: "JetBrains Mono Nerd Font"
     property int fontSize: 18
     property int fontWeight: 500
+    property var underlineMargin: 2
+    property int yEnd: appText.y + appText.height
 
     color: 'transparent'
 
@@ -145,7 +147,6 @@ Rectangle {
 
     Rectangle {
         id: appTextContainer
-        property var underlineMargin: 2
         width: parent.width
         height: parent.height * 0.25
         anchors.bottom: parent.bottom
@@ -168,7 +169,7 @@ Rectangle {
             width: appText.width * 0.75
             x: appText.x + 0.15 * width
             height: 5
-            y: appText.y + appText.height + appTextContainer.underlineMargin
+            y: carouselItem.yEnd
             radius: 3
             color: carouselItem.isSelected ? carouselItem.underlineColor : 'transparent'
 

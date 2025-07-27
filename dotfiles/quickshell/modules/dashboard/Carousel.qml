@@ -9,6 +9,7 @@ Item {
     width: parent.width * 0.8
     signal appRequested(var appName)
     readonly property var unfocusedScale: 0.6
+    property var containerBottomMargin: 2
     property var topLevelModel: [
         {
             appName: 'Applications',
@@ -85,6 +86,7 @@ Item {
                     anchors.centerIn: parent
                     width: narrowedAppChooser.width * 0.3 // Fixed size for each item
                     height: narrowedAppChooser.height
+                    underlineMargin: root.containerBottomMargin
 
                     // Pass data from model
                     appName: modelData.appName
@@ -97,7 +99,7 @@ Item {
 
                     // Pass styling properties
                     unfocusedScale: root.unfocusedScale
-                    carouselRadius: narrowedAppChooser.width * 1
+                    carouselRadius: narrowedAppChooser.width
                     textColor: Color.palette.base07
                     underlineColor: Color.palette.base08
                     fontFamily: 'JetBrains Mono Nerd Font'

@@ -13,7 +13,6 @@ FocusScope {
     focus: true  // Important: Enable focus for the FocusScope
 
     property string userText: ''
-    signal refreshFocus
 
     function clearSelection() {
         searchBar.readOnly = false;
@@ -28,7 +27,7 @@ FocusScope {
     Rectangle {
         id: background
         anchors.fill: parent
-        color: 'transparent'
+        color: 'red'
 
         SearchBar {
             id: searchBar

@@ -76,6 +76,7 @@ PanelWindow {
                 onAppRequested: appName => {
                     appLoader.componentType = appName;
                 }
+                containerBottomMargin: 32
             }
 
             Rectangle {
@@ -83,7 +84,7 @@ PanelWindow {
                 color: 'transparent'
                 height: parent.height - appCarousel.height
                 width: parent.width - splashPanel.width
-                y: parent.y + appCarousel.height
+                y: parent.y + appCarousel.height + appCarousel.containerBottomMargin
                 bottomLeftRadius: mainDrawArea.radius
                 Item {
                     id: appLoader
