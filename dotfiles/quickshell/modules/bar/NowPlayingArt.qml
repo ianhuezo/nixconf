@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell.Services.Mpris
 import Quickshell.Io
 import "root:/services"
+import qs.modules.music_popup
 
 Image {
     id: art
@@ -25,12 +26,21 @@ Image {
         // 1. Find playing Spotify
         activePlayer = players.find(p => p.identity === "Spotify" && p.playbackState === MprisPlaybackState.Playing);
 
-        // 2. If no playing Spotify, find first playing player
+        // 2. If not playing Spotify, find first playing player
         if (!activePlayer) {
             activePlayer = players.find(p => p.playbackState === MprisPlaybackState.Playing);
         }
 
         if (activePlayer) {
+            let artUrl = activePlayer.trackArtUrl || '';
+            if (artUrl == '') {
+                let trackTitle = activePlayer.trackTitle || '';
+                if (trackTitle != '') {
+                    extractMP3Image.mp3FileName = trackTitle + '.mp3';
+                    extractMP3Image.running = true;
+                    extractMP3Image.mp3FileName = '';
+                }
+            }
             return activePlayer.trackArtUrl || '';
         }
 
@@ -42,17 +52,15 @@ Image {
         return activePlayer?.trackArtUrl || '';
     }
 
-    Process {
-        id: runImageExtract
-        property string mp3File: ""
-        property string finalPath: ""
-        property int counter: 0
-        command: []
-        running: false
-        onRunningChanged: {
-            if (running == false) {
-                art.source = '/tmp/FRONT_COVER.jpg';
-            }
+    ExtractMP3Image {
+        id: extractMP3Image
+        mediaFolder: '~/Music'
+        mp3FileName: ''
+        property string localFileName: ''
+
+        onFileCreated: fileName => {
+            art.source = '';
+            art.source = fileName;
         }
     }
 
