@@ -1,4 +1,7 @@
 import QtQuick
+import qs.services
+import qs.config
+import Quickshell.Widgets
 
 Item {
     id: root
@@ -7,13 +10,26 @@ Item {
     property bool isVisible: false
     property real progress: 0  // 0-100
     property string title: "Processing..."
-    property string progressColor: "#4CAF50"
-    property string backgroundColor: "#2a2a2a"
-    property string overlayColor: "#80000000"
     property bool showPercentage: true
     property bool enablePulseAnimation: true
-    property real containerWidth: parent ? parent.width * 0.7 : 300
-    property real containerHeight: 120
+    property real containerWidth: parent.width
+    property real containerHeight: 250
+
+    // Configurable colors
+    property string progressColor: Color.palette.base09
+    property string progressGlowColor: Qt.lighter(progressColor, 1.2)
+    property string backgroundColor: "transparent"
+    property string progressBarBackgroundColor: Qt.darker(backgroundColor, 1.5)
+    property string progressBarBorderColor: Qt.lighter(backgroundColor, 1.2)
+    property string titleTextColor: Color.palette.base07
+    property string percentageTextColor: Color.palette.base07
+    property string containerColor: 'transparent'
+    property string progressSectionBackgroundColor: Qt.rgba(0.2, 0.2, 0.2, 0.5)
+    property string progressSectionBorderColor: Qt.rgba(0.3, 0.3, 0.3, 0.7)
+
+    // Progress section properties
+    property bool showProgressSection: true
+    property real progressSectionRadius: 8
 
     // Signals
     signal clicked
@@ -25,93 +41,113 @@ Item {
             progressComplete();
         }
     }
+
     visible: root.isVisible
-
     anchors.fill: parent
-
-    // Semi-transparent background overlay
-    Rectangle {
-        anchors.fill: parent
-        color: root.overlayColor
-
-        MouseArea {
-            anchors.fill: parent
-            onClicked: root.clicked()
-        }
-    }
 
     // Progress container
     Rectangle {
         id: progressContainer
-        width: root.containerWidth
+        width: root.containerWidth * 0.5
         height: root.containerHeight
         anchors.centerIn: parent
-        color: root.backgroundColor
+        color: root.containerColor
         radius: 12
-        border.color: Qt.lighter(root.backgroundColor, 1.5)
-        border.width: 1
 
         Column {
             anchors.centerIn: parent
             spacing: 15
-            width: parent.width - 40
+            width: parent.width
 
             // Title text
             Text {
                 id: titleText
                 text: root.title
-                color: "#ffffff"
+                color: root.titleTextColor
                 font.pixelSize: 16
                 font.weight: Font.Medium
                 width: parent.width
                 wrapMode: Text.WordWrap
                 horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignTop
                 maximumLineCount: 2
                 elide: Text.ElideRight
             }
-
-            // Progress bar background
-            Rectangle {
-                id: progressBarBg
-                width: parent.width
-                height: 8
-                color: Qt.darker(root.backgroundColor, 1.5)
-                radius: 4
-                border.color: Qt.lighter(root.backgroundColor, 1.2)
-                border.width: 1
-
-                // Progress bar fill
-                Rectangle {
-                    id: progressBarFill
-                    width: parent.width * Math.max(0, Math.min(100, root.progress)) / 100
-                    height: parent.height
-                    color: root.progressColor
-                    radius: parent.radius
-
-                    Behavior on width {
-                        NumberAnimation {
-                            duration: 200
-                            easing.type: Easing.OutQuad
-                        }
-                    }
-
-                    // Subtle glow effect
-                    Rectangle {
-                        anchors.fill: parent
-                        color: Qt.lighter(root.progressColor, 1.2)
-                        radius: parent.radius
-                        opacity: 0.5
-                    }
+            ClippingRectangle {
+                width: 200
+                height: 200
+                anchors.horizontalCenter: parent.horizontalCenter           // Animated GIF
+                radius: 10
+                AnimatedImage {
+                    id: animation
+                    anchors.fill: parent
+                    source: FileConfig.downloadingVideoMP3
+                    fillMode: Image.PreserveAspectFit
                 }
             }
 
-            // Percentage text
-            Text {
-                text: Math.round(Math.max(0, Math.min(100, root.progress))) + "%"
-                color: "#cccccc"
-                font.pixelSize: 14
+            // Progress section container
+            Rectangle {
+                id: progressSection
+                width: parent.width * 0.8
+                height: 60
                 anchors.horizontalCenter: parent.horizontalCenter
-                visible: root.showPercentage
+                color: root.progressSectionBackgroundColor
+                radius: root.progressSectionRadius
+                border.color: root.progressSectionBorderColor
+                border.width: 1
+                visible: root.showProgressSection
+
+                Column {
+                    anchors.centerIn: parent
+                    spacing: 10
+                    width: parent.width * 0.9
+
+                    // Progress bar background - now always visible
+                    Rectangle {
+                        id: progressBarBg
+                        width: parent.width
+                        height: 8
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        color: root.progressBarBackgroundColor
+                        radius: 4
+                        border.color: root.progressBarBorderColor
+                        border.width: 1
+
+                        // Progress bar fill
+                        Rectangle {
+                            id: progressBarFill
+                            width: parent.width * Math.max(0, Math.min(100, root.progress)) / 100
+                            height: parent.height
+                            color: root.progressColor
+                            radius: parent.radius
+
+                            Behavior on width {
+                                NumberAnimation {
+                                    duration: 200
+                                    easing.type: Easing.OutQuad
+                                }
+                            }
+
+                            // Subtle glow effect
+                            Rectangle {
+                                anchors.fill: parent
+                                color: root.progressGlowColor
+                                radius: parent.radius
+                                opacity: 0.5
+                            }
+                        }
+                    }
+
+                    // Percentage text
+                    Text {
+                        text: Math.round(Math.max(0, Math.min(100, root.progress))) + "%"
+                        color: root.percentageTextColor
+                        font.pixelSize: 14
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        visible: root.showPercentage
+                    }
+                }
             }
         }
 
@@ -144,12 +180,12 @@ Item {
         if (initialTitle !== undefined) {
             root.title = initialTitle;
         }
-        root.visible = true;
+        root.isVisible = true;
         root.progress = 0;
     }
 
     function hide() {
-        root.visible = false;
+        root.isVisible = false;
     }
 
     function updateProgress(newProgress, newTitle) {
@@ -162,6 +198,6 @@ Item {
     function reset() {
         root.progress = 0;
         root.title = "Processing...";
-        root.visible = false;
+        root.isVisible = false;
     }
 }

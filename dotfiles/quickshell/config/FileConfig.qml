@@ -11,9 +11,13 @@ Singleton {
     readonly property string themesRootPath: rootPath + '/themes'
     readonly property string homePath: 'Music'
 
+    //art for app selector
     readonly property string splashArtPath: Qt.resolvedUrl(`${assetsRootPath}/frieren/camp-crop.jpg`)
     readonly property string dashboardAppLauncher: Qt.resolvedUrl(`${assetsRootPath}/frieren/mimic.png`)
+
+    //art for youtube converter
     readonly property string youtubeConverter: Qt.resolvedUrl(`${assetsRootPath}/global/youtube.png`)
+    readonly property string downloadingVideoMP3: Qt.resolvedUrl(`${assetsRootPath}/frieren/fern-pout.gif`)
 
     function getIconPath(iconName) {
         //for icons that are not from font packages
