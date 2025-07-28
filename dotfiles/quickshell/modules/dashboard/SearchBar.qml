@@ -7,7 +7,6 @@ import "root:/services"
 FocusScope {
     id: searchBarContainer
     property var leftMargin: parent.width * 0.1
-    // property var topMargin: parent.height * 0.05
     property var containerHeight: parent.height * 0.1
     property var containerWidth: parent.width * 0.8
     property string currentText: ''
@@ -26,7 +25,7 @@ FocusScope {
 
     width: containerWidth
     x: leftMargin + parent.x
-    y: parent.y + topMargin
+    y: parent.y
     height: containerHeight
     focus: true  // Important!
 

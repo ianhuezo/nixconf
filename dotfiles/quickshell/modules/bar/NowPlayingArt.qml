@@ -14,14 +14,15 @@ Image {
     antialiasing: true                  // Improved rendering quality
     asynchronous: true                  // Load image asynchronously
     cache: false
-
     layer.enabled: true
     layer.smooth: true
     layer.samples: 4  // Antialiasing samples
 
-    source: {
+    // Separate property to determine the art URL
+    property string artUrl: {
         const players = Array.from(Mpris.players.values);
         let activePlayer = null;
+        extractMP3Image.localFilePath = '';
 
         // 1. Find playing Spotify
         activePlayer = players.find(p => p.identity === "Spotify" && p.playbackState === MprisPlaybackState.Playing);
@@ -32,16 +33,16 @@ Image {
         }
 
         if (activePlayer) {
-            let artUrl = activePlayer.trackArtUrl || '';
-            if (artUrl == '') {
+            let url = activePlayer.trackArtUrl || '';
+
+            if (url == '') {
                 let trackTitle = activePlayer.trackTitle || '';
                 if (trackTitle != '') {
                     extractMP3Image.mp3FileName = trackTitle + '.mp3';
                     extractMP3Image.running = true;
-                    extractMP3Image.mp3FileName = '';
                 }
             }
-            return activePlayer.trackArtUrl || '';
+            return url;
         }
 
         // 3. Fallback to original behavior: Spotify or first player
@@ -52,15 +53,26 @@ Image {
         return activePlayer?.trackArtUrl || '';
     }
 
+    // Bind source to either local file or artUrl
+    source: extractMP3Image.localFilePath != '' ? extractMP3Image.localFilePath : artUrl
+
     ExtractMP3Image {
         id: extractMP3Image
-        mediaFolder: '~/Music'
+        mediaFolder: '/home/ianh/Music'
         mp3FileName: ''
-        property string localFileName: ''
+        property string localFilePath: ''
 
         onFileCreated: fileName => {
-            art.source = '';
-            art.source = fileName;
+            localFilePath = fileName;
+            art.sourceChanged(); // Still needed for same filename, different content
+            extractMP3Image.running = false;
+        }
+
+        onError: error => {}
+
+        // Clear local file when track changes
+        onMp3FileNameChanged: {
+            localFilePath = '';
         }
     }
 

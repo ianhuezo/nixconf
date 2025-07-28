@@ -42,8 +42,7 @@ FocusScope {
             case Qt.Key_Enter:
             case Qt.Key_Return:
                 searchBar.readOnly = true;
-                triggerDownloadProcess();
-                root.refreshFocus();
+                background.triggerDownloadProcess();
                 break;
             default:
                 break;
