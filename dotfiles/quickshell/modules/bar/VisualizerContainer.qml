@@ -20,6 +20,7 @@ Rectangle {
         anchors.centerIn: parent
         height: parent.height
         width: Math.min(parent.width, implicitWidth)
+        spacing: 5
 
         Item {
             id: imageButton

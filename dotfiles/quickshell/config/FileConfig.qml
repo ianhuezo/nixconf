@@ -19,6 +19,9 @@ Singleton {
     readonly property string youtubeConverter: Qt.resolvedUrl(`${assetsRootPath}/global/youtube.png`)
     readonly property string downloadingVideoMP3: Qt.resolvedUrl(`${assetsRootPath}/frieren/fern-pout.gif`)
 
+    //art for theme selector
+    readonly property string themeChooser: Qt.resolvedUrl(`${assetsRootPath}/frieren/lookup.png`)
+
     function getIconPath(iconName) {
         //for icons that are not from font packages
         return Qt.resolvedUrl(`${assetsRootPath}/icons/${iconName}`);

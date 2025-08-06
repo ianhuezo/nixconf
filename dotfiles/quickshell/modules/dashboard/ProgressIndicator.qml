@@ -24,8 +24,10 @@ Item {
     property string titleTextColor: Color.palette.base07
     property string percentageTextColor: Color.palette.base07
     property string containerColor: 'transparent'
-    property string progressSectionBackgroundColor: Qt.rgba(0.2, 0.2, 0.2, 0.5)
-    property string progressSectionBorderColor: Qt.rgba(0.3, 0.3, 0.3, 0.7)
+    property string progressSectionBackgroundColor: Color.palette.base03
+    property string progressSectionBorderColor: Color.palette.base03
+    property string inactiveProgressColor: Color.palette.base03
+    property string inactiveProgressBorderColor: Color.palette.base04
 
     // Progress section properties
     property bool showProgressSection: true
@@ -92,10 +94,7 @@ Item {
                 width: parent.width * 0.8
                 height: 60
                 anchors.horizontalCenter: parent.horizontalCenter
-                color: root.progressSectionBackgroundColor
-                radius: root.progressSectionRadius
-                border.color: root.progressSectionBorderColor
-                border.width: 1
+                color: 'transparent'
                 visible: root.showProgressSection
 
                 Column {
@@ -103,7 +102,6 @@ Item {
                     spacing: 10
                     width: parent.width * 0.9
 
-                    // Progress bar background - now always visible
                     Rectangle {
                         id: progressBarBg
                         width: parent.width
@@ -115,12 +113,23 @@ Item {
                         border.width: 1
 
                         // Progress bar fill
+
+                        Rectangle {
+                            id: progressBarOutlineContainer
+                            width: parent.width
+                            height: parent.height
+                            color: root.inactiveProgressColor
+                            border.width: 1
+                            border.color: root.inactiveProgressBorderColor
+                            radius: parent.radius
+                        }
                         Rectangle {
                             id: progressBarFill
                             width: parent.width * Math.max(0, Math.min(100, root.progress)) / 100
                             height: parent.height
                             color: root.progressColor
                             radius: parent.radius
+                            clip: true
 
                             Behavior on width {
                                 NumberAnimation {

@@ -119,6 +119,19 @@ PanelWindow {
                             }
                         }
                     }
+
+                    Loader {
+                        id: desktopThemes
+                        anchors.fill: parent
+                        visible: appLoader.componentType === "Desktop Themes"
+                        active: visible || appLoader.componentType === "Desktop Themes"
+
+                        sourceComponent: Component {
+                            YoutubeConversionContainer {
+                                id: youtubeConverter
+                            }
+                        }
+                    }
                 }
             }
         }

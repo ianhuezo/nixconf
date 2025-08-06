@@ -22,6 +22,11 @@ Item {
             iconLocation: FileConfig.youtubeConverter,
             selected: false,
             mipmap: true
+        },
+        {
+            appName: 'Desktop Themes',
+            iconLocation: FileConfig.themeChooser,
+            selected: false
         }
     ]
 
