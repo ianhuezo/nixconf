@@ -13,7 +13,7 @@ Image {
     smooth: true                        // Enable smooth scaling
     antialiasing: true                  // Improved rendering quality
     asynchronous: true                  // Load image asynchronously
-    cache: false
+    cache: true
     layer.enabled: true
     layer.smooth: true
     layer.samples: 4  // Antialiasing samples
