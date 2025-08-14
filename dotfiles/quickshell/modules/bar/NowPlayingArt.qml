@@ -13,7 +13,7 @@ Image {
     smooth: true                        // Enable smooth scaling
     antialiasing: true                  // Improved rendering quality
     asynchronous: true                  // Load image asynchronously
-    cache: true
+    cache: false
     layer.enabled: true
     layer.smooth: true
     layer.samples: 4  // Antialiasing samples
@@ -64,7 +64,7 @@ Image {
 
         onFileCreated: fileName => {
             localFilePath = fileName;
-            art.sourceChanged(); // Still needed for same filename, different content
+            art.sourceChanged(localFilePath); // Still needed for same filename, different content
             extractMP3Image.running = false;
         }
 

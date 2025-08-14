@@ -5,8 +5,8 @@ import qs.config
 Process {
     id: mediaImageExtractMP3
     property string scriptLocation: FileConfig.scripts.extractMP3AlbumImage
-    required property string mediaFolder  // Default value
-    required property string mp3FileName
+    property string mediaFolder  // Default value
+    property string mp3FileName
 
     // Signals
     signal finished(int exitCode)
