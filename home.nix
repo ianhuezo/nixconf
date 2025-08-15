@@ -129,15 +129,15 @@ in
   '';
   services.mako = {
     enable = true;
-    settings = {
-      defaultTimeout = 10000;
-      font = "JetBrains Mono Nerd Font";
-      backgroundColor = "#${config.colorScheme.palette.base00}80";
-      borderRadius = 20;
-      padding = "10,5,10,5";
-      borderColor = "#${config.colorScheme.palette.base0C}";
-      borderSize = 2;
-    };
+    extraConfig = ''
+      default-timeout=10000
+      font=JetBrains Mono Nerd Font
+      background-color=#${config.colorScheme.palette.base00}80
+      border-radius=20
+      padding=10,5,10,5
+      border-color=#${config.colorScheme.palette.base0C}
+      border-size=2
+    '';
   };
   programs.hyprlock = {
     enable = true;
@@ -284,43 +284,42 @@ in
       bindm = [
         "$mod, mouse:272, movewindow"
       ];
-      bind =
-        [
-          "$mod, SPACE, exec, $menu"
-          #mod key opens general applications
-          "$mod, F, exec, firefox"
-          "$mod, K, exec, kitty"
-          "$mod, S, exec, spotify --enable-features=UseOzonePlatform --ozone-platform=x11 --uri=%U"
-          "$mod, D, exec, vesktop --enable-features=UseOzonePlatform --ozone-platform=x11 --uri=%U"
-          "$mod SHIFT, L, exec, hyprlock"
-          "$mod SHIFT, S, exec, hyprshot -m region --clipboard-only"
-          # "CTRL, TAB, overview:toggle"
-          "$mod, Q, killactive"
-          "$mod, B, exec, qs ipc call bar toggleBar"
-          "$mod SHIFT, Q, exec,loginctl terminate-user $USER"
-          "$mod SHIFT, F, fullscreen"
-          "$mod, N, exec, hyprctl dispatch togglefloating"
-          #mod with left mouse moves windows
-          ", Print, exec, grimblast copy area"
-	  #Kitty specific open another kitty terminal instead of splitting the kitty terminal
-	  "CTRL_SHIFT, Return, exec, kitty --directory=$HOME"
-	  "CTRL_SHIFT, bracketleft, cyclenext, prev"
-	  "CTRL_SHIFT, bracketright, cyclenext"
-        ]
-        ++ (
-          # binds $mod + [shift +] {Q,W,E,R,T,Y,U,I,O} to [move to] workspace {1..9}
-          builtins.concatLists (
-            builtins.genList (
-              i:
-              let
-                ws = i + 1;
-              in
-              [
-                "$mod, code:1${toString i}, workspace, ${toString ws}"
-              ]
-            ) 9
-          )
-        );
+      bind = [
+        "$mod, SPACE, exec, $menu"
+        #mod key opens general applications
+        "$mod, F, exec, firefox"
+        "$mod, K, exec, kitty"
+        "$mod, S, exec, spotify --enable-features=UseOzonePlatform --ozone-platform=x11 --uri=%U"
+        "$mod, D, exec, vesktop --enable-features=UseOzonePlatform --ozone-platform=x11 --uri=%U"
+        "$mod SHIFT, L, exec, hyprlock"
+        "$mod SHIFT, S, exec, hyprshot -m region --clipboard-only"
+        # "CTRL, TAB, overview:toggle"
+        "$mod, Q, killactive"
+        "$mod, B, exec, qs ipc call bar toggleBar"
+        "$mod SHIFT, Q, exec,loginctl terminate-user $USER"
+        "$mod SHIFT, F, fullscreen"
+        "$mod, N, exec, hyprctl dispatch togglefloating"
+        #mod with left mouse moves windows
+        ", Print, exec, grimblast copy area"
+        #Kitty specific open another kitty terminal instead of splitting the kitty terminal
+        "CTRL_SHIFT, Return, exec, kitty --directory=$HOME"
+        "CTRL_SHIFT, bracketleft, cyclenext, prev"
+        "CTRL_SHIFT, bracketright, cyclenext"
+      ]
+      ++ (
+        # binds $mod + [shift +] {Q,W,E,R,T,Y,U,I,O} to [move to] workspace {1..9}
+        builtins.concatLists (
+          builtins.genList (
+            i:
+            let
+              ws = i + 1;
+            in
+            [
+              "$mod, code:1${toString i}, workspace, ${toString ws}"
+            ]
+          ) 9
+        )
+      );
       #tokyodark theme applied
       general = {
         resize_on_border = true;
@@ -565,7 +564,8 @@ in
     };
     history = {
       size = 10000;
-      path = "$XDG_DATA_HOME/zsh/history";
+      save = 10000;
+      path = "${config.home.homeDirectory}/.config/zsh/history";
     };
     initContent = ''
         bindkey '^ ' autosuggest-execute
@@ -577,8 +577,8 @@ in
         src = pkgs.fetchFromGitHub {
           owner = "zsh-users";
           repo = "zsh-autosuggestions";
-          rev = "v0.4.0";
-          sha256 = "0z6i9wjjklb4lvr7zjhbphibsyx51psv50gm07mbb0kj9058j6kc";
+          rev = "v0.7.1";
+          sha256 = "sha256-vpTyYq9ZgfgdDsWzjxVAE7FZH4MALMNZIFyEOBLm5Qo=";
         };
       }
     ];

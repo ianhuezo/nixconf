@@ -13,7 +13,7 @@ Image {
     smooth: true                        // Enable smooth scaling
     antialiasing: true                  // Improved rendering quality
     asynchronous: true                  // Load image asynchronously
-    cache: false
+    cache: false //local files aren't scanned for content; just name of the file wtf
     layer.enabled: true
     layer.smooth: true
     layer.samples: 4  // Antialiasing samples
@@ -42,7 +42,6 @@ Image {
                     extractMP3Image.running = true;
                 }
             }
-            return url;
         }
 
         // 3. Fallback to original behavior: Spotify or first player
@@ -54,7 +53,12 @@ Image {
     }
 
     // Bind source to either local file or artUrl
-    source: extractMP3Image.localFilePath != '' ? extractMP3Image.localFilePath : artUrl
+    source: {
+        if (extractMP3Image.localFilePath?.length > 0) {
+            return extractMP3Image.localFilePath;
+        }
+        return artUrl;
+    }
 
     ExtractMP3Image {
         id: extractMP3Image

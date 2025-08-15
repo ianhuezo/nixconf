@@ -6,8 +6,14 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      flake-utils,
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
       in
@@ -18,27 +24,27 @@
             gcc
             cmake
             pkg-config
-            
+
             # Development tools
             gdb
             valgrind
-            
+
             # Wayland core libraries
             wayland
             wayland-protocols
             wayland-scanner
-            
+
             # Qt for graphics and rendering
             qt6.full
             qt6.qtwayland
-            
+
             # Hyprland and related
             hyprland
             hyprland-protocols
-            
+
             # JSON parsing (for Hyprland IPC)
             nlohmann_json
-            
+
             # Useful utilities
             tree
             which
@@ -63,5 +69,6 @@
             echo ""
           '';
         };
-      });
+      }
+    );
 }

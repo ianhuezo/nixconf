@@ -55,55 +55,54 @@ in
         fd # for find_files
       ];
     };
-    programs.nixvim.keymaps =
-      [
-        {
-          mode = "n";
-          key = "<S-l>"; # Shift + l
-          action = ":BufferLineCycleNext<CR>";
-          options.silent = true;
-        }
-        {
-          mode = "n";
-          key = "<S-h>"; # Shift + h
-          action = ":BufferLineCyclePrev<CR>";
-          options.silent = true;
-        }
-        {
-          mode = "n";
-          key = "<leader>q"; # or any key combination you prefer
-          action = ":bd!<CR>";
-          options = {
-            desc = "Close current buffer";
-            silent = true;
-          };
-        }
-        {
-          mode = "n";
-          key = "<leader>e";
-          action = "<cmd>lua vim.diagnostic.open_float()<cr>";
-          options = {
-            desc = "Open diagnostic window";
-            silent = true;
-          };
-        }
-      ]
-      ++ (builtins.concatLists (
-        builtins.genList (
-          i:
-          let
-            ws = i + 1;
-          in
-          [
-            {
-              mode = "n";
-              key = "<leader>${toString ws}";
-              action = ":BufferLineGoToBuffer ${toString ws}<CR>";
-              options.silent = true;
-            }
-          ]
-        ) 9
-      ));
+    programs.nixvim.keymaps = [
+      {
+        mode = "n";
+        key = "<S-l>"; # Shift + l
+        action = ":BufferLineCycleNext<CR>";
+        options.silent = true;
+      }
+      {
+        mode = "n";
+        key = "<S-h>"; # Shift + h
+        action = ":BufferLineCyclePrev<CR>";
+        options.silent = true;
+      }
+      {
+        mode = "n";
+        key = "<leader>q"; # or any key combination you prefer
+        action = ":bd!<CR>";
+        options = {
+          desc = "Close current buffer";
+          silent = true;
+        };
+      }
+      {
+        mode = "n";
+        key = "<leader>e";
+        action = "<cmd>lua vim.diagnostic.open_float()<cr>";
+        options = {
+          desc = "Open diagnostic window";
+          silent = true;
+        };
+      }
+    ]
+    ++ (builtins.concatLists (
+      builtins.genList (
+        i:
+        let
+          ws = i + 1;
+        in
+        [
+          {
+            mode = "n";
+            key = "<leader>${toString ws}";
+            action = ":BufferLineGoToBuffer ${toString ws}<CR>";
+            options.silent = true;
+          }
+        ]
+      ) 9
+    ));
 
     programs.nixvim.plugins = {
       lsp.enable = true;
@@ -134,7 +133,7 @@ in
       };
       colorizer.enable = true;
       colorizer.settings = {
-	RRGGBBAA = true;
+        RRGGBBAA = true;
       };
       lsp.servers.typos_lsp.enable = true;
       typescript-tools = {
@@ -232,11 +231,11 @@ in
 
       };
       presence-nvim = {
-	enable = true;
-	debounceTimeout = 30;
-	blacklist = [
-	  "^%.env"
-	];
+        enable = true;
+        debounceTimeout = 30;
+        blacklist = [
+          "^%.env"
+        ];
       };
       bufferline = {
         enable = true;
