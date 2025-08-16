@@ -4,6 +4,7 @@ import Quickshell.Wayland
 import "root:/config"
 import "root:/services"
 import "root:/modules/music_popup"
+import qs.modules.dashboard.ThemeViewer
 
 PanelWindow {
     id: root
@@ -127,8 +128,8 @@ PanelWindow {
                         active: visible || appLoader.componentType === "Desktop Themes"
 
                         sourceComponent: Component {
-                            YoutubeConversionContainer {
-                                id: youtubeConverter
+                            Theme {
+                                id: themePicker
                             }
                         }
                     }

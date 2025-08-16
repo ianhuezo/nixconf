@@ -767,15 +767,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1753516101,
-        "narHash": "sha256-x7laxUkpkt8A2nhe9lFsJIClIEMMMEHOA/tN0IOQav8=",
+        "lastModified": 1753396978,
+        "narHash": "sha256-JRO1dhmb39y1ruHSDKUNYa5NrgWMJKEXQJxxUlY6lFY=",
         "ref": "refs/heads/master",
-        "rev": "91c9db581e4a5ecb21dcfe9fa81bacd582745b49",
-        "revCount": 660,
+        "rev": "3bbf39c67e3108b12cc4eac689050bc5d8d71d12",
+        "revCount": 655,
         "type": "git",
         "url": "https://git.outfoxxed.me/outfoxxed/quickshell"
       },
       "original": {
+        "rev": "3bbf39c67e3108b12cc4eac689050bc5d8d71d12",
         "type": "git",
         "url": "https://git.outfoxxed.me/outfoxxed/quickshell"
       }
