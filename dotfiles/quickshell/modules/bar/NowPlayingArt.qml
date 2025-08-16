@@ -13,7 +13,7 @@ Image {
     smooth: true                        // Enable smooth scaling
     antialiasing: true                  // Improved rendering quality
     asynchronous: true                  // Load image asynchronously
-    cache: false //local files aren't scanned for content; just name of the file wtf
+    cache: true
     layer.enabled: true
     layer.smooth: true
     layer.samples: 4  // Antialiasing samples
@@ -42,7 +42,12 @@ Image {
     }
 
     function updateSource() {
-        root.currentSource = root.defaultFilePath || root.getPreferredPlayer()?.trackArtUrl || extractMP3Image.localFilePath || "";
+        let baseSource = root.defaultFilePath || root.getPreferredPlayer()?.trackArtUrl || extractMP3Image.localFilePath || "";
+        // Add cache busting for local files based on current timestamp
+        if (baseSource && baseSource.startsWith("file://")) {
+            baseSource += "?t=" + Date.now();
+        }
+        root.currentSource = baseSource;
     }
 
     Component.onCompleted: updateSource()
