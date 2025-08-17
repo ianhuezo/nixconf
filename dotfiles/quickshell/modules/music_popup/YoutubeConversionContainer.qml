@@ -95,7 +95,7 @@ FocusScope {
                 source: ''
                 visible: source.toString().length > 0
                 onVisibleChanged: {
-                    if (visible) {
+                    if (visible && source.toString().length > 0) {
                         downloadProgress.hide();
                         downloadProgress.reset();
                     }
@@ -368,7 +368,6 @@ FocusScope {
             id: tagMP3FileProcess
             onError: error => {
                 console.log(error);
-                downloadProgress.hide();
             }
         }
         YTDataProcessor {
@@ -397,7 +396,6 @@ FocusScope {
             }
             onError: error => {
                 console.log(error);
-                downloadProgress.hide();
             }
             onFinished: {}
         }
