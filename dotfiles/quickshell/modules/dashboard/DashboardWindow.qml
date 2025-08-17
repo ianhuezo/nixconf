@@ -124,8 +124,8 @@ PanelWindow {
                     Loader {
                         id: desktopThemes
                         anchors.fill: parent
-                        visible: appLoader.componentType === "Desktop Themes"
-                        active: visible || appLoader.componentType === "Desktop Themes"
+                        visible: appLoader.componentType === "Desktop Theme Creator"
+                        active: visible || appLoader.componentType === "Desktop Theme Creator"
 
                         sourceComponent: Component {
                             Theme {

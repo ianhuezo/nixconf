@@ -24,7 +24,7 @@ Item {
             mipmap: true
         },
         {
-            appName: 'Desktop Themes',
+            appName: 'Desktop Theme Creator',
             iconLocation: FileConfig.themeChooser,
             selected: false
         }
