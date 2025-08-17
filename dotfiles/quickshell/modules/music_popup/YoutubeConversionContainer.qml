@@ -367,6 +367,11 @@ FocusScope {
         CreateMP3Processor {
             id: tagMP3FileProcess
             onError: error => {
+                //comes from incoming SABR protocol of YT
+                if (error.includes('12482')) {
+                    return;
+                }
+                downloadProgress.hide();
                 console.log(error);
             }
         }
@@ -395,7 +400,12 @@ FocusScope {
                 }
             }
             onError: error => {
+                //this issue comes from SABR YT protocol, so ignoring as it's not an actual YT error yet...
+                if (error.includes('12482')) {
+                    return;
+                }
                 console.log(error);
+                downloadProgress.hide();
             }
             onFinished: {}
         }
