@@ -10,7 +10,6 @@ Column {
     id: hyprlandWindowDisplay
     anchors.fill: parent
     spacing: 10
-
     property int activeWsId: Hyprland.focusedMonitor?.activeWorkspace ? Hyprland.focusedMonitor?.activeWorkspace.id : 1
     property var workspaceMap: {
         let map = {};
@@ -35,7 +34,7 @@ Column {
     Row {
         id: workspaceRow
         width: parent.width
-        height: 20
+        height: parent.height
         spacing: 8
         property var swingAnimations: []
         function registerSwingAnimation(index, animation) {

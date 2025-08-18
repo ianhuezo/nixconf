@@ -3,6 +3,12 @@ import QtQuick
 Item {
     id: root
     anchors.fill: parent
+    readonly property list<var> rightWidgets: [
+        {
+            dog: "cat"
+        }
+    ]
+
     Rectangle {
         id: rootArea
         color: 'transparent'

@@ -34,8 +34,8 @@ Rectangle {
         }
         Rectangle {
             id: hyprlandRect
-            width: parent.width / 1.1
-            height: 20
+            width: 28 * 5 - 8
+            height: parent.height
             radius: 10
             color: 'transparent'
             HyprlandWorkspaces {}
