@@ -14,6 +14,7 @@ FocusScope {
     property bool readOnly: false
     property string icon: "⚲"
     property int iconRotation: 45
+    property int iconSize: 20
     signal searchText(string text)
 
     function setSearchText(text: string) {
@@ -39,7 +40,9 @@ FocusScope {
             id: searchIcon
             text: searchBarContainer.icon
             color: Color.palette.base04
-            font.pixelSize: parent.height * 0.4
+            font.pixelSize: searchBarContainer.iconSize
+            width: searchBarContainer.iconSize
+            height: searchBarContainer.iconSize
             anchors.left: parent.left
             anchors.leftMargin: parent.width * 0.03
             anchors.verticalCenter: parent.verticalCenter

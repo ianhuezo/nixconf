@@ -115,7 +115,7 @@ FocusScope {
                 id: clearSelection
                 height: 40
                 width: 40
-                radius: 3
+                radius: 12
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
                 color: Color.palette.base02
@@ -145,7 +145,7 @@ FocusScope {
                 anchors.leftMargin: 10  // 10px spacing
                 anchors.verticalCenter: parent.verticalCenter
                 color: acceptSelection.animationRunning ? Color.palette.base0B : Color.palette.base0D
-                radius: 4
+                radius: 12
 
                 property bool animationRunning: false
                 MouseArea {
@@ -405,7 +405,7 @@ FocusScope {
                     return;
                 }
                 console.log(error);
-                // downloadProgress.hide();
+            // downloadProgress.hide();
             }
             onFinished: {}
         }
