@@ -318,6 +318,12 @@
     # glxinfo # Provides glxinfo command
     # mesa-demos # Provides additional OpenGL utilities
   ];
+  programs.thunar.enable = true;
+  programs.thunar.plugins = with pkgs.xfce; [
+    thunar-archive-plugin
+    thunar-volman
+  ];
+  services.tumbler.enable = true;
   programs.obs-studio = {
     enable = true;
 
