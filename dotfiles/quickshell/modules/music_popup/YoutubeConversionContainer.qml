@@ -371,7 +371,7 @@ FocusScope {
                 if (error.includes('12482')) {
                     return;
                 }
-                downloadProgress.hide();
+                // downloadProgress.hide();
                 console.log(error);
             }
         }
@@ -405,7 +405,7 @@ FocusScope {
                     return;
                 }
                 console.log(error);
-                downloadProgress.hide();
+                // downloadProgress.hide();
             }
             onFinished: {}
         }
