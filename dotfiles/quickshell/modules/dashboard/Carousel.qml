@@ -108,7 +108,7 @@ Item {
                     textColor: Color.palette.base07
                     underlineColor: Color.palette.base08
                     fontFamily: 'JetBrains Mono Nerd Font'
-                    fontSize: 18
+                    fontSize: 20
                     fontWeight: 500
                 }
             }

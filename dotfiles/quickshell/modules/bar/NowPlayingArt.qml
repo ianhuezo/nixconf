@@ -103,7 +103,7 @@ Image {
             anchors.centerIn: parent
             text: "♪"  // Music note symbol
             color: Color.palette.base09
-            font.pixelSize: parent.height * 0.6
+            font.pixelSize: 16
         }
         // Rounded corners for placeholder too
         radius: 4

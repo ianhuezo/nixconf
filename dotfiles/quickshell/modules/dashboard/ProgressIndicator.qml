@@ -152,7 +152,7 @@ Item {
                     Text {
                         text: Math.round(Math.max(0, Math.min(100, root.progress))) + "%"
                         color: root.percentageTextColor
-                        font.pixelSize: 14
+                        font.pixelSize: 16
                         anchors.horizontalCenter: parent.horizontalCenter
                         visible: root.showPercentage
                     }
