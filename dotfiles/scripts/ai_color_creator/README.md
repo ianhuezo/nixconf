@@ -1,0 +1,1 @@
+This is only meant to be used with Gemini systems as their is a generous free tier with images(for now).  You will need to sign-up with a google developer account and request a gemini api key to run this script.
