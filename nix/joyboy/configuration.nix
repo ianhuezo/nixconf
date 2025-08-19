@@ -312,6 +312,7 @@
         pillow
       ]
     ))
+    nodejs
     #wifi hotspot
     hostapd
     dnsmasq
