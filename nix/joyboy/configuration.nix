@@ -17,6 +17,7 @@
     ../gaming/proton-ge.nix
   ];
 
+
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   services.journald.extraConfig = ''
@@ -319,6 +320,14 @@
     # glxinfo # Provides glxinfo command
     # mesa-demos # Provides additional OpenGL utilities
   ];
+  # nixpkgs.overlays = (import ../overlays);
+  # nixpkgs.config.packageOverrides = pkgs: {
+  #   thunar = pkgs.thunar.overrideAttrs (oldAttrs: {
+  #     patches = (oldAttrs.patches or []) ++ [
+  #       ../overlays/thunar/pipe.patch  # Adjust path as needed
+  #     ];
+  #   });
+  # };
   programs.thunar.enable = true;
   programs.thunar.plugins = with pkgs.xfce; [
     thunar-archive-plugin
