@@ -1,0 +1,84 @@
+diff --git a/thunar/thunar-action-manager.c b/thunar/thunar-action-manager.c
+index d299273c3..865ec9599 100644
+--- a/thunar/thunar-action-manager.c
++++ b/thunar/thunar-action-manager.c
+@@ -83,6 +83,7 @@
+ 
+ typedef struct _ThunarActionManagerPokeData ThunarActionManagerPokeData;
+ 
++extern gboolean global_pipe_mode;
+ 
+ 
+ /* Signal identifiers */
+@@ -879,6 +880,30 @@ thunar_action_manager_open_files (ThunarActionManager *action_mgr,
+                                   GList               *files,
+                                   GAppInfo            *application_to_use)
+ {
++
++  
++  if (global_pipe_mode)
++    {
++      /* Output clicked file paths to stdout instead of opening */
++      GList *lp;
++      for (lp = files; lp != NULL; lp = lp->next)
++        {
++          gchar *path = g_file_get_path (thunar_file_get_file (lp->data));
++          if (path != NULL)
++            {
++              g_print("%s\n", path);
++              g_free (path);
++            }
++        }
++      fflush(stdout);
++      
++      /* Auto-close Thunar after outputting the selection */
++      GApplication *app = g_application_get_default();
++      if (app != NULL)
++        g_application_quit(app);
++      
++      return;
++    }  
+   GHashTable *applications;
+   GAppInfo   *app_info;
+   GList      *lp;
+diff --git a/thunar/thunar-application.c b/thunar/thunar-application.c
+index fa77eb2b1..a2823de0a 100644
+--- a/thunar/thunar-application.c
++++ b/thunar/thunar-application.c
+@@ -74,6 +74,7 @@
+ 
+ /* option values */
+ static gboolean opt_version = FALSE;
++gboolean global_pipe_mode = FALSE;
+ /* the sm-client-id option is only honored while starting the primary instance,
+  * and will be silently ignored on every other invocation */
+ static gchar *opt_sm_client_id = NULL;
+@@ -87,6 +88,7 @@ static const GOptionEntry option_entries[] =
+   { "daemon", 0, 0, G_OPTION_ARG_NONE, NULL, N_ ("Run in daemon mode"), NULL, },
+   { "sm-client-id", 0, G_OPTION_FLAG_HIDDEN, G_OPTION_ARG_STRING, &opt_sm_client_id, NULL, NULL, },
+   { "quit", 'q', 0, G_OPTION_ARG_NONE, NULL, N_ ("Quit a running Thunar instance"), NULL, },
++  { "pipe-mode", 'p', 0, G_OPTION_ARG_NONE, NULL, "Output selected file paths to stdout instead of opening them", NULL },
+   { "version", 'V', 0, G_OPTION_ARG_NONE, &opt_version, N_ ("Print version information and exit"), NULL, },
+   { G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, NULL, NULL, NULL, },
+   { NULL, },
+@@ -532,13 +534,20 @@ thunar_application_command_line (GApplication            *gapp,
+   gboolean           restore_tabs;
+   gboolean           open_first_window = TRUE;
+   GList             *window_list;
++  gboolean          pipe_mode = FALSE;
+ 
+   /* retrieve arguments */
+   g_variant_dict_lookup (options_dict, "bulk-rename", "b", &bulk_rename);
+   g_variant_dict_lookup (options_dict, "window", "b", &application->force_new_window);
+   g_variant_dict_lookup (options_dict, "quit", "b", &quit);
+   g_variant_dict_lookup (options_dict, "daemon", "b", &daemon);
++  g_variant_dict_lookup (options_dict, "pipe-mode", "b", &pipe_mode);
+   g_variant_dict_lookup (options_dict, G_OPTION_REMAINING, "^aay", &filenames);
++  global_pipe_mode = pipe_mode;  /* Store it globally */
++  g_debug ("pipe-mode flag is: %s", pipe_mode ? "TRUE" : "FALSE");
++
++  /* TODO: Debug logging remove after confirming works */
++  g_debug ("pipe-mode flag is: %s", pipe_mode ? "TRUE" : "FALSE");
+ 
+   /* FIXME: --quit should be named --suicide */
+   if (G_UNLIKELY (quit))
