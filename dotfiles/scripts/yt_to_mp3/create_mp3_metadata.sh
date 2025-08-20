@@ -31,9 +31,9 @@ cd ~ && echo "DEBUG: Changed to directory: $(pwd)" && cp "$ALBUM_MP3_PATH" "$ALB
 
 # Check if copy was successful
 if [ $? -eq 0 ]; then
-    echo "DEBUG: File copy completed successfully"
+  echo "DEBUG: File copy completed successfully"
 else
-    echo "DEBUG: File copy failed with exit code: $?"
+  echo "DEBUG: File copy failed with exit code: $?"
 fi
 
 echo "DEBUG: Script execution completed"

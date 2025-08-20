@@ -259,8 +259,8 @@ in
       ];
       windowrulev2 = [
         "idleinhibit fullscreen, class:^(vlc)$"
-	"float,class:^(thunar)$"
-	"center,class:^(thunar)$"
+        "float,class:^(thunar)$"
+        "center,class:^(thunar)$"
       ];
       layerrule = [
         "blur, notifications"

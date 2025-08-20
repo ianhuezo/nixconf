@@ -1,8 +1,8 @@
 final: prev: {
-  thunar = prev.thunar.overrideAttrs (oldAttrs: {
+  thunar = prev.xfce.thunar.overrideAttrs (oldAttrs: rec {
     patches = (oldAttrs.patches or []) ++ [
-      # Path relative to your configuration directory
       ./pipe.patch
     ];
   });
 }
+

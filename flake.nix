@@ -33,6 +33,9 @@
     hyprland-qtutils = {
       url = "github:hyprwm/hyprland-qtutils";
     };
+    # thunar-patched = {
+    #   url = "path:./nix/overlays/thunar";
+    # };
     # stylix = {
     #   url = "github:danth/stylix";
     #   inputs.nixpkgs.follows = "nixpkgs";

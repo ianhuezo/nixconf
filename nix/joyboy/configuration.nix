@@ -17,7 +17,6 @@
     ../gaming/proton-ge.nix
   ];
 
-
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   services.journald.extraConfig = ''
@@ -317,22 +316,18 @@
     #wifi hotspot
     hostapd
     dnsmasq
+    thunar
     # glxinfo # Provides glxinfo command
     # mesa-demos # Provides additional OpenGL utilities
   ];
-  # nixpkgs.overlays = (import ../overlays);
-  # nixpkgs.config.packageOverrides = pkgs: {
-  #   thunar = pkgs.thunar.overrideAttrs (oldAttrs: {
-  #     patches = (oldAttrs.patches or []) ++ [
-  #       ../overlays/thunar/pipe.patch  # Adjust path as needed
-  #     ];
-  #   });
-  # };
-  programs.thunar.enable = true;
-  programs.thunar.plugins = with pkgs.xfce; [
-    thunar-archive-plugin
-    thunar-volman
-  ];
+  nixpkgs.overlays = (import ../overlays);
+  programs.thunar = {
+    enable = true;
+    plugins = with pkgs.xfce; [
+      thunar-archive-plugin
+      thunar-volman
+    ];
+  };
   services.tumbler.enable = true;
   programs.obs-studio = {
     enable = true;
