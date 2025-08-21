@@ -11,9 +11,8 @@ Item {
     property var active: true
     property var cavaValues: []
     property bool useCanvasVisualization: true
-    property var barOffsetY: 8  // Renamed from barOffset
     property var barOffsetX: 10 // New horizontal offset property
-    property var verticalPadding: 8 // Padding for top and bottom of the inner bar
+    property var verticalPadding: 8// Padding for top and bottom of the inner bar
     property real originalHeight: bar.implicitHeight
     property var mainMonitor: Quickshell.screens.filter(screen => screen.name == "DP-1")
 

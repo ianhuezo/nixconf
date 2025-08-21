@@ -3,6 +3,7 @@ import QtQuick
 import QtQuick.Effects
 import "root:/config"
 import "root:/services"
+import Quickshell.Widgets
 
 PanelWindow {
     id: panel
@@ -13,7 +14,10 @@ PanelWindow {
     required property var barOffsetX
     required property var verticalPadding
     required property bool isActive
+    property real panelHeight: 36
     property real animatedHeight: panel.isActive ? 54 : 0
+    property real panelRadius: 8
+    property bool isSectionedBar: false
 
     screen: modelData
     implicitHeight: animatedHeight
@@ -49,7 +53,7 @@ PanelWindow {
                 leftMargin: panel.barOffsetX
                 rightMargin: panel.barOffsetX
             }
-            color: Color.palette.base01
+            color: 'transparent' //Color.palette.base01
             radius: 8 // Optional: rounded corners for the bar
 
             // Animation properties for expand/collapse
@@ -106,27 +110,40 @@ PanelWindow {
             Rectangle {
                 id: contentContainer
                 anchors {
-                    fill: parent
                     topMargin: panel.verticalPadding
                     bottomMargin: panel.verticalPadding
                 }
-                color: "transparent" // No visible background
+                color: panel.isSectionedBar ? "transparent" : Color.palette.base01
+                height: panel.panelHeight
+                width: parent.width
+                radius: panelRadius
 
                 // Left section
-                Left {}
+                Left {
+                    color: Color.palette.base01
+                    height: parent.height
+                    width: parent.width / 8
+                    anchors.verticalCenter: parent.verticalCenter
+                    radius: panelRadius
+                    border.width: panel.isSectionedBar ? 2 : 0
+                    border.color: panel.isSectionedBar ? Color.palette.base03 : 'transparent'
+                }
 
                 // Center section
-                Rectangle {
+                ClippingRectangle {
                     id: centerSection
                     height: parent.height
-                    width: parent.width / 2
-                    anchors {
-                        centerIn: parent
-                    }
-                    color: "transparent"
+                    width: parent.width / 7
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    color: Color.palette.base01
+                    radius: panelRadius
+                    border.width: panel.isSectionedBar ? 2 : 0
+                    border.color: panel.isSectionedBar ? Color.palette.base03 : 'transparent'
 
                     VisualizerContainer {
                         anchors.centerIn: parent
+                        height: panel.isSectionedBar ? parent.height : parent.height - 4
                         cavaValues: panel.cavaValues
                         useCanvas: panel.useCanvasVisualization
                         waveColor: Color.palette.base09
@@ -135,50 +152,65 @@ PanelWindow {
                     }
                 }
 
-                // Right section
-                Row {
-                    id: rightSection
+                Rectangle {
+                    color: Color.palette.base01
                     height: parent.height
-                    width: parent.width / 4
-                    property real ramPercentage: GetRam.ram
-                    property int cpuPercentage: GetCPU.cpu
-                    property int gpuPercentage: GetGPU.gpu
+                    width: parent.width / 8
+                    border.width: panel.isSectionedBar ? 2 : 0
+                    border.color: panel.isSectionedBar ? Color.palette.base03 : 'transparent'
 
-                    property var circleStatsData: [
-                        {
-                            percentage: gpuPercentage,
-                            statText: gpuPercentage + "%",
-                            iconSource: FileConfig.icons.gpu
-                        },
-                        {
-                            percentage: cpuPercentage,
-                            statText: cpuPercentage + "%",
-                            iconSource: FileConfig.icons.cpu
-                        },
-                        {
-                            percentage: ramPercentage,
-                            statText: ramPercentage + "%",
-                            iconSource: FileConfig.icons.ram
-                        }
-                    ]
                     anchors {
-                        right: parent.right
-                        top: parent.top
+                        right: parent.right  // Add this line
+                        verticalCenter: parent.verticalCenter
                     }
-                    layoutDirection: Qt.RightToLeft
-                    Repeater {
-                        model: rightSection.circleStatsData
-                        delegate: CircleProgress {
-                            percentage: modelData.percentage
-                            statText: modelData.statText
-                            iconSource: modelData.iconSource
-                            textColor: Color.palette.base09
-                            backgroundColor: Color.palette.base01
-                            progressColor: Color.palette.base09
-                            color: mainContainer.color
+                    radius: panelRadius
+                    Row {
+                        id: rightSection
+                        height: parent.height
+                        width: parent.width / 4
+                        property real ramPercentage: GetRam.ram
+                        property int cpuPercentage: GetCPU.cpu
+                        property int gpuPercentage: GetGPU.gpu
+
+                        property var circleStatsData: [
+                            {
+                                percentage: gpuPercentage,
+                                statText: gpuPercentage + "%",
+                                iconSource: FileConfig.icons.gpu
+                            },
+                            {
+                                percentage: cpuPercentage,
+                                statText: cpuPercentage + "%",
+                                iconSource: FileConfig.icons.cpu
+                            },
+                            {
+                                percentage: ramPercentage,
+                                statText: ramPercentage + "%",
+                                iconSource: FileConfig.icons.ram
+                            }
+                        ]
+                        anchors {
+                            right: parent.right
+                            top: parent.top
+                        }
+                        layoutDirection: Qt.RightToLeft
+                        Repeater {
+                            model: rightSection.circleStatsData
+                            delegate: CircleProgress {
+                                percentage: modelData.percentage
+                                statText: modelData.statText
+                                iconSource: modelData.iconSource
+                                textColor: Color.palette.base09
+                                backgroundColor: Color.palette.base01
+                                progressColor: Color.palette.base09
+                                color: mainContainer.color
+                            }
                         }
                     }
                 }
+
+                // Right section
+
             }
         }
     }

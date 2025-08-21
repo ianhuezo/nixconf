@@ -3,12 +3,6 @@ import "root:/config"
 
 Rectangle {
     id: leftSection
-    height: parent.height
-    width: parent.width / 4
-    anchors {
-        left: parent.left
-        top: parent.top
-    }
     color: "transparent"
 
     Row {

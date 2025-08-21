@@ -1,7 +1,5 @@
 import QtQuick
 import QtQuick.Window
-import QtQuick.Controls
-import QtQuick.Effects
 
 Rectangle {
     id: container
@@ -11,50 +9,49 @@ Rectangle {
     property color barColor: 'black'
     signal toggleVisualization
     signal toggleMusicDownloader
-
+    anchors.fill: parent
     color: barColor
     width: 166
-    height: 32
+    height: parent.height
 
     Row {
-        anchors.centerIn: parent
         height: parent.height
-        width: Math.min(parent.width, implicitWidth)
         spacing: 5
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
 
         Item {
             id: imageButton
             width: parent.height
             height: parent.height
+
             NowPlayingArt {
                 id: playingArt
                 height: parent.height
-                width: parent.width
+                width: parent.height
             }
             MouseArea {
                 anchors.fill: playingArt
                 onClicked: event => {}
             }
         }
-
         Item {
             id: vizContainer
             height: parent.height
-            width: loader.width
-
+            width: 166  // Move the explicit width here instead of in the Loader
             Loader {
                 id: loader
                 sourceComponent: container.useCanvas ? waveComponent : barComponent
                 height: parent.height
-                width: 166
+                anchors.fill: parent  // Fill the vizContainer
             }
-
             MouseArea {
                 anchors.fill: parent
                 onClicked: container.toggleVisualization()
             }
         }
     }
+
     Component {
         id: waveComponent
         WaveVisualizer {
@@ -63,7 +60,6 @@ Rectangle {
             height: parent.height
         }
     }
-
     Component {
         id: barComponent
         BarsVisualizer {
