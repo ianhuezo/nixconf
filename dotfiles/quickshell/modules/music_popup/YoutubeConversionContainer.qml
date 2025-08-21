@@ -3,9 +3,9 @@ import QtQuick.Window
 import QtQuick.Controls
 import QtQuick.Effects
 import Quickshell.Widgets
-import "root:/modules/dashboard"
-import "root:/config"
-import "root:/services"
+import qs.modules.dashboard
+import qs.config
+import qs.services
 
 FocusScope {
     id: root
@@ -72,10 +72,10 @@ FocusScope {
                 console.log("Download completed!");
             }
 
-            onClicked: {
-                // Handle overlay clicks if needed (e.g., cancel download)
-                // console.log("Progress overlay clicked");
-            }
+            onClicked:
+            // Handle overlay clicks if needed (e.g., cancel download)
+            // console.log("Progress overlay clicked");
+            {}
         }
 
         ClippingRectangle {

@@ -1,8 +1,8 @@
 import Quickshell
 import QtQuick
 import QtQuick.Effects
-import "root:/config"
-import "root:/services"
+import qs.config
+import qs.services
 import Quickshell.Widgets
 
 PanelWindow {

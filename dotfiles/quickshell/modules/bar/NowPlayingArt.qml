@@ -1,7 +1,7 @@
 import QtQuick
 import Quickshell.Services.Mpris
 import Quickshell.Io
-import "root:/services"
+import qs.services
 import qs.modules.music_popup
 
 Image {

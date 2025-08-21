@@ -1,6 +1,6 @@
 import Quickshell.Io
 import QtQuick
-import "root:/config"
+import qs.config
 
 Process {
     id: mediaDownloadProcess

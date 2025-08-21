@@ -1,8 +1,8 @@
 import Quickshell
 import QtQuick
 import Quickshell.Wayland
-import "root:/config"
-import "root:/services"
+import qs.config
+import qs.services
 import "root:/modules/music_popup"
 import qs.modules.dashboard.ThemeViewer
 

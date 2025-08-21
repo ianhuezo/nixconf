@@ -2,8 +2,8 @@ import Quickshell
 import QtQuick
 import Quickshell.Io
 import Quickshell.Wayland
-import "root:/config"
-import "root:/services"
+import qs.config
+import qs.services
 import QtQuick.Effects
 
 Rectangle {

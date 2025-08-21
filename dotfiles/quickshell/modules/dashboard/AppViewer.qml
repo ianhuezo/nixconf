@@ -1,8 +1,8 @@
 import Quickshell
 import QtQuick
 import QtQuick.Controls
-import "root:/config"
-import "root:/services"
+import qs.config
+import qs.services
 import "root:/libs/fuzzysort/fuzzysort.js" as Fuzzy
 
 Item {

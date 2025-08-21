@@ -3,8 +3,8 @@ import QtQuick
 import Quickshell
 import QtQuick
 import Quickshell.Io
-import "root:/config"
-import "root:/services"
+import qs.config
+import qs.services
 
 Item {
     id: bar

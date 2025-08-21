@@ -3,8 +3,8 @@ import QtQuick
 import Quickshell
 import Qt.labs.platform 1.1
 import QtQuick.Effects
-import "root:/config"
-import "root:/services"
+import qs.config
+import qs.services
 
 Column {
     id: hyprlandWindowDisplay

@@ -1,5 +1,5 @@
 import QtQuick
-import "root:/config"
+import qs.config
 
 Rectangle {
     id: leftSection
