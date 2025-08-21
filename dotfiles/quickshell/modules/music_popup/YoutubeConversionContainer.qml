@@ -74,7 +74,7 @@ FocusScope {
 
             onClicked: {
                 // Handle overlay clicks if needed (e.g., cancel download)
-                console.log("Progress overlay clicked");
+                // console.log("Progress overlay clicked");
             }
         }
 
