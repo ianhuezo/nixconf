@@ -27,7 +27,7 @@
     nix-colors.url = "github:misterio77/nix-colors";
     swww.url = "github:LGFae/swww/412326e40a399e61e15a31147569e97c69900dba";
     quickshell = {
-      url = "git+https://git.outfoxxed.me/outfoxxed/quickshell?rev=3bbf39c67e3108b12cc4eac689050bc5d8d71d12"; # ?rev=3d594e16dd3850973336c70014a948dc97837d39";
+      url = "git+https://git.outfoxxed.me/outfoxxed/quickshell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     hyprland-qtutils = {

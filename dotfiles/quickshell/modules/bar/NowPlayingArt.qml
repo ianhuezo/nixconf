@@ -44,7 +44,7 @@ Image {
     function updateSource() {
         let baseSource = root.defaultFilePath || root.getPreferredPlayer()?.trackArtUrl || extractMP3Image.localFilePath || "";
         // Add cache busting for local files based on current timestamp
-        if (baseSource && baseSource.startsWith("file://")) {
+        if (baseSource && (baseSource.startsWith("file://") || baseSource.startsWith("/tmp/FRONT_COVER"))) {
             baseSource += "?t=" + Date.now();
         }
         root.currentSource = baseSource;
