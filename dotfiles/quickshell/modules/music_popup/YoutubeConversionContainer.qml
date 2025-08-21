@@ -6,6 +6,7 @@ import Quickshell.Widgets
 import qs.modules.dashboard
 import qs.config
 import qs.services
+import qs.components
 
 FocusScope {
     id: root
@@ -111,31 +112,11 @@ FocusScope {
             visible: youtubeThumbnail.visible
             color: "transparent"  // or whatever background color you prefer
 
-            Rectangle {
+            IconButton {
                 id: clearSelection
-                height: 40
-                width: 40
-                radius: 12
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
-                color: Color.palette.base02
-
-                Text {
-                    anchors.centerIn: parent
-                    color: Color.palette.base05
-                    font.pixelSize: 24
-                    font.weight: 800
-                    text: '⟳'
-                    font.family: 'JetBrains Mono Nerd Font'
-                }
-                MouseArea {
-                    id: resetArea
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: {
-                        root.clearSelection();
-                    }
-                }
+                onClicked: root.clearSelection()
             }
             Rectangle {
                 id: acceptSelection
