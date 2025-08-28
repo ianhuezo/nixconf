@@ -15,7 +15,7 @@ PanelWindow {
     implicitWidth: parentId.implicitWidth
     implicitHeight: parentId.implicitHeight
 
-    WlrLayershell.layer: WlrLayer.Overlay
+    WlrLayershell.layer: WlrLayer.Top
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
     WlrLayershell.exclusiveZone: 0
 

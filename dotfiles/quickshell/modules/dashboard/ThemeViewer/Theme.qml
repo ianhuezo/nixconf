@@ -30,6 +30,16 @@ Item {
                 height: parent.height * 0.1
                 border.color: 'pink'
                 border.width: 1
+
+                Row {
+                    spacing: 4
+
+                    Item {
+                        FolderButton {
+                            id: button
+                        }
+                    }
+                }
             }
             Rectangle {
                 id: imageArea
