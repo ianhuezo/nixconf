@@ -11,11 +11,12 @@ PanelWindow {
     property var modelData
     required property var parentId
     property var windowProperty
+    property var currentWlrLayer: WlrLayer.Top
     color: 'transparent'
     implicitWidth: parentId.implicitWidth
     implicitHeight: parentId.implicitHeight
 
-    WlrLayershell.layer: WlrLayer.Top
+    WlrLayershell.layer: currentWlrLayer
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
     WlrLayershell.exclusiveZone: 0
 
@@ -130,6 +131,11 @@ PanelWindow {
                         sourceComponent: Component {
                             Theme {
                                 id: themePicker
+
+                                onFolderOpen: isOpen => {
+                                    console.log(isOpen);
+                                    root.currentWlrLayer = isOpen ? WlrLayer.Bottom : WlrLayer.Top;
+                                }
                             }
                         }
                     }

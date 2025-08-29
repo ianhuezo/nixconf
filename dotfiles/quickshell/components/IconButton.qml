@@ -11,7 +11,7 @@ Rectangle {
     property string fontFamily: "JetBrains Mono Nerd Font"
     property color iconColor: Color.palette.base05
     property color backgroundColor: Color.palette.base02
-    property int buttonRadius: 12
+    property int buttonRadius: 4
 
     // Signals
     signal clicked
@@ -34,8 +34,18 @@ Rectangle {
     }
 
     MouseArea {
+        id: area
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
-        onClicked: root.clicked()
+        onPressed: root.clicked()
+        hoverEnabled: true
+        onEntered: {
+            root.border.color = Color.palette.base05;
+            root.border.width = 1;
+        }
+        onExited: {
+            root.border.color = '';
+            root.border.width = 0;
+        }
     }
 }

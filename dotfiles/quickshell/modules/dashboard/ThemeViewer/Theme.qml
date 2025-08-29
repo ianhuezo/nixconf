@@ -8,6 +8,7 @@ Item {
             dog: "cat"
         }
     ]
+    signal folderOpen(bool isOpen)
 
     Rectangle {
         id: rootArea
@@ -37,6 +38,10 @@ Item {
                     Item {
                         FolderButton {
                             id: button
+
+                            onOpened: data => {
+                                root.folderOpen(data);
+                            }
                         }
                     }
                 }
