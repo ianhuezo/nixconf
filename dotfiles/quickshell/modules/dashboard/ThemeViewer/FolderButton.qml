@@ -8,6 +8,7 @@ IconButton {
     iconText: '🗀'
 
     signal opened(bool isOpen)
+    signal pathAdded(string path)
 
     onClicked: {
         if (!fileExplorer.running) {
@@ -19,12 +20,13 @@ IconButton {
     ThunarOpener {
         id: fileExplorer
         onClosed: path => {
-            console.log(`Got path ${path}`);
+            console.debug(`Got path ${path}`);
             root.opened(false);
+            root.pathAdded(path);
             fileExplorer.running = false;
         }
         onError: error => {
-            console.log(`${error}`);
+            console.debug(`${error}`);
             root.opened(false);
             fileExplorer.running = false;
         }

@@ -35,14 +35,16 @@ Item {
                 Row {
                     spacing: 4
 
-                    Item {
-                        FolderButton {
-                            id: button
-
-                            onOpened: data => {
-                                root.folderOpen(data);
-                            }
+                    FolderButton {
+                        id: folderButton
+                        y: {
+                            //centers the widget in the border
+                            return widgetArea.y + (widgetArea.y + widgetArea.height - folderButton.height) / 2;
                         }
+                        onOpened: flag => {
+                            root.folderOpen(flag);
+                        }
+                        onPathAdded: path => {}
                     }
                 }
             }
