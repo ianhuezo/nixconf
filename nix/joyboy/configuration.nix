@@ -317,6 +317,7 @@
     hostapd
     dnsmasq
     thunar
+    (callPackage ../gaming/poe2/awakened-poe2.nix { }) 
     # glxinfo # Provides glxinfo command
     # mesa-demos # Provides additional OpenGL utilities
   ];
