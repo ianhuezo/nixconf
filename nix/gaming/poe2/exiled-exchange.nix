@@ -7,12 +7,13 @@
   electron,
   xorg,
 }:
+#basically based off of nezia's PR but for poe2 stuff
 stdenv.mkDerivation rec {
-  pname = "exiled-exchange";
-  version = "3.26.101";
+  pname = "exiled-exchange-2";
+  version = "0.11.3";
   src = fetchurl {
-    url = "https://github.com/Kvan7/Exiled-Exchange-2/releases/download/v${version}/Exiled-Exchange-${version}.AppImage";
-    hash = "sha256-n7xweAHNYQSDQMxZpHEf60PZk62ydwMsW9a7k3QeU1E=";
+    url = "https://github.com/Kvan7/Exiled-Exchange-2/releases/download/v${version}/Exiled-Exchange-2-${version}.AppImage";
+    hash = "sha256-Iu4LCoXL0CzTMn/9jZsh/qDe8WjrUEY0ya1GrbTBydA="; # Update this hash
   };
   appimageContents = appimageTools.extractType2 {
     inherit pname src version;
@@ -23,17 +24,17 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ makeWrapper ];
   installPhase = ''
     runHook preInstall
-    mkdir -p $out/bin $out/share/exiled-exchange $out/share/applications
-    cp -a ${appimageContents}/{locales,resources} $out/share/exiled-exchange
-    cp -a ${appimageContents}/exiled-exchange.desktop $out/share/applications/
+    mkdir -p $out/bin $out/share/exiled-exchange-2 $out/share/applications
+    cp -a ${appimageContents}/{locales,resources} $out/share/exiled-exchange-2
+    cp -a ${appimageContents}/exiled-exchange-2.desktop $out/share/applications/
     cp -a ${appimageContents}/usr/share/icons $out/share
-    substituteInPlace $out/share/applications/exiled-exchange.desktop \
-    --replace-fail 'Exec=AppRun' 'Exec=exiled-exchange'
+    substituteInPlace $out/share/applications/exiled-exchange-2.desktop \
+    --replace-fail 'Exec=AppRun' 'Exec=exiled-exchange-2'
     runHook postInstall
   '';
   postFixup = ''
-        makeWrapper ${lib.getExe electron} $out/bin/exiled-exchange \
-    --add-flags $out/share/exiled-exchange/resources/app.asar \
+        makeWrapper ${lib.getExe electron} $out/bin/exiled-exchange-2 \
+    --add-flags $out/share/exiled-exchange-2/resources/app.asar \
     --prefix LD_LIBRARY_PATH : "${
       lib.makeLibraryPath [
         xorg.libXtst
@@ -47,8 +48,8 @@ stdenv.mkDerivation rec {
     changelog = "https://github.com/Kvan7/Exiled-Exchange-2/releases/tag/v${version}";
     sourceProvenance = [ lib.sourceTypes.binaryNativeCode ];
     license = lib.licenses.mit;
-    maintainers = [ lib.maintainers.nezia ];
+    maintainers = [ "ianhuezo" ];
     platforms = lib.platforms.linux;
-    mainProgram = "exiled-exchange";
+    mainProgram = "exiled-exchange-2";
   };
 }
