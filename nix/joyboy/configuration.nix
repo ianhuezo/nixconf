@@ -308,7 +308,7 @@
     ffmpeg
     (python3.withPackages (
       python-pkgs: with python-pkgs; [
-        yt-dlp
+        pkgs.python3Packages.yt-dlp
         eyed3
         pillow
       ]
