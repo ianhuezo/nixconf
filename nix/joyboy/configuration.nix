@@ -264,6 +264,7 @@
   environment.shells = with pkgs; [ zsh ];
   # List packages installed in system profile. To search, run:
   # $ nix search wget
+  nixpkgs.overlays = (import ../overlays);
   environment.systemPackages = with pkgs; [
     #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     #  wget
@@ -322,7 +323,6 @@
     # glxinfo # Provides glxinfo command
     # mesa-demos # Provides additional OpenGL utilities
   ];
-  nixpkgs.overlays = (import ../overlays);
   programs.thunar = {
     enable = true;
     plugins = with pkgs.xfce; [
