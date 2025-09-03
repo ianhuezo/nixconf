@@ -1,4 +1,5 @@
 import QtQuick
+import Quickshell.Widgets
 
 Item {
     id: root
@@ -9,6 +10,7 @@ Item {
         }
     ]
     signal folderOpen(bool isOpen)
+    property string imagePath: ""
 
     Rectangle {
         id: rootArea
@@ -44,8 +46,29 @@ Item {
                         onOpened: flag => {
                             root.folderOpen(flag);
                         }
-                        onPathAdded: path => {}
+                        onPathAdded: path => {
+                            root.imagePath = path;
+                        }
                     }
+                }
+            }
+            ClippingRectangle {
+                width: parent.width * 0.5
+                height: parent.height * 0.5
+                anchors.horizontalCenter: marginedArea.horizontalCenter
+                y: widgetArea.y + widgetArea.height + 24
+                visible: root.imagePath.toString().length > 0
+                clip: true
+                radius: 10
+                color: 'transparent'
+                Image {
+                    id: backgroundImageFile
+                    anchors.fill: parent
+                    mipmap: true
+                    fillMode: Image.PreserveAspectFit
+                    source: root.imagePath
+                    visible: source.toString().length > 0
+                    onVisibleChanged: {}
                 }
             }
             Rectangle {
