@@ -259,8 +259,8 @@ in
       ];
       windowrulev2 = [
         "idleinhibit fullscreen, class:^(vlc)$"
-        "float,class:^(thunar)$"
-        "center,class:^(thunar)$"
+        "float,class:^(thunar|Thunar)$"
+        "center,class:^(thunar|Thunar)$"
         
         # Path of Exile 2 - fullscreen game
         "tag +poe, class:(steam_app_2694490)"
