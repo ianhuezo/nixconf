@@ -10,10 +10,10 @@
 #basically based off of nezia's PR but for poe2 stuff
 stdenv.mkDerivation rec {
   pname = "exiled-exchange-2";
-  version = "0.11.3";
+  version = "0.11.5";
   src = fetchurl {
     url = "https://github.com/Kvan7/Exiled-Exchange-2/releases/download/v${version}/Exiled-Exchange-2-${version}.AppImage";
-    hash = "sha256-Iu4LCoXL0CzTMn/9jZsh/qDe8WjrUEY0ya1GrbTBydA="; # Update this hash
+    hash = "sha256-bWwSQ9wVjL7vamfE6L95Oapjvms90lJw8IYJh32mLuw="; # Update this hash
   };
   appimageContents = appimageTools.extractType2 {
     inherit pname src version;
