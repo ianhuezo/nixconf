@@ -6,7 +6,7 @@ final: prev: {
         owner = "yt-dlp";
         repo = "yt-dlp";
         rev = version;
-        sha256 = "sha256-j7x844MPPFdXYTJiiMnru3CE79A/6JdfJDdh8it9KsU=";
+        hash = "sha256-9y6OUVm6hNTTi5FFmd9DHcmAMrvSmDD+4kDe00aMTDI=";
       };
     });
   };
