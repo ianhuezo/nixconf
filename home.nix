@@ -261,12 +261,12 @@ in
         "idleinhibit fullscreen, class:^(vlc)$"
         "float,class:^(thunar|Thunar)$"
         "center,class:^(thunar|Thunar)$"
-        
+
         # Path of Exile 2 - fullscreen game
         "tag +poe, class:(steam_app_2694490)"
         "tile, class:(steam_app_2694490)"
         "fullscreen, class:(steam_app_2694490)"
-        
+
         # Exiled Exchange 2 - overlay tool
         "tag +apt, title:(exiled-exchange-2|Exiled Exchange 2)"
         "float, tag:apt"
@@ -325,7 +325,7 @@ in
         "CTRL_SHIFT, Return, exec, kitty --directory=$HOME"
         "CTRL_SHIFT, bracketleft, cyclenext, prev"
         "CTRL_SHIFT, bracketright, cyclenext"
-	"SHIFT,Space,pass,title:^(exiled-exchange-2)$"
+        "SHIFT,Space,pass,title:^(exiled-exchange-2)$"
         "CTRL,D,pass,class:^(exiled-exchange-2)$"
         "CTRL ALT,D,pass,class:^(exiled-exchange-2)$"
       ]

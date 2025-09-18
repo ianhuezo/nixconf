@@ -228,7 +228,27 @@ in
         };
       };
       conform-nvim = {
-
+        enable = true;
+        settings = {
+          formatters_by_ft = {
+            # Let conform-nvim discover formatters from treefmt.toml
+            "*" = [ "treefmt" ];
+          };
+          formatters = {
+            treefmt = {
+              command = "treefmt";
+              args = [
+                "--stdin"
+                "$FILENAME"
+              ];
+              stdin = true;
+            };
+          };
+          format_on_save = {
+            timeout_ms = 500;
+            lsp_fallback = true;
+          };
+        };
       };
       presence-nvim = {
         enable = true;
