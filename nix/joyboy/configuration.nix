@@ -320,8 +320,6 @@
     dnsmasq
     thunar
     (callPackage ../gaming/poe2/exiled-exchange.nix { }) # for poe2
-    # glxinfo # Provides glxinfo command
-    # mesa-demos # Provides additional OpenGL utilities
   ];
   programs.thunar = {
     enable = true;
