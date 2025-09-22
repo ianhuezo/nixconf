@@ -53,7 +53,7 @@ Singleton {
         readonly property string downloadYoutube: root.getScriptPath('yt_to_mp3/youtube_dl.sh')
         readonly property string saveMP3: root.getScriptPath('yt_to_mp3/create_mp3_metadata.sh')
         readonly property string extractMP3AlbumImage: root.getScriptPath('yt_to_mp3/extract_mp3_image.sh')
-        readonly property string generateAIColor: root.getScriptPath('ai_color_creator/generate_wallpaper.sh')
+        readonly property string generateWallpaper: root.getScriptPath('ai_color_creator/generate_wallpaper.sh')
         readonly property string generateAIColorPrompt: root.getScriptPath('ai_color_creator/prompt.md')
     }
 

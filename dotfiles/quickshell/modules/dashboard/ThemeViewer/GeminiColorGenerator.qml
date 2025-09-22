@@ -5,7 +5,7 @@ Process {
     id: root
     property string wallpaperPath: ""
     property var geminiAPIKey: ""
-    readonly property var scriptLocation: FileConfig.scripts.generateAIColor
+    readonly property string scriptLocation: FileConfig.scripts.generateWallpaper
     readonly property string promptPath: FileConfig.scripts.generateAIColorPrompt
     //this is not in regular thunar, it's from the custom nix code patch
     command: [scriptLocation, wallpaperPath, promptPath, geminiAPIKey]
