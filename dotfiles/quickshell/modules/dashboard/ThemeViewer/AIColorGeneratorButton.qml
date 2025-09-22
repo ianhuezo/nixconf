@@ -1,13 +1,15 @@
 import qs.components
 import QtQuick
+import qs.config
+import Quickshell.Io
 
 IconButton {
     id: root
     iconText: '✨️'
 
     property string wallpaperPath: ""
+    property var apiKey: JSON.parse(jsonFile.text())['apiKey'] ?? ""
 
-    signal opened(bool isOpen)
     signal colorsGenerated(var json)
 
     onClicked: {
@@ -15,24 +17,37 @@ IconButton {
             console.error("A path must be provided to generate a wallpaper color configuration");
             return;
         }
-        if (!coloreGenerator.running) {
-            root.opened(true);
-            coloreGenerator.running = true;
+        if (apiKey.length == 0) {
+            console.error("API Key could not be read");
+        }
+        if (!colorGenerator.running) {
+            console.log("starting color generation");
+            colorGenerator.wallpaperPath = wallpaperPath;
+            colorGenerator.geminiAPIKey = apiKey;
+            colorGenerator.running = true;
         }
     }
 
+    onWallpaperPathChanged: data => {
+        console.log(`Wallpaper path changed to ${wallpaperPath}`);
+    }
+    FileView {
+        id: jsonFile
+        path: FileConfig.environment.geminiAPIKeyPath
+        blockLoading: true
+    }
+
     GeminiColorGenerator {
-        id: coloreGenerator
+        id: colorGenerator
         onClosed: jsonColors => {
             console.debug(`Got colors ${jsonColors}`);
-            root.opened(false);
             root.colorsGenerated(jsonColors);
-            coloreGenerator.running = false;
+            // colorGenerator.running = false;
         }
+        wallpaperPath: root.wallpaperPath
         onError: error => {
             console.debug(`${error}`);
-            root.opened(false);
-            coloreGenerator.running = false;
+            // colorGenerator.running = false;
         }
     }
 }

@@ -6,10 +6,11 @@ Singleton {
     id: root
     //
     readonly property string rootPath: "file:///etc/nixos/dotfiles"
+    readonly property string configPath: "file:///home/ianh/.config"
     readonly property string scriptRootPath: rootPath + '/scripts'
     readonly property string assetsRootPath: rootPath + '/assets'
     readonly property string themesRootPath: rootPath + '/themes'
-    readonly property string environmentRootPath: rootPath + '~/.config'
+    readonly property string environmentRootPath: configPath
     readonly property string homePath: 'Music'
 
     //art for app selector
