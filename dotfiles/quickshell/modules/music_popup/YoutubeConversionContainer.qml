@@ -87,7 +87,7 @@ FocusScope {
             y: youtubeMediaSvg.y - 24
             visible: youtubeThumbnail.source.toString().length > 0
             clip: true
-            radius: 10
+            radius: AppearanceConfig.calculateRadius(width, height, 'md')
 
             Image {
                 id: youtubeThumbnail
@@ -126,7 +126,7 @@ FocusScope {
                 anchors.leftMargin: 10  // 10px spacing
                 anchors.verticalCenter: parent.verticalCenter
                 color: acceptSelection.animationRunning ? Color.palette.base0B : Color.palette.base0D
-                radius: 12
+                radius: AppearanceConfig.calculateRadius(width, height, 'lg')
 
                 property bool animationRunning: false
                 MouseArea {
@@ -151,6 +151,7 @@ FocusScope {
                     text: "♪ Add to Library"
                     color: Color.palette.base05
                     font.family: 'JetBrains Mono Nerd Font'
+                    font.weight: 500
                     font.pixelSize: 16
                     opacity: acceptSelection.animationRunning ? 0 : 1
 

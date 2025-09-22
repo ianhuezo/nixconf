@@ -1,14 +1,36 @@
+pragma Singleton
 import Quickshell
 import QtQuick
 
 Singleton {
-
     readonly property QtObject radius: QtObject {
         readonly property real none: 0
         readonly property real sm: 4
         readonly property real md: 12
         readonly property real lg: 20
     }
+
+    property var calculateRadius: function (width, height, radiusType) {
+        var minDimension = Math.min(width, height);
+        switch (radiusType.toLowerCase()) {
+        case "none":
+            return 0;
+        case "sm":
+            return Math.min(4, minDimension * 0.02);
+        case "md":
+            return Math.min(8, minDimension * 0.04);
+        case "lg":
+            return Math.min(12, minDimension * 0.06);
+        case "xl":
+            return Math.min(16, minDimension * 0.08);
+        case "round":
+            return minDimension / 2;
+        default:
+            console.warn("Unknown radius type:", radiusType, "- defaulting to 'none'");
+            return 0;
+        }
+    }
+
     readonly property QtObject font: QtObject {
         readonly property string family: "JetBrains Mono Nerd Font"
         readonly property QtObject size: QtObject {

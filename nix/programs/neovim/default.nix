@@ -231,17 +231,14 @@ in
         enable = true;
         settings = {
           formatters_by_ft = {
-            # Let conform-nvim discover formatters from treefmt.toml
+            qml = [ ];
             "*" = [ "treefmt" ];
           };
           formatters = {
             treefmt = {
               command = "treefmt";
-              args = [
-                "--stdin"
-                "$FILENAME"
-              ];
-              stdin = true;
+              args = [ "$FILENAME" ];
+              stdin = false; # Don't use stdin, let treefmt read the file directly
             };
           };
           format_on_save = {
