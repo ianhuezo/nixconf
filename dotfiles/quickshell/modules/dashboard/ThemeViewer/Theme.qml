@@ -50,16 +50,16 @@ Item {
                             root.imagePath = path;
                         }
                     }
-                    AIColorGeneratorButton {
-                        id: generateColors
-			wallpaperPath: root.imagePath
-                        onOpened: flag => {
-                            root.folderOpen(flag);
-                        }
-                        onPathAdded: path => {
-                            root.imagePath = path;
-                        }
-                    }
+                    // AIColorGeneratorButton {
+                    //     id: generateColors
+                    //     wallpaperPath: root.imagePath
+                    //     onOpened: flag => {
+                    //         root.folderOpen(flag);
+                    //     }
+                    //     onPathAdded: path => {
+                    //         root.imagePath = path;
+                    //     }
+                    // }
                     Grid {
                         columns: 8
                         rows: 2
