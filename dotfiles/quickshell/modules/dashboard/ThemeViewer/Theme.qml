@@ -1,5 +1,7 @@
 import QtQuick
 import Quickshell.Widgets
+import qs.services
+import qs.config
 
 Item {
     id: root
@@ -48,6 +50,79 @@ Item {
                         }
                         onPathAdded: path => {
                             root.imagePath = path;
+                        }
+                    }
+
+                    Grid {
+                        columns: 8
+                        rows: 2
+                        spacing: 10
+
+                        Repeater {
+                            id: coloredCircles
+                            model: Color.paletteData
+
+                            Rectangle {
+                                id: colorRect
+                                width: 20
+                                height: 20
+                                color: modelData.color
+                                radius: AppearanceConfig.calculateRadius(width, height, 'round')
+                                border.width: 1
+                                border.color: Color.getBorderColor(modelData.color)
+
+                                property bool hovered: false
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    onEntered: colorRect.hovered = true
+                                    onExited: colorRect.hovered = false
+                                }
+
+                                // Tooltip
+                                Rectangle {
+                                    id: tooltip
+                                    width: tooltipText.width + 16
+                                    height: tooltipText.height + 12
+                                    color: Color.palette.base0E
+                                    radius: 6
+
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    anchors.bottom: parent.top
+                                    anchors.bottomMargin: 8
+
+                                    visible: colorRect.hovered
+                                    opacity: colorRect.hovered ? 1.0 : 0.0
+
+                                    Behavior on opacity {
+                                        NumberAnimation {
+                                            duration: 200
+                                            easing.type: Easing.InOutQuad
+                                        }
+                                    }
+
+                                    Text {
+                                        id: tooltipText
+                                        anchors.centerIn: parent
+                                        text: modelData.name + "\n" + colorRect.color.toString().toUpperCase()
+                                        color: "white"
+                                        font.pixelSize: 11
+                                        horizontalAlignment: Text.AlignHCenter
+                                    }
+
+                                    // Tooltip arrow
+                                    Rectangle {
+                                        width: 8
+                                        height: 8
+                                        color: tooltip.color
+                                        rotation: 45
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                        anchors.top: parent.bottom
+                                        anchors.topMargin: -4
+                                    }
+                                }
+                            }
                         }
                     }
                 }
