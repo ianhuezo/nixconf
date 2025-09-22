@@ -37,14 +37,12 @@ Item {
                 border.width: 1
 
                 Row {
-                    spacing: 4
+                    spacing: 16
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.verticalCenter: parent.verticalCenter
 
                     FolderButton {
                         id: folderButton
-                        y: {
-                            //centers the widget in the border
-                            return widgetArea.y + (widgetArea.y + widgetArea.height - folderButton.height) / 2;
-                        }
                         onOpened: flag => {
                             root.folderOpen(flag);
                         }
@@ -52,7 +50,16 @@ Item {
                             root.imagePath = path;
                         }
                     }
-
+                    AIColorGeneratorButton {
+                        id: generateColors
+			wallpaperPath: root.imagePath
+                        onOpened: flag => {
+                            root.folderOpen(flag);
+                        }
+                        onPathAdded: path => {
+                            root.imagePath = path;
+                        }
+                    }
                     Grid {
                         columns: 8
                         rows: 2
@@ -64,8 +71,8 @@ Item {
 
                             Rectangle {
                                 id: colorRect
-                                width: 20
-                                height: 20
+                                width: 15
+                                height: 15
                                 color: modelData.color
                                 radius: AppearanceConfig.calculateRadius(width, height, 'round')
                                 border.width: 1

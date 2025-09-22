@@ -1,6 +1,4 @@
 import qs.components
-import Quickshell.Wayland
-import Quickshell.Io
 import QtQuick
 
 IconButton {

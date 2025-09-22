@@ -9,6 +9,7 @@ Singleton {
     readonly property string scriptRootPath: rootPath + '/scripts'
     readonly property string assetsRootPath: rootPath + '/assets'
     readonly property string themesRootPath: rootPath + '/themes'
+    readonly property string environmentRootPath: rootPath + '~/.config'
     readonly property string homePath: 'Music'
 
     //art for app selector
@@ -31,6 +32,10 @@ Singleton {
         return Qt.resolvedUrl(`${scriptRootPath}/${scriptName}`);
     }
 
+    function getEnvironmentPath(environmentName) {
+        return Qt.resolvedUrl(`${environmentRootPath}/${environmentName}`);
+    }
+
     // Icon paths object with pre-resolved URLs
     readonly property QtObject icons: QtObject {
         readonly property string nix: root.getIconPath("nixos.png")
@@ -39,6 +44,7 @@ Singleton {
         readonly property string ram: root.getIconPath("ram.svg")
         readonly property string media: root.getIconPath("media.svg")
         readonly property string workspace: root.getIconPath("lamp_on.png")
+        readonly property string spark: root.getIconPath("spark.svg")
     }
 
     readonly property QtObject scripts: QtObject {
@@ -46,5 +52,11 @@ Singleton {
         readonly property string downloadYoutube: root.getScriptPath('yt_to_mp3/youtube_dl.sh')
         readonly property string saveMP3: root.getScriptPath('yt_to_mp3/create_mp3_metadata.sh')
         readonly property string extractMP3AlbumImage: root.getScriptPath('yt_to_mp3/extract_mp3_image.sh')
+        readonly property string generateAIColor: root.getScriptPath('ai_color_creator/generate_wallpaper.sh')
+        readonly property string generateAIColorPrompt: root.getScriptPath('ai_color_creator/prompt.md')
+    }
+
+    readonly property QtObject environment: QtObject {
+        readonly property string geminiAPIKeyPath: root.getEnvironmentPath('gemini/api.json')
     }
 }
