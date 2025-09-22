@@ -5,8 +5,8 @@ Process {
     id: root
     property string wallpaperPath: ""
     property var geminiAPIKey: ""
-    readonly property string scriptLocation: FileConfig.scripts.generateWallpaper
-    readonly property string promptPath: FileConfig.scripts.generateAIColorPrompt
+    property string scriptLocation: FileConfig.scripts.generateWallpaper
+    property string promptPath: FileConfig.scripts.generateAIColorPrompt
     //this is not in regular thunar, it's from the custom nix code patch
     command: [scriptLocation, wallpaperPath, promptPath, geminiAPIKey]
     signal closed(var jsonColors)
@@ -15,17 +15,17 @@ Process {
     running: false
     stdout: SplitParser {
         onRead: data => {
-        console.log("Raw stdout data:", data);
-        
-        // Try to parse - only proceed if valid JSON
-        try {
-            const jsonData = JSON.parse(data);
-            console.log("Valid JSON received:", jsonData);
-            root.closed(jsonData);
-        } catch (e) {
-            console.log("Partial or invalid JSON, waiting for more data...");
-            // Don't call closed() yet
-        }
+            console.log("Raw stdout data:", data);
+
+            // Try to parse - only proceed if valid JSON
+            try {
+                const jsonData = JSON.parse(data);
+                console.log("Valid JSON received:", jsonData);
+                root.closed(jsonData);
+            } catch (e) {
+                console.log("Partial or invalid JSON, waiting for more data...");
+                // Don't call closed() yet
+            }
         }
     }
     onRunningChanged: {
