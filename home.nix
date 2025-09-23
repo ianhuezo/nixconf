@@ -94,6 +94,7 @@ in
     inputs.hyprland-qtutils.packages.${pkgs.system}.default
     qt6.full
     qt6.qtdeclarative
+    eza
   ];
   programs.zoxide.enable = true;
   programs.zoxide.enableZshIntegration = true;
@@ -514,7 +515,9 @@ in
     syntaxHighlighting.enable = true;
 
     shellAliases = {
-      ll = "ls -l";
+      ll = "eza -la";
+      lt = "eza --tree";
+      ls = "eza";
       update = "sudo nixos-rebuild switch --flake .#joyboy";
       nixfmt = "sudo nixfmt";
       cd = "z";

@@ -9,6 +9,7 @@ Item {
     signal folderOpen(bool isOpen)
     property string imagePath: ""
     property var paletteData: Color.paletteData
+    property var isLayOutDebugEnabled: false
 
     Rectangle {
         id: rootArea
@@ -21,16 +22,16 @@ Item {
             width: parent.width * 0.8
             height: parent.height
             anchors.centerIn: parent
-            // border.color: 'green'
-            // border.width: 1
+            border.color: root.isLayOutDebugEnabled ? 'green' : ''
+            border.width: root.isLayOutDebugEnabled ? 1 : 0
 
             Rectangle {
                 id: widgetArea
                 color: 'transparent'
                 width: parent.width
                 height: parent.height * 0.1
-                // border.color: 'pink'
-                // border.width: 1
+                border.color: root.isLayOutDebugEnabled ? 'pink' : ''
+                border.width: root.isLayOutDebugEnabled ? 1 : 0
 
                 Row {
                     spacing: 16
@@ -156,6 +157,8 @@ Item {
                 width: parent.width
                 height: parent.height * 0.3
                 y: rootArea.y + rootArea.height - height
+                border.color: root.isLayOutDebugEnabled ? 'red' : ''
+                border.width: root.isLayOutDebugEnabled ? 1 : 0
             }
         }
     }
