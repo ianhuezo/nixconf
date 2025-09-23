@@ -12,7 +12,7 @@ Rectangle {
     property string fontFamily: "JetBrains Mono Nerd Font"
     property color iconColor: Color.palette.base05
     property color backgroundColor: Color.palette.base02
-    property int buttonRadius: AppearanceConfig.calculateRadius(width,height,'lg')
+    property int buttonRadius: AppearanceConfig.calculateRadius(width, height, 'lg')
 
     // Signals
     signal clicked

@@ -5,7 +5,7 @@ import Quickshell.Io
 
 IconButton {
     id: root
-    iconText: '✨️'
+    iconText: "✨"
 
     property string wallpaperPath: ""
     property var apiKey: JSON.parse(jsonFile.text())['apiKey'] ?? ""
@@ -40,14 +40,13 @@ IconButton {
     GeminiColorGenerator {
         id: colorGenerator
         onClosed: jsonColors => {
-            console.debug(`Got colors ${jsonColors}`);
             root.colorsGenerated(jsonColors);
-            // colorGenerator.running = false;
+            colorGenerator.running = false;
         }
         wallpaperPath: root.wallpaperPath
         onError: error => {
             console.debug(`${error}`);
-            // colorGenerator.running = false;
+            colorGenerator.running = false;
         }
     }
 }

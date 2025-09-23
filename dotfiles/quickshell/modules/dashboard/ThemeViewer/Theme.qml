@@ -6,13 +6,9 @@ import qs.config
 Item {
     id: root
     anchors.fill: parent
-    readonly property list<var> rightWidgets: [
-        {
-            dog: "cat"
-        }
-    ]
     signal folderOpen(bool isOpen)
     property string imagePath: ""
+    property var paletteData: Color.paletteData
 
     Rectangle {
         id: rootArea
@@ -25,16 +21,16 @@ Item {
             width: parent.width * 0.8
             height: parent.height
             anchors.centerIn: parent
-            border.color: 'green'
-            border.width: 1
+            // border.color: 'green'
+            // border.width: 1
 
             Rectangle {
                 id: widgetArea
                 color: 'transparent'
                 width: parent.width
                 height: parent.height * 0.1
-                border.color: 'pink'
-                border.width: 1
+                // border.color: 'pink'
+                // border.width: 1
 
                 Row {
                     spacing: 16
@@ -54,7 +50,8 @@ Item {
                         id: generateColors
                         wallpaperPath: root.imagePath
                         onColorsGenerated: jsonColors => {
-                            console.log(jsonColors);
+                            const aiGeneratedPalette = jsonColors.palette;
+                            root.paletteData = Color.convertPaletteToArray(aiGeneratedPalette);
                         }
                     }
                     Grid {
@@ -64,7 +61,7 @@ Item {
 
                         Repeater {
                             id: coloredCircles
-                            model: Color.paletteData
+                            model: root.paletteData
 
                             Rectangle {
                                 id: colorRect
@@ -73,7 +70,7 @@ Item {
                                 color: modelData.color
                                 radius: AppearanceConfig.calculateRadius(width, height, 'round')
                                 border.width: 1
-                                border.color: Color.getBorderColor(modelData.color)
+                                border.color: Color.getBorderColor(colorRect.color)
 
                                 property bool hovered: false
 
@@ -110,7 +107,7 @@ Item {
                                         id: tooltipText
                                         anchors.centerIn: parent
                                         text: modelData.name + "\n" + colorRect.color.toString().toUpperCase()
-                                        color: "white"
+                                        color: Color.palette.base06
                                         font.pixelSize: 11
                                         horizontalAlignment: Text.AlignHCenter
                                     }
@@ -159,8 +156,6 @@ Item {
                 width: parent.width
                 height: parent.height * 0.3
                 y: rootArea.y + rootArea.height - height
-                border.color: 'red'
-                border.width: 1
             }
         }
     }

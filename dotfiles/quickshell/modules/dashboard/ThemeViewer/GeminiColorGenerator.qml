@@ -15,25 +15,22 @@ Process {
     running: false
     stdout: SplitParser {
         onRead: data => {
-            console.log("Raw stdout data:", data);
+            console.debug("Raw stdout data:", data);
 
             // Try to parse - only proceed if valid JSON
             try {
                 const jsonData = JSON.parse(data);
-                console.log("Valid JSON received:", jsonData);
+                console.debug("Valid JSON received:", data);
                 root.closed(jsonData);
             } catch (e) {
-                console.log("Partial or invalid JSON, waiting for more data...");
-                // Don't call closed() yet
+                console.debug("Partial or invalid JSON, waiting for more data...");
             }
         }
-    }
-    onRunningChanged: {
-        console.log(`Running with variables:\n${scriptLocation}\n${geminiAPIKey}\n${promptPath}\n${wallpaperPath}\nAnd running ${running}`);
+        splitMarker: ""
     }
     stderr: SplitParser {
         onRead: data => {
-            return console.log(`Failed to parse Gemini with error: ${data.trim()}`);
+            return console.error(`Failed to parse Gemini with error: ${data.trim()}`);
         }
     }
     onFinished: {

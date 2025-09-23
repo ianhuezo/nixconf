@@ -44,6 +44,25 @@ Singleton {
         property color base0E: root.defaultPalette.base0E
         property color base0F: root.defaultPalette.base0F
     }
+    function convertPaletteToArray(jsonPalette) {
+        var paletteArray = [];
+
+        // Define the order of base colors (base00 to base0F)
+        var baseKeys = ["base00", "base01", "base02", "base03", "base04", "base05", "base06", "base07", "base08", "base09", "base0A", "base0B", "base0C", "base0D", "base0E", "base0F"];
+
+        // Convert each palette entry
+        for (var i = 0; i < baseKeys.length; i++) {
+            var key = baseKeys[i];
+            if (jsonPalette.hasOwnProperty(key)) {
+                paletteArray.push({
+                    name: key,
+                    color: jsonPalette[key]
+                });
+            }
+        }
+
+        return paletteArray;
+    }
 
     property var paletteData: [
         {

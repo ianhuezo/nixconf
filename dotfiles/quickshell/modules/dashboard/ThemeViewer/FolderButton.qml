@@ -4,6 +4,7 @@ import QtQuick
 IconButton {
     id: root
     iconText: '🗀'
+    iconSize: 36
 
     signal opened(bool isOpen)
     signal pathAdded(string path)
