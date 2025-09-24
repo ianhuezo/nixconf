@@ -38,6 +38,7 @@ in
     nix-colors.homeManagerModules.default
     ./nix/programs/neovim
     ./nix/programs/kitty
+    ./nix/programs/mako
   ];
 
   # Home Manager needs a bit of information about you and the paths it should
@@ -53,6 +54,11 @@ in
   };
 
   modules.kitty = {
+    enable = true;
+    colorScheme = config.colorScheme;
+  };
+
+  modules.mako = {
     enable = true;
     colorScheme = config.colorScheme;
   };
@@ -135,18 +141,7 @@ in
       "version" : 1
     }
   '';
-  services.mako = {
-    enable = true;
-    extraConfig = ''
-      default-timeout=10000
-      font=JetBrains Mono Nerd Font
-      background-color=#${config.colorScheme.palette.base00}80
-      border-radius=20
-      padding=10,5,10,5
-      border-color=#${config.colorScheme.palette.base0C}
-      border-size=2
-    '';
-  };
+
   programs.hyprlock = {
     enable = true;
     extraConfig = ''
