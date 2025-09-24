@@ -27,7 +27,7 @@ echo "DEBUG: Destination directory: '$ALBUM_MP3_OUT_PATH'"
 echo "DEBUG: Final destination: '$ALBUM_MP3_OUT_PATH/$ALBUM_NAME.mp3'"
 echo "DEBUG: Current working directory before cd: $(pwd)"
 
-cd ~ && echo "DEBUG: Changed to directory: $(pwd)" && cp "$ALBUM_MP3_PATH" "$ALBUM_MP3_OUT_PATH/$ALBUM_NAME.mp3"
+cd ~ && echo "DEBUG: Changed to directory: $(pwd)" && cp "$ALBUM_MP3_PATH" "$ALBUM_MP3_OUT_PATH/$ALBUM_NAME.mp3" && rclone copy "$ALBUM_MP3_OUT_PATH/$ALBUM_NAME.mp3" gdrive:Music/
 
 # Check if copy was successful
 if [ $? -eq 0 ]; then
