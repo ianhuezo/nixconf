@@ -7,13 +7,13 @@
 }:
 let
   nix-colors = import inputs.nix-colors { };
-  neovim = import ./nix/programs/neovim { inherit inputs; };
+  neovim = import ./modules/programs/neovim { inherit inputs; };
   quickshellPath = /etc/nixos/dotfiles/quickshell;
   agsPath = /etc/nixos/dotfiles/ags;
   cavaPath = /etc/nixos/dotfiles/cava;
   scriptsPath = /etc/nixos/dotfiles/scripts;
   vesktopThemePath = /etc/nixos/dotfiles/vesktop/themes;
-  fastfetchConfigPath = ./dotfiles/fastfetch/fastfetch-config.jsonc;
+  fastfetchConfigPath = ../../dotfiles/fastfetch/fastfetch-config.jsonc;
   nix-colors-lib = nix-colors.lib.contrib { inherit pkgs; };
   leftMonitor = "HDMI-A-1";
   rightMonitor = "DP-1";
@@ -36,9 +36,9 @@ in
 
   imports = [
     nix-colors.homeManagerModules.default
-    ./nix/programs/neovim
-    ./nix/programs/kitty
-    ./nix/programs/mako
+    ./modules/programs/neovim
+    ./modules/programs/kitty
+    ./modules/programs/mako
   ];
 
   # Home Manager needs a bit of information about you and the paths it should
@@ -46,7 +46,7 @@ in
   home.username = "ianh";
   home.homeDirectory = "/home/ianh";
 
-  colorScheme = import ./nix/themes/dark-ethereal;
+  colorScheme = import ../themes/dark-ethereal;
 
   modules.neovim = {
     enable = true;
@@ -439,7 +439,7 @@ in
   home.file.".config/cava_conf".source = config.lib.file.mkOutOfStoreSymlink cavaPath;
   home.file.".config/vesktop/themes".source = config.lib.file.mkOutOfStoreSymlink vesktopThemePath;
   home.file."${config.home.homeDirectory}/Pictures" = {
-    source = ./wallpapers;
+    source = ../../wallpapers;
     recursive = true;
   };
   home.file.".config/fetch/custom-fetch.sh" = {

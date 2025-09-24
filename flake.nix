@@ -66,7 +66,7 @@
                 inherit (inputs.nix-colors.lib-contrib { inherit pkgs; }) gtkThemeFromScheme;
               };
               home-manager.users.ianh.imports = [
-                ./home.nix
+                ./nix/home-manager/home.nix
               ];
             }
           ];
