@@ -335,7 +335,7 @@
     serviceConfig = {
       Type = "simple";
       ExecStartPre = "/run/current-system/sw/bin/mkdir -p /home/ianh/GoogleDrive"; # Creates folder if didn't exist
-      ExecStart = "${pkgs.rclone}/bin/rclone mount gdrive: /home/ianh/GoogleDrive"; # Mounts
+      ExecStart = "${pkgs.rclone}/bin/rclone mount --vfs-cache-mode full gdrive: /home/ianh/GoogleDrive"; # Mounts
       ExecStop = "/run/current-system/sw/bin/fusermount -u /home/ianh/GoogleDrive"; # Dismounts
       Restart = "on-failure";
       RestartSec = "10s";
