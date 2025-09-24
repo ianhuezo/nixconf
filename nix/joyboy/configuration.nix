@@ -243,11 +243,12 @@
   users.users.ianh = {
     isNormalUser = true;
     description = "Ian Huezo";
+    uid = 1000;
     extraGroups = [
       "networkmanager"
       "wheel"
       "input"
-
+      "fuse"
     ];
     packages = with pkgs; [
       #  thunderbird
@@ -320,7 +321,29 @@
     dnsmasq
     thunar
     (callPackage ../gaming/poe2/exiled-exchange.nix { }) # for poe2
+    rclone
   ];
+  programs.fuse.userAllowOther = true; # for rclone to function correctly
+
+  systemd.services.rclone-gdrive-mount = {
+    # Ensure the service starts after the network is up
+    wantedBy = [ "multi-user.target" ];
+    after = [ "network-online.target" ];
+    requires = [ "network-online.target" ];
+
+    # Service configuration
+    serviceConfig = {
+      Type = "simple";
+      ExecStartPre = "/run/current-system/sw/bin/mkdir -p /home/ianh/GoogleDrive"; # Creates folder if didn't exist
+      ExecStart = "${pkgs.rclone}/bin/rclone mount gdrive: /home/ianh/GoogleDrive"; # Mounts
+      ExecStop = "/run/current-system/sw/bin/fusermount -u /home/ianh/GoogleDrive"; # Dismounts
+      Restart = "on-failure";
+      RestartSec = "10s";
+      User = "ianh";
+      Group = "users";
+      Environment = [ "PATH=/run/wrappers/bin/:$PATH" ]; # Required environments
+    };
+  };
   programs.thunar = {
     enable = true;
     plugins = with pkgs.xfce; [
