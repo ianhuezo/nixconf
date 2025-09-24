@@ -130,14 +130,14 @@ Item {
                 }
             }
             ClippingRectangle {
-                width: parent.width * 0.5
+                width: parent.width * 0.8
                 height: parent.height * 0.5
                 anchors.horizontalCenter: marginedArea.horizontalCenter
                 y: widgetArea.y + widgetArea.height + 24
                 visible: root.imagePath.toString().length > 0
                 clip: true
                 radius: 10
-                color: 'transparent'
+                color: Color.palette.base03
                 Image {
                     id: backgroundImageFile
                     anchors.fill: parent
