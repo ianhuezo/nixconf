@@ -304,6 +304,8 @@
     treefmt
     shfmt
     black
+    jq
+    prettier
     gimp
     nixfmt-rfc-style
     pulseaudio

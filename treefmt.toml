@@ -55,3 +55,8 @@ command = "shfmt"
 excludes = []
 includes = ["*.sh", "*.bash", "*.envrc", "*.envrc.*"]
 options = ["-s", "-w", "-i", "2"]
+
+[formatter.prettier]
+command = "prettier"
+options = ["--write"]
+includes = ["*.json"]
