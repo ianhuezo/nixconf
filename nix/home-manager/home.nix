@@ -39,6 +39,7 @@ in
     ./modules/programs/neovim
     ./modules/programs/kitty
     ./modules/programs/mako
+    ./modules/shells/zsh
   ];
 
   # Home Manager needs a bit of information about you and the paths it should
@@ -63,6 +64,10 @@ in
     colorScheme = config.colorScheme;
   };
 
+  modules.zsh = {
+    enable = true;
+  };
+
   home.file.".syncplay/syncplay.ini".text = ''
     [client_settings]
     mediaplayer = VLC
@@ -81,32 +86,20 @@ in
   # The home.packages option allows you to install Nix packages into your
   # environment.
   home.packages = with pkgs; [
-    krabby
     vlc
-    fastfetch
     qbittorrent
-    zoxide
-    zsh
     imagemagick
-    kitty
     bash
     spotify
     gh
     typescript
     typescript-language-server
-    starship
     syncplay
     inputs.quickshell.packages.${pkgs.system}.default
     inputs.hyprland-qtutils.packages.${pkgs.system}.default
     qt6.full
     qt6.qtdeclarative
-    eza
   ];
-  programs.zoxide.enable = true;
-  programs.zoxide.enableZshIntegration = true;
-  programs.starship = {
-    enable = true;
-  };
   xdg.enable = true;
   xdg.cacheHome = "${config.home.homeDirectory}/var/.cache";
   xdg.dataHome = "${config.home.homeDirectory}/var/share";
@@ -502,42 +495,6 @@ in
   };
 
   home.file.".config/fastfetch/config.jsonc".source = fastfetchConfigPath;
-
-  programs.zsh = {
-    enable = true;
-    enableCompletion = true;
-    autosuggestion.enable = true;
-    syntaxHighlighting.enable = true;
-
-    shellAliases = {
-      ll = "eza -la";
-      lt = "eza --tree";
-      ls = "eza";
-      update = "sudo nixos-rebuild switch --flake .#joyboy";
-      nixfmt = "sudo nixfmt";
-      cd = "z";
-    };
-    history = {
-      size = 10000;
-      save = 10000;
-      path = "${config.home.homeDirectory}/.config/zsh/history";
-    };
-    initContent = ''
-        bindkey '^ ' autosuggest-execute
-      	fastfetch
-    '';
-    plugins = [
-      {
-        name = "zsh-autosuggestions";
-        src = pkgs.fetchFromGitHub {
-          owner = "zsh-users";
-          repo = "zsh-autosuggestions";
-          rev = "v0.7.1";
-          sha256 = "sha256-vpTyYq9ZgfgdDsWzjxVAE7FZH4MALMNZIFyEOBLm5Qo=";
-        };
-      }
-    ];
-  };
 
   # nixpkgs.config.home.allowUnfree = true;
   # Home Manager can also manage your environment variables through

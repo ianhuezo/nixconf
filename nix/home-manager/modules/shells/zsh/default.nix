@@ -22,10 +22,16 @@ in
       [
         eza
         zoxide
+        zsh
+        starship
+        krabby
       ]
       ++ optionals isLinux [
         fastfetch
       ];
+    programs.starship = {
+      enable = true;
+    };
 
     programs.zsh = {
       enable = true;
