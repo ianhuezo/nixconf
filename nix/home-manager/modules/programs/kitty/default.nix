@@ -23,14 +23,16 @@ in
   config = mkIf cfg.enable {
     home.packages = with pkgs; [
       kitty
+      maple-mono.NF-CN
     ];
+    # ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.maple-mono);
 
     programs.kitty = {
       enable = true;
       extraConfig = ''
-        font_family Maple Mono
-        bold_font Maple Mono
-        bold_italic_font Maple Mono
+        font_family Maple Mono NF CN
+        bold_font Maple Mono NF CN
+        bold_italic_font Maple Mono NF CN
         font_size 12.0
         map ctrl+shift+enter no_op
         map ctrl+shift+[ no_op
