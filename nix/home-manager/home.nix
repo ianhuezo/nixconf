@@ -8,7 +8,7 @@
 let
   nix-colors = import inputs.nix-colors { };
   neovim = import ./modules/programs/neovim { inherit inputs; };
-  quickshellPath = /etc/nixos/dotfiles/quickshell;
+  quickshell = import ./modules/quickshell { inherit inputs; };
   agsPath = /etc/nixos/dotfiles/ags;
   cavaPath = /etc/nixos/dotfiles/cava;
   scriptsPath = /etc/nixos/dotfiles/scripts;
@@ -40,6 +40,7 @@ in
     ./modules/programs/mako
     ./modules/shells/zsh
     ./modules/xdg
+    ./modules/quickshell
   ];
 
   # Home Manager needs a bit of information about you and the paths it should
@@ -72,6 +73,10 @@ in
     enable = true;
   };
 
+  modules.quickshell = {
+    enable = true;
+  };
+
   home.file.".syncplay/syncplay.ini".text = ''
     [client_settings]
     mediaplayer = VLC
@@ -99,10 +104,7 @@ in
     typescript
     typescript-language-server
     syncplay
-    inputs.quickshell.packages.${pkgs.system}.default
     inputs.hyprland-qtutils.packages.${pkgs.system}.default
-    qt6.full
-    qt6.qtdeclarative
   ];
 
   programs.hyprlock = {
@@ -396,7 +398,6 @@ in
 
   };
 
-  home.file.".config/quickshell".source = config.lib.file.mkOutOfStoreSymlink quickshellPath;
   home.file.".config/ags".source = config.lib.file.mkOutOfStoreSymlink agsPath;
   home.file.".config/custom_scripts".source = config.lib.file.mkOutOfStoreSymlink scriptsPath;
   home.file.".config/cava_conf".source = config.lib.file.mkOutOfStoreSymlink cavaPath;
@@ -411,13 +412,6 @@ in
     STEAM_EXTRA_COMPAT_TOOLS_PATHS = "\${HOME}/.steam/root/compatibilitytools.d";
     NIXOS_OZONE_WL = "1";
     STEAMVR_LH_ENABLE = "true";
-    QS_CONFIG_PATH = "${config.home.homeDirectory}/.config/quickshell";
-    QS_BASE_PATH = "${config.home.homeDirectory}/.config/quickshell";
-    QML2_IMPORT_PATH = "${pkgs.qt6.qtdeclarative}/${pkgs.qt6.qtbase.qtQmlPrefix}:${
-      inputs.quickshell.packages.${pkgs.system}.default
-    }/lib/qt-6/qml:${config.home.homeDirectory}/.config/quickshell";
-    QML_IMPORT_PATH = "${config.home.homeDirectory}/.config/quickshell";
-    QT_QML_ROOT_PATH = "${config.home.homeDirectory}/.config/quickshell";
   };
 
   programs.home-manager.enable = true;
