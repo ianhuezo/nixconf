@@ -18,18 +18,17 @@ in
 
   config = mkIf cfg.enable {
     # Install dependencies
-    home.packages =
-      with pkgs;
-      [
-        eza
-        zoxide
-        zsh
-        starship
-        krabby
-      ]
-      ++ optionals isLinux [
-        fastfetch
-      ];
+    home.packages = with pkgs; [
+      eza
+      zoxide
+      zsh
+      starship
+      krabby
+      fastfetch
+    ];
+    # ++ optionals isLinux [
+    #   fastfetch
+    # ];
     home.file.".config/fastfetch/config.jsonc".source = fastfetchConfigPath;
 
     programs.starship = {
