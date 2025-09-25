@@ -435,84 +435,8 @@ in
     source = ../../wallpapers;
     recursive = true;
   };
-  home.file.".config/fetch/custom-fetch.sh" = {
-    executable = true;
-    text = ''
-          #!/usr/bin/env bash
-          
-          # Get terminal dimensions
-          COLS=$(tput cols)
-          LINES=$(tput lines)
-          
-          # Calculate image size (30% of terminal width, max 20 lines)
-          IMG_WIDTH=$((600))
-          IMG_HEIGHT=$((400))
-          
-          # Resize image dynamically
-          TEMP_IMG="/tmp/resized_fetch_img.jpg"
-          convert "${config.home.homeDirectory}/Pictures/phos.jpg" \
-            -resize "''${IMG_WIDTH}x''${IMG_HEIGHT}" "$TEMP_IMG" 2>/dev/null
-
-      # Calculate needed space for text output
-
-          
-          # Display image
-          kitty +kitten icat --align left --place "''${IMG_WIDTH}x''${IMG_HEIGHT}@0x0" "$TEMP_IMG"
-          
-          # System info with your layout
-          echo -e "\n\033[90m┌──────────────────────Hardware──────────────────────┐\033[0m"
-          echo -e "\033[32m PC\033[0m      $(hostnamectl --static)"
-          echo -e "\033[32m│ ├ CPU\033[0m   $(lscpu | grep 'Model name' | cut -d: -f2 | xargs)"
-          echo -e "\033[32m│ ├󰍛 GPU\033[0m   $(lspci | grep VGA | cut -d: -f3 | xargs)"
-          echo -e "\033[32m│ ├󰍛 Memory\033[0m $(free -h | awk '/^Mem:/ {print $3 "/" $2}')"
-          echo -e "\033[32m└ └ Disk\033[0m  $(df -h / | awk 'NR==2 {print $3 "/" $2}')"
-          echo -e "\033[90m└────────────────────────────────────────────────────┘\033[0m"
-          
-          echo -e "\n\033[90m┌──────────────────────Software──────────────────────┐\033[0m"
-          echo -e "\033[33m OS\033[0m      $(cat /etc/os-release | grep PRETTY_NAME | cut -d= -f2 | tr -d '"')"
-          echo -e "\033[33m│ ├ Kernel\033[0m $(uname -r)"
-          echo -e "\033[33m│ ├󰏖 Packages\033[0m $(nix-env -qa --installed 2>/dev/null | wc -l) (nix)"
-          echo -e "\033[33m└ └ Shell\033[0m $SHELL"
-          echo -e "\033[90m└────────────────────────────────────────────────────┘\033[0m"
-          
-          echo -e "\n\033[90m┌──────────────────────Desktop───────────────────────┐\033[0m"
-          echo -e "\033[34m DE\033[0m      $XDG_CURRENT_DESKTOP"
-          echo -e "\033[34m│ ├ WM\033[0m    $XDG_SESSION_TYPE"
-          echo -e "\033[34m└ └ Terminal\033[0m $TERM"
-          echo -e "\033[90m└────────────────────────────────────────────────────┘\033[0m"
-          
-          echo -e "\n\033[90m┌────────────────────Uptime / DateTime───────────────┐\033[0m"
-          echo -e "\033[35m  Uptime\033[0m   $(awk '{print int($1/3600)" hours "int(($1%3600)/60)" mins"}' /proc/uptime)"
-          echo -e "\033[35m  DateTime\033[0m $(date)"
-          echo -e "\033[90m└─────────────────────────────────────────────────────┘\033[0m"
-          
-          # Color palette
-          echo -e "\n  \033[31m●\033[32m●\033[33m●\033[34m●\033[35m●\033[36m●\033[37m●\033[30m●\033[0m"
-          
-          # Clean up
-          rm -f "$TEMP_IMG"
-    '';
-  };
-
   home.file.".config/fastfetch/config.jsonc".source = fastfetchConfigPath;
 
-  # nixpkgs.config.home.allowUnfree = true;
-  # Home Manager can also manage your environment variables through
-  # 'home.sessionVariables'. These will be explicitly sourced when using a
-  # shell provided by Home Manager. If you don't want to manage your shell
-  # through Home Manager then you have to manually source 'hm-session-vars.sh'
-  # located at either
-  #
-  #  ~/.nix-profile/etc/profile.d/hm-session-vars.sh
-  #
-  # or
-  #
-  #  ~/.local/state/nix/profiles/profile/etc/profile.d/hm-session-vars.sh
-  #
-  # or
-  #
-  #  /etc/profiles/per-user/ianh/etc/profile.d/hm-session-vars.sh
-  #
   home.sessionVariables = {
     XDG_CACHE_HOME = "${config.home.homeDirectory}/var/.cache";
     XDG_CONFIG_HOME = "${config.home.homeDirectory}/.config";
@@ -535,6 +459,5 @@ in
     QT_QML_ROOT_PATH = "${config.home.homeDirectory}/.config/quickshell";
   };
 
-  # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 }
