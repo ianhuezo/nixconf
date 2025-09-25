@@ -13,7 +13,6 @@ let
   cavaPath = /etc/nixos/dotfiles/cava;
   scriptsPath = /etc/nixos/dotfiles/scripts;
   vesktopThemePath = /etc/nixos/dotfiles/vesktop/themes;
-  fastfetchConfigPath = ../../dotfiles/fastfetch/fastfetch-config.jsonc;
   nix-colors-lib = nix-colors.lib.contrib { inherit pkgs; };
   leftMonitor = "HDMI-A-1";
   rightMonitor = "DP-1";
@@ -435,7 +434,6 @@ in
     source = ../../wallpapers;
     recursive = true;
   };
-  home.file.".config/fastfetch/config.jsonc".source = fastfetchConfigPath;
 
   home.sessionVariables = {
     XDG_CACHE_HOME = "${config.home.homeDirectory}/var/.cache";

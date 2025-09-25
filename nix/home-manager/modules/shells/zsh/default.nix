@@ -9,6 +9,7 @@ let
   cfg = config.modules.zsh;
   isLinux = pkgs.stdenv.isLinux;
   isDarwin = pkgs.stdenv.isDarwin;
+  fastfetchConfigPath = ../../../../../dotfiles/fastfetch/fastfetch-config.jsonc;
 in
 {
   options.modules.zsh = {
@@ -29,6 +30,8 @@ in
       ++ optionals isLinux [
         fastfetch
       ];
+    home.file.".config/fastfetch/config.jsonc".source = fastfetchConfigPath;
+
     programs.starship = {
       enable = true;
     };
