@@ -10,8 +10,9 @@ Rectangle {
     property int iconSize: 24
     property int iconWeight: 800
     property string fontFamily: "JetBrains Mono Nerd Font"
-    property color iconColor: Color.palette.base05
-    property color backgroundColor: Color.palette.base02
+    property bool disabled: false
+    property color iconColor: disabled ? Color.palette.base03 : Color.palette.base05
+    property color backgroundColor: disabled ? Color.palette.base01 : Color.palette.base02
     property int buttonRadius: AppearanceConfig.calculateRadius(width, height, 'lg')
 
     // Signals
@@ -37,10 +38,13 @@ Rectangle {
     MouseArea {
         id: area
         anchors.fill: parent
-        cursorShape: Qt.PointingHandCursor
-        onPressed: root.clicked()
-        hoverEnabled: true
+        cursorShape: root.disabled ? Qt.ArrowCursor : Qt.PointingHandCursor
+        onPressed: root.disabled ? () => {} : root.clicked()
+        hoverEnabled: !root.disabled
         onEntered: {
+            if (root.disabled) {
+                return;
+            }
             root.border.color = Color.palette.base05;
             root.border.width = 1;
         }
