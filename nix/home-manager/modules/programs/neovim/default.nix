@@ -14,6 +14,7 @@ in
 {
   imports = [
     inputs.nixvim.homeManagerModules.nixvim
+
   ];
 
   options.modules.neovim = {
@@ -26,6 +27,9 @@ in
   };
 
   config = mkIf cfg.enable {
+    home.packages = [
+      inputs.nixd.packages.${pkgs.system}.default
+    ];
     programs.nixvim = {
       enable = true;
       globals.mapleader = " ";
@@ -163,6 +167,21 @@ in
         settings = {
           # Optional: Configure LSP behavior
           qml.formatOnSave = true;
+        };
+      };
+
+      lsp.servers.nixd = {
+        enable = true;
+        settings = {
+          nixpkgs.expr = "import (builtins.getFlake \"${inputs.self}\").inputs.nixpkgs {}";
+          options = {
+            nixos = {
+              expr = "(builtins.getFlake \"${inputs.self}\").nixosConfigurations.joyboy.options";
+            };
+            home_manager = {
+              expr = "(builtins.getFlake \"${inputs.self}\").homeConfigurations.ianh.options";
+            };
+          };
         };
       };
 
