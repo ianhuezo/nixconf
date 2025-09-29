@@ -14,7 +14,7 @@ Item {
     property real selectionHeight: 40
     signal appSelected
     //these dont have 32x32 icons... strange
-    property var blacklistedApps: ["Advanced Network Configuration", "Volume Control"]
+    property var blacklistedApps: []
     property list<DesktopEntry> list: DesktopEntries.applications.values.filter(a => !a.noDisplay).sort((a, b) => a.name.localeCompare(b.name))
     property list<var> preppedApps: list.filter(a => !blacklistedApps.includes(a.name))  // Filter blacklist here
     .map(a => ({

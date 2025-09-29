@@ -241,4 +241,7 @@ in
     };
 
   };
+  home.sessionVariables = {
+    QS_ICON_THEME = "Tela-dark";
+  };
 }
