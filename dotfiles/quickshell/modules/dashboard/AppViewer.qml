@@ -1,6 +1,7 @@
 import Quickshell
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Effects
 import qs.config
 import qs.services
 import "root:/libs/fuzzysort/fuzzysort.js" as Fuzzy
@@ -12,9 +13,10 @@ Item {
     property var userText: ""
     property real selectionHeight: 40
     signal appSelected
+    //these dont have 32x32 icons... strange
     property var blacklistedApps: ["Advanced Network Configuration", "Volume Control"]
-    readonly property list<DesktopEntry> list: DesktopEntries.applications.values.filter(a => !a.noDisplay).sort((a, b) => a.name.localeCompare(b.name))
-    readonly property list<var> preppedApps: list.filter(a => !blacklistedApps.includes(a.name))  // Filter blacklist here
+    property list<DesktopEntry> list: DesktopEntries.applications.values.filter(a => !a.noDisplay).sort((a, b) => a.name.localeCompare(b.name))
+    property list<var> preppedApps: list.filter(a => !blacklistedApps.includes(a.name))  // Filter blacklist here
     .map(a => ({
                 name: Fuzzy.prepare(a.name),
                 comment: Fuzzy.prepare(a.comment),
@@ -122,11 +124,25 @@ Item {
                             spacing: 8
 
                             Image {
+                                id: appIcon
                                 height: appViewer.selectionHeight - 8
                                 width: appViewer.selectionHeight - 8
                                 sourceSize.width: width
                                 sourceSize.height: height
-                                source: Quickshell.iconPath(modelData.icon)
+                                source: {
+                                    if (modelData.icon) {
+                                        return Quickshell.iconPath(modelData.icon);
+                                    }
+                                    return FileConfig.icons.media;
+                                }
+
+                                layer.enabled: true
+                                layer.effect: MultiEffect {
+                                    colorization: !modelData.icon ? 1.0 : 0.0
+                                    colorizationColor: !modelData.icon ? Color.palette.base07 : "transparent"
+                                    saturation: modelData.icon ? 0.0 : -1.0
+                                    brightness: modelData.icon ? 0.0 : 1.0
+                                }
                             }
 
                             Text {

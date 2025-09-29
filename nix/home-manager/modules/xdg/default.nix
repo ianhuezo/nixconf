@@ -54,7 +54,7 @@ in
       XDG_CONFIG_DIRS = "${config.home.homeDirectory}/etc/xdg";
       XDG_DATA_HOME = "${config.home.homeDirectory}/var/share";
       XDG_STATE_HOME = "${config.home.homeDirectory}/var/state";
-      XDG_DATA_DIRS = "/usr/local/share/:/usr/share/:/etc/profiles/per-user/$USER/share/:/run/current-system/sw/share/:${config.home.homeDirectory}/.local/share/";
+      XDG_DATA_DIRS = "/usr/local/share/:/usr/share/:/etc/profiles/per-user/$USER/share/:/run/current-system/sw/share/:${config.home.homeDirectory}/.local/share/:${pkgs.tela-icon-theme}/share";
       XDG_PICTURES_DIR = "${config.home.homeDirectory}/pictures";
       NIXOS_XDG_OPEN_USE_PORTAL = "1";
     };

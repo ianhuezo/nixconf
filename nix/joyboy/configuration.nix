@@ -322,6 +322,7 @@
     dnsmasq
     thunar
     (callPackage ../gaming/poe2/exiled-exchange.nix { }) # for poe2
+    (callPackage ../gaming/beyond-all-reason { })
     rclone
   ];
   programs.fuse.userAllowOther = true; # for rclone to function correctly

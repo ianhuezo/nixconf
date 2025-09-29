@@ -59,6 +59,6 @@ Singleton {
 
     readonly property QtObject environment: QtObject {
         readonly property string geminiAPIKeyPath: root.getEnvironmentPath('gemini/api.json')
-	readonly property string wallhavenAPIKeyPath: root.getEnvironmentPath('wallhaven/api.json')
+        readonly property string wallhavenAPIKeyPath: root.getEnvironmentPath('wallhaven/api.json')
     }
 }
