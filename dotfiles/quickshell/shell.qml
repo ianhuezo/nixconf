@@ -1,3 +1,5 @@
+//@ pragma IconTheme Tela-dark
+
 import Quickshell
 import "modules/bar"
 import "modules/dashboard"

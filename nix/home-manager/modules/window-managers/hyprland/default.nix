@@ -23,7 +23,8 @@ let
     dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
     nm-applet --indicator & disown
     systemctl --user import-environment XDG_CURRENT_DESKTOP XDG_SESSION_TYPE & disown
-    quickshell & disown
+    sleep 1
+    QS_ICON_THEME="Tela-dark" quickshell & disown
   '';
 
 in
