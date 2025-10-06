@@ -10,6 +10,54 @@ with lib;
 
 let
   cfg = config.modules.neovim;
+  # Helper function to ensure color has # prefix
+  addHashPrefix =
+    color:
+    let
+      # Increment the last hex digit by 1
+      chars = lib.stringToCharacters color;
+      lastChar = lib.last chars;
+      restChars = lib.init chars;
+
+      # Increment logic for hex digits
+      incrementedLast =
+        if lastChar == "F" || lastChar == "f" then
+          "0"
+        else if lastChar == "9" then
+          "A"
+        else if lastChar == "E" || lastChar == "e" then
+          "F"
+        else if lastChar == "D" || lastChar == "d" then
+          "E"
+        else if lastChar == "C" || lastChar == "c" then
+          "D"
+        else if lastChar == "B" || lastChar == "b" then
+          "C"
+        else if lastChar == "A" || lastChar == "a" then
+          "B"
+        else if lastChar == "8" then
+          "9"
+        else if lastChar == "7" then
+          "8"
+        else if lastChar == "6" then
+          "7"
+        else if lastChar == "5" then
+          "6"
+        else if lastChar == "4" then
+          "5"
+        else if lastChar == "3" then
+          "4"
+        else if lastChar == "2" then
+          "3"
+        else if lastChar == "1" then
+          "2"
+        else
+          "1"; # lastChar == "0"
+
+      newColor = lib.concatStrings (restChars ++ [ incrementedLast ]);
+    in
+    "#${newColor}";
+  base16Colors = builtins.mapAttrs (name: value: addHashPrefix value) cfg.colorScheme.palette;
 in
 {
   imports = [
@@ -37,17 +85,11 @@ in
         number = true; # Show line numbers
         relativenumber = true; # Show relative line numbers
         shiftwidth = 2; # Tab width should be 2
+        cursorline = true;
       };
-      colorschemes.tokyonight = {
+      colorschemes.base16 = {
         enable = true;
-        settings.style = "night";
-        settings.on_highlights = ''
-          	function(highlights, colors) 
-                     highlights.LineNr = {
-                       fg = "#${cfg.colorScheme.palette.base09}",
-                     }
-          	end
-        '';
+        colorscheme = base16Colors;
       };
       plugins.lualine.enable = true;
       plugins.web-devicons.enable = true;
@@ -107,6 +149,41 @@ in
         ]
       ) 9
     ));
+
+    programs.nixvim.extraConfigLua = ''
+
+      vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "${base16Colors.base09}", bold = true })
+
+      vim.api.nvim_set_hl(0, "TelescopeBorder", { fg = "${base16Colors.base0B}", bg = "${base16Colors.base00}" })
+
+      vim.api.nvim_set_hl(0, "TelescopePromptNormal", { bg = "${base16Colors.base01}" })
+      vim.api.nvim_set_hl(0, "TelescopePromptBorder", { fg = "${base16Colors.base0B}", bg = "${base16Colors.base01}" })
+      vim.api.nvim_set_hl(0, "TelescopePromptTitle", { fg = "${base16Colors.base00}", bg = "${base16Colors.base0B}", bold = true })
+
+      vim.api.nvim_set_hl(0, "TelescopeResultsNormal", { bg = "${base16Colors.base00}" })
+      vim.api.nvim_set_hl(0, "TelescopeResultsBorder", { fg = "${base16Colors.base0C}", bg = "${base16Colors.base00}" })
+      vim.api.nvim_set_hl(0, "TelescopeResultsTitle", { fg = "${base16Colors.base00}", bg = "${base16Colors.base0C}", bold = true })
+
+      -- Preview window
+      vim.api.nvim_set_hl(0, "TelescopePreviewNormal", { bg = "${base16Colors.base01}" })
+      vim.api.nvim_set_hl(0, "TelescopePreviewBorder", { fg = "${base16Colors.base0E}", bg = "${base16Colors.base01}" })
+      vim.api.nvim_set_hl(0, "TelescopePreviewTitle", { fg = "${base16Colors.base00}", bg = "${base16Colors.base0E}", bold = true })
+
+      -- Selection highlight
+      vim.api.nvim_set_hl(0, "TelescopeSelection", { fg = "${base16Colors.base05}", bg = "${base16Colors.base02}", bold = true })
+
+      -- Selection highlight
+      vim.api.nvim_set_hl(0, "TelescopeSelection", { fg = "${base16Colors.base05}", bg = "${base16Colors.base02}", bold = true })
+
+      -- Matched text highlighting
+      vim.api.nvim_set_hl(0, "TelescopeMatching", { fg = "${base16Colors.base0B}", bold = true })
+
+
+      vim.api.nvim_set_hl(0, "@function", { fg = "${base16Colors.base0D}", bold = true })
+      vim.api.nvim_set_hl(0, "@method", { fg = "${base16Colors.base0D}", italic = true })
+      vim.api.nvim_set_hl(0, "@variable", { fg = "${base16Colors.base05}" })
+      vim.api.nvim_set_hl(0, "@property", { fg = "${base16Colors.base0E}" })
+    '';
 
     programs.nixvim.plugins = {
       lsp.enable = true;

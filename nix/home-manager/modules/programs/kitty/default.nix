@@ -79,13 +79,13 @@ in
         # Tab bar
         tab_bar_style fade
         tab_fade 1
-        active_tab_foreground   #3d59a1
-        active_tab_background   #16161e
+        active_tab_foreground   #${cfg.colorScheme.palette.base0D}
+        active_tab_background   #${cfg.colorScheme.palette.base00}
         active_tab_font_style   bold
-        inactive_tab_foreground #787c99
-        inactive_tab_background #16161e
+        inactive_tab_foreground #${cfg.colorScheme.palette.base04}
+        inactive_tab_background #${cfg.colorScheme.palette.base00}
         inactive_tab_font_style bold
-        tab_bar_background #101014
+        tab_bar_background #${cfg.colorScheme.palette.base00}
       '';
     };
   };
