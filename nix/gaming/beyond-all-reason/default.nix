@@ -29,11 +29,11 @@ appimageTools.wrapType2 {
     ];
 
   extraInstallCommands = ''
-        mv $out/bin/${pname} $out/bin/bar
-        
-        # Create a desktop entry
-        mkdir -p $out/share/applications
-        cat > $out/share/applications/${pname}.desktop <<EOF
+    mv $out/bin/${pname} $out/bin/bar
+
+    # Create a desktop entry
+    mkdir -p $out/share/applications
+    cat > $out/share/applications/${pname}.desktop <<EOF
     [Desktop Entry]
     Name=Beyond All Reason
     Comment=Real-time strategy game
