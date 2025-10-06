@@ -181,7 +181,7 @@ in
 
       vim.api.nvim_set_hl(0, "@function", { fg = "${base16Colors.base0D}", bold = true })
       vim.api.nvim_set_hl(0, "@method", { fg = "${base16Colors.base0D}", italic = true })
-      vim.api.nvim_set_hl(0, "@variable", { fg = "${base16Colors.base05}" })
+      vim.api.nvim_set_hl(0, "@variable", { fg = "${base16Colors.base0C}" })
       vim.api.nvim_set_hl(0, "@property", { fg = "${base16Colors.base0E}" })
     '';
 
