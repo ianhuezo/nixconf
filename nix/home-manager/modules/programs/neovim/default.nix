@@ -11,52 +11,42 @@ with lib;
 let
   cfg = config.modules.neovim;
   # Helper function to ensure color has # prefix
+  hexSuccessor = {
+    "0" = "1";
+    "1" = "2";
+    "2" = "3";
+    "3" = "4";
+    "4" = "5";
+    "5" = "6";
+    "6" = "7";
+    "7" = "8";
+    "8" = "9";
+    "9" = "A";
+    "A" = "B";
+    "a" = "B";
+    "B" = "C";
+    "b" = "C";
+    "C" = "D";
+    "c" = "D";
+    "D" = "E";
+    "d" = "E";
+    "E" = "F";
+    "e" = "F";
+    "F" = "0";
+    "f" = "0";
+  };
+
   addHashPrefix =
     color:
     let
-      # Increment the last hex digit by 1
       chars = lib.stringToCharacters color;
       lastChar = lib.last chars;
       restChars = lib.init chars;
-
-      # Increment logic for hex digits
-      incrementedLast =
-        if lastChar == "F" || lastChar == "f" then
-          "0"
-        else if lastChar == "9" then
-          "A"
-        else if lastChar == "E" || lastChar == "e" then
-          "F"
-        else if lastChar == "D" || lastChar == "d" then
-          "E"
-        else if lastChar == "C" || lastChar == "c" then
-          "D"
-        else if lastChar == "B" || lastChar == "b" then
-          "C"
-        else if lastChar == "A" || lastChar == "a" then
-          "B"
-        else if lastChar == "8" then
-          "9"
-        else if lastChar == "7" then
-          "8"
-        else if lastChar == "6" then
-          "7"
-        else if lastChar == "5" then
-          "6"
-        else if lastChar == "4" then
-          "5"
-        else if lastChar == "3" then
-          "4"
-        else if lastChar == "2" then
-          "3"
-        else if lastChar == "1" then
-          "2"
-        else
-          "1"; # lastChar == "0"
-
+      incrementedLast = hexSuccessor.${lastChar};
       newColor = lib.concatStrings (restChars ++ [ incrementedLast ]);
     in
     "#${newColor}";
+
   base16Colors = builtins.mapAttrs (name: value: addHashPrefix value) cfg.colorScheme.palette;
 in
 {
