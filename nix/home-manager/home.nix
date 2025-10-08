@@ -10,6 +10,7 @@ let
   cavaPath = /etc/nixos/dotfiles/cava;
   scriptsPath = /etc/nixos/dotfiles/scripts;
   vesktopThemePath = /etc/nixos/dotfiles/vesktop/themes;
+  fullScheme = import ../themes/dark-ethereal;
 in
 {
 
@@ -28,8 +29,9 @@ in
   # manage.
   home.username = "ianh";
   home.homeDirectory = "/home/ianh";
-
-  colorScheme = import ../themes/dark-ethereal;
+  #TODO for later I'll need to add this theme to places
+  colorScheme = removeAttrs fullScheme [ "theme" ];
+  # theme = fullScheme.theme;
 
   modules.neovim = {
     enable = true;

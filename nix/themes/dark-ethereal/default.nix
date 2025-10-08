@@ -8,6 +8,7 @@
   name = "Frieren Ethereal";
   # Author(s) of the theme
   author = "AI Gemini (inspired by Frieren artwork)";
+  theme = "dark";
   # The core Base16 palette
   palette = {
     base00 = "#0D121B"; # Deepest background
