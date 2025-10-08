@@ -130,6 +130,8 @@ Singleton {
             color: root.palette.base0F
         }
     ]
+    function saveTheme(json: var) {
+    }
 
     function loadTheme(path: string): bool {
         try {

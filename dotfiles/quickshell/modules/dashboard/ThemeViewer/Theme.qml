@@ -1,7 +1,9 @@
 import QtQuick
 import Quickshell.Widgets
+import Quickshell.Io
 import qs.services
 import qs.config
+import qs.components
 
 Item {
     id: root
@@ -9,6 +11,7 @@ Item {
     signal folderOpen(bool isOpen)
     property string imagePath: ""
     property var paletteData: Color.paletteData
+    property var aiGeneratedTheme: null
     property var isLayOutDebugEnabled: false
 
     Rectangle {
@@ -53,6 +56,7 @@ Item {
                         onColorsGenerated: jsonColors => {
                             const aiGeneratedPalette = jsonColors.palette;
                             root.paletteData = Color.convertPaletteToArray(aiGeneratedPalette);
+                            root.aiGeneratedTheme = jsonColors;
                         }
                     }
                     Grid {
@@ -124,6 +128,62 @@ Item {
                                         anchors.topMargin: -4
                                     }
                                 }
+                            }
+                        }
+                    }
+                    IconButton {
+                        id: saveJsonButton
+                        property var jsonData: root.aiGeneratedTheme
+                        property string filePath: ""
+                        onClicked: {
+                            if (!jsonData) {
+                                return;
+                            }
+                            // if (filePath.length == 0) {
+                            //     return;
+                            // }
+                            saveJsonToLocation.json = root.aiGeneratedTheme;
+                            console.log(saveJsonToLocation.json);
+                            saveJsonToLocation.running = true;
+                        }
+
+                        Process {
+                            id: saveJsonToLocation
+                            property var json: null
+                            property string filePath: "/etc/nixos/nix/themes"
+                            signal error(string message)
+                            function jsonToNix(obj, indent = 0) {
+                                const spaces = "  ".repeat(indent);
+                                const lines = [];
+
+                                for (const [key, value] of Object.entries(obj)) {
+                                    if (typeof value === "object" && value !== null) {
+                                        lines.push(`${spaces}${key} = ${jsonToNix(value, indent + 1)};`);
+                                    } else {
+                                        lines.push(`${spaces}${key} = ${JSON.stringify(value)};`);
+                                    }
+                                }
+
+                                const closingSpaces = indent > 0 ? "  ".repeat(indent - 1) : "";
+                                return `{\n${lines.join("\n")}\n${closingSpaces}}`;
+                            }
+                            command: {
+                                if (!json) {
+                                    error("no json provided");
+                                    return []; // no-op command
+                                }
+                                if (filePath.length == 0) {
+                                    error("filePath was not provided");
+                                    return [];
+                                }
+                                const folderName = json["slug"];
+                                if (!folderName) {
+                                    error("The slug was not found, so file name was not created");
+                                    return [];
+                                }
+                                const nixString = jsonToNix(json, 2);
+                                const builtCommand = `mkdir -p ${filePath}/${folderName} && echo '${nixString}' > ${filePath}/${folderName}/default.nix`;
+                                return ["sh", "-c", builtCommand];
                             }
                         }
                     }
