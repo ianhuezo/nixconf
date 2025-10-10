@@ -133,17 +133,15 @@ Item {
                     }
                     IconButton {
                         id: saveJsonButton
+                        iconName: "document-save"
+                        iconSize: 28
                         property var jsonData: root.aiGeneratedTheme
                         property string filePath: ""
                         onClicked: {
                             if (!jsonData) {
                                 return;
                             }
-                            // if (filePath.length == 0) {
-                            //     return;
-                            // }
                             saveJsonToLocation.json = root.aiGeneratedTheme;
-                            console.log(saveJsonToLocation.json);
                             saveJsonToLocation.running = true;
                         }
 
