@@ -29,25 +29,25 @@ in
     #VR config files written in home manager
     xdg.configFile."openxr/1/active_runtime.json".source =
       "${pkgs.monado}/share/openxr/1/openxr_monado.json";
-    xdg.configFile."openvr/openvrpaths.vrpath".text = ''
-      {
-        "config" :
-        [
-          "${config.xdg.dataHome}/Steam/config"
-        ],
-        "external_drivers" : null,
-        "jsonid" : "vrpathreg",
-        "log" :
-        [
-          "${config.xdg.dataHome}/Steam/logs"
-        ],
-        "runtime" :
-        [
-          "${pkgs.opencomposite}/lib/opencomposite"
-        ],
-        "version" : 1
-      }
-    '';
+    # xdg.configFile."openvr/openvrpaths.vrpath".text = ''
+    #   {
+    #     "config" :
+    #     [
+    #       "${config.xdg.dataHome}/Steam/config"
+    #     ],
+    #     "external_drivers" : null,
+    #     "jsonid" : "vrpathreg",
+    #     "log" :
+    #     [
+    #       "${config.xdg.dataHome}/Steam/logs"
+    #     ],
+    #     "runtime" :
+    #     [
+    #       "${pkgs.opencomposite}/lib/opencomposite"
+    #     ],
+    #     "version" : 1
+    #   }
+    # '';
     home.sessionVariables = {
       XDG_CACHE_HOME = "${config.home.homeDirectory}/var/.cache";
       XDG_CONFIG_HOME = "${config.home.homeDirectory}/.config";

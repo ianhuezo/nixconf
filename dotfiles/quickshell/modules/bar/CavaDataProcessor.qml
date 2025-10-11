@@ -8,6 +8,7 @@ Process {
     command: [scriptLocation]
     running: true
     property var lastValues: []
+    property string smoothingMode: "normal" // "adaptive", "responsive", "fluid", "normal"
     signal newData(var processedValues)
 
     stdout: SplitParser {
@@ -24,7 +25,30 @@ Process {
             if (newValues.length > targetLength)
                 newValues.length = targetLength;
 
-            const smoothed = processor.lastValues.length === 0 ? newValues : processor.lastValues.map((old, i) => 0.3 * old + 0.7 * (newValues[i] || 0));
+            // Adaptive smoothing based on mode
+            const smoothed = processor.lastValues.length === 0 ? newValues : processor.lastValues.map((old, i) => {
+                const newVal = newValues[i] || 0;
+
+                switch (processor.smoothingMode) {
+                case "adaptive":
+                    // Quick rise, gradual fall
+                    if (newVal > old) {
+                        return 0.2 * old + 0.8 * newVal;
+                    } else {
+                        return 0.6 * old + 0.4 * newVal;
+                    }
+                case "responsive":
+                    // More responsive, less smoothing (80% new)
+                    return 0.2 * old + 0.8 * newVal;
+                case "fluid":
+                    // More smoothing, slower response (50% new)
+                    return 0.5 * old + 0.5 * newVal;
+                case "normal":
+                default:
+                    // Original smoothing (70% new)
+                    return 0.3 * old + 0.7 * newVal;
+                }
+            });
 
             processor.lastValues = smoothed;
             processor.newData(smoothed);

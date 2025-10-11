@@ -19,8 +19,9 @@
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.kernelParams = [
-    "video=DP-2:d"
-    "video=DP-3:d"
+    # "video=DP-1:d"
+    # "video=DP-2:d"
+    # "video=DP-3:d"
   ];
   services.journald.extraConfig = ''
     Storage=persistent

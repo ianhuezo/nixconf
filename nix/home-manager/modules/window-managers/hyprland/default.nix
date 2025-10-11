@@ -10,9 +10,9 @@ with lib;
 let
   cfg = config.modules.hyprland;
   leftMonitor = "HDMI-A-1";
-  rightMonitor = "DP-1";
+  rightMonitor = "DP-2";
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
-    xrandr --output DP-1 --primary & disown
+    xrandr --output DP-2 --primary & disown
     hyprlock & disown
     sleep 1
     swww-daemon &
