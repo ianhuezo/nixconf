@@ -115,6 +115,9 @@ FocusScope {
             IconButton {
                 id: clearSelection
                 anchors.left: parent.left
+                iconName: "edit-delete"
+                iconColor: Color.palette.base04
+                tooltip: "Clear Selection"
                 anchors.verticalCenter: parent.verticalCenter
                 onClicked: root.clearSelection()
             }

@@ -1,10 +1,12 @@
 import qs.components
 import QtQuick
+import qs.services
 
 IconButton {
     id: root
-    iconText: '🗀'
-    iconSize: 36
+    iconName: "folder"
+    iconSize: 24
+    iconColor: Color.palette.base04
 
     signal opened(bool isOpen)
     signal pathAdded(string path)

@@ -133,8 +133,11 @@ Item {
                     }
                     IconButton {
                         id: saveJsonButton
-                        iconName: "document-save"
-                        iconSize: 28
+                        iconName: "emblem-default"
+                        iconSize: 26
+                        z: -1
+                        iconColor: Color.palette.base04
+                        tooltip: "Save Theme"
                         property var jsonData: root.aiGeneratedTheme
                         property string filePath: ""
                         onClicked: {

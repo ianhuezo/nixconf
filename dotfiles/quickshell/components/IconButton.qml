@@ -16,15 +16,18 @@ Rectangle {
     // Public properties - SVG
     property string svgSource: ""
     property string iconName: "" // GTK icon name (e.g., "document-save", "edit-copy")
-    property string svgColorBase: Color.palette.base05 // e.g., "base05", "base08", etc.
+
+    // Public properties - Tooltip
+    property string tooltip: ""
 
     // Public properties - State
     property bool disabled: false
+    property bool loading: false
 
     // Public properties - Colors
-    property color iconColor: disabled ? Color.palette.base03 : Color.palette.base05
-    property color textColor: disabled ? Color.palette.base03 : Color.palette.base05
-    property color backgroundColor: disabled ? Color.palette.base01 : Color.palette.base02
+    property color iconColor: disabled || loading ? Color.palette.base03 : Color.palette.base05
+    property color textColor: disabled || loading ? Color.palette.base03 : Color.palette.base05
+    property color backgroundColor: disabled || loading ? Color.palette.base01 : Color.palette.base02
     property int buttonRadius: AppearanceConfig.calculateRadius(width, height, 'lg')
 
     // Signals
@@ -60,6 +63,56 @@ Rectangle {
     radius: buttonRadius
     color: backgroundColor
 
+    // Loading spinner overlay
+    Item {
+        id: loadingSpinner
+        visible: root.loading
+        anchors.fill: parent
+
+        Canvas {
+            id: spinnerCanvas
+            anchors.fill: parent
+            rotation: 0
+
+            onPaint: {
+                var ctx = getContext("2d");
+                ctx.reset();
+
+                var centerX = width / 2;
+                var centerY = height / 2;
+                var radius = Math.min(width, height) / 2 - 2;
+
+                // Draw arc
+                ctx.strokeStyle = root.iconColor;
+                ctx.lineWidth = 2;
+                ctx.lineCap = "round";
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, Math.PI * 1.5);
+                ctx.stroke();
+            }
+
+            RotationAnimator on rotation {
+                running: root.loading
+                from: 0
+                to: 360
+                duration: 1000
+                loops: Animation.Infinite
+            }
+
+            onVisibleChanged: {
+                if (visible)
+                    requestPaint();
+            }
+        }
+
+        Connections {
+            target: root
+            function onIconColorChanged() {
+                spinnerCanvas.requestPaint();
+            }
+        }
+    }
+
     // Content container
     Row {
         id: contentContainer
@@ -81,11 +134,11 @@ Rectangle {
                 sourceSize.width: root.iconSize
                 sourceSize.height: root.iconSize
                 fillMode: Image.PreserveAspectFit
-                visible: false
+                visible: true
+                layer.enabled: true
                 layer.effect: MultiEffect {
-                    brightness: 1.0
                     colorization: 1.0
-                    colorizationColor: Color.palette.base05
+                    colorizationColor: root.iconColor
                 }
             }
         }
@@ -118,21 +171,79 @@ Rectangle {
     MouseArea {
         id: area
         anchors.fill: parent
-        cursorShape: root.disabled ? Qt.ArrowCursor : Qt.PointingHandCursor
-        onPressed: root.disabled ? () => {} : root.clicked()
-        hoverEnabled: !root.disabled
+        cursorShape: root.disabled || root.loading ? Qt.ArrowCursor : Qt.PointingHandCursor
+        onPressed: (root.disabled || root.loading) ? () => {} : root.clicked()
+        hoverEnabled: !root.disabled && !root.loading
 
         onEntered: {
-            if (root.disabled) {
+            if (root.disabled || root.loading) {
                 return;
             }
             root.border.color = Color.palette.base05;
             root.border.width = 1;
+
+            if (root.tooltip !== "") {
+                tooltipTimer.start();
+            }
         }
 
         onExited: {
             root.border.color = '';
             root.border.width = 0;
+            tooltipTimer.stop();
+            tooltipPopup.visible = false;
+        }
+    }
+
+    // Tooltip timer - delays showing tooltip
+    Timer {
+        id: tooltipTimer
+        interval: 500
+        onTriggered: {
+            if (root.tooltip !== "" && area.containsMouse) {
+                tooltipPopup.visible = true;
+            }
+        }
+    }
+
+    // Tooltip popup
+    Rectangle {
+        id: tooltipPopup
+        visible: false
+        color: Color.palette.base0F
+        radius: 4
+        width: tooltipText.implicitWidth + 16
+        height: tooltipText.implicitHeight + 12
+        x: root.width / 2 - width / 2
+        y: root.height + 8
+        z: 1000
+        Text {
+            id: tooltipText
+            anchors.centerIn: parent
+            text: root.tooltip
+            color: Color.palette.base05
+            font.pixelSize: 12
+            font.family: root.fontFamily
+        }
+        // Small arrow pointing up to button
+        Canvas {
+            id: tooltipArrow
+            width: 8
+            height: 4
+            x: parent.width / 2 - width / 2
+            y: -4
+            onPaint: {
+                var ctx = getContext("2d");
+                ctx.reset();
+                ctx.fillStyle = Color.palette.base05;
+                // Draw triangle
+                ctx.beginPath();
+                ctx.moveTo(0, height);
+                ctx.lineTo(width / 2, 0);
+                ctx.lineTo(width, height);
+                ctx.closePath();
+                ctx.fill();
+            }
         }
     }
 }
