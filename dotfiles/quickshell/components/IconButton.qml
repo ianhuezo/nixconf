@@ -13,6 +13,9 @@ Rectangle {
     property int iconWeight: 800
     property string fontFamily: "JetBrains Mono Nerd Font"
 
+    // Important as this could clip your tooltip if not done correctly
+    property var toolTipContainer: root
+
     // Public properties - SVG
     property string svgSource: ""
     property string iconName: "" // GTK icon name (e.g., "document-save", "edit-copy")
@@ -28,7 +31,7 @@ Rectangle {
     property color iconColor: disabled || loading ? Color.palette.base03 : Color.palette.base05
     property color textColor: disabled || loading ? Color.palette.base03 : Color.palette.base05
     property color backgroundColor: disabled || loading ? Color.palette.base01 : Color.palette.base02
-    property int buttonRadius: AppearanceConfig.calculateRadius(width, height, 'lg')
+    property int buttonRadius: AppearanceConfig.calculateRadius(width, height, 'xl')
 
     // Signals
     signal clicked
@@ -62,6 +65,16 @@ Rectangle {
     // Styling
     radius: buttonRadius
     color: backgroundColor
+
+    layer.enabled: true
+    layer.effect: MultiEffect {
+        shadowEnabled: true
+        shadowColor: Color.palette.base00
+        shadowVerticalOffset: 1
+        shadowHorizontalOffset: 0
+        shadowBlur: 0.4
+        shadowOpacity: 0.6
+    }
 
     // Loading spinner overlay
     Item {
@@ -201,6 +214,17 @@ Rectangle {
         interval: 500
         onTriggered: {
             if (root.tooltip !== "" && area.containsMouse) {
+                // STEP 1: Map the button's top-left corner (0,0) to global screen coordinates.
+                var globalPoint = root.mapToGlobal(0, 0);
+
+                // STEP 2: Map that global screen point into the coordinate system of the tooltip's container.
+                var positionInContainer = root.toolTipContainer.mapFromGlobal(globalPoint);
+
+                // STEP 3: Calculate the final position and show the tooltip.
+                // This logic remains the same as before.
+                tooltipPopup.x = positionInContainer.x + (root.width - tooltipPopup.width) / 2;
+                tooltipPopup.y = positionInContainer.y - tooltipPopup.height - 8; // 8px margin
+
                 tooltipPopup.visible = true;
             }
         }
@@ -209,41 +233,50 @@ Rectangle {
     // Tooltip popup
     Rectangle {
         id: tooltipPopup
-        visible: false
-        color: Color.palette.base0F
-        radius: 4
+        visible: false // Start with visible: false
+        color: Color.palette.base0E
+        radius: 6
         width: tooltipText.implicitWidth + 16
         height: tooltipText.implicitHeight + 12
-        x: root.width / 2 - width / 2
-        y: root.height + 8
+
+        // Reparent to the toolTipContainer to avoid clipping
+        parent: root.toolTipContainer
+
+        // Manual positioning when reparented
+        anchors.horizontalCenter: root.toolTipContainer === root ? root.horizontalCenter : undefined
+        anchors.bottom: root.toolTipContainer === root ? root.top : undefined
+        anchors.bottomMargin: root.toolTipContainer === root ? 8 : 0
+
         z: 1000
+        opacity: visible ? 1.0 : 0.0
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 200
+                easing.type: Easing.InOutQuad
+            }
+        }
+
         Text {
             id: tooltipText
             anchors.centerIn: parent
             text: root.tooltip
-            color: Color.palette.base05
-            font.pixelSize: 12
+            color: Color.palette.base06
+            font.pixelSize: 11
             font.family: root.fontFamily
+            horizontalAlignment: Text.AlignHCenter
+            // No rotation needed!
         }
-        // Small arrow pointing up to button
-        Canvas {
-            id: tooltipArrow
+
+        // Tooltip arrow (now pointing up, positioned at the bottom)
+        Rectangle {
             width: 8
-            height: 4
-            x: parent.width / 2 - width / 2
-            y: -4
-            onPaint: {
-                var ctx = getContext("2d");
-                ctx.reset();
-                ctx.fillStyle = Color.palette.base05;
-                // Draw triangle
-                ctx.beginPath();
-                ctx.moveTo(0, height);
-                ctx.lineTo(width / 2, 0);
-                ctx.lineTo(width, height);
-                ctx.closePath();
-                ctx.fill();
-            }
+            height: 8
+            color: tooltipPopup.color
+            rotation: 45
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottom: parent.bottom // Attach to the bottom
+            anchors.bottomMargin: -3     // Overlap to create a seamless arrow
         }
     }
 }

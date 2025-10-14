@@ -7,6 +7,7 @@ IconButton {
     iconName: "folder"
     iconSize: 24
     iconColor: Color.palette.base04
+    tooltip: "Open File"
 
     signal opened(bool isOpen)
     signal pathAdded(string path)

@@ -7,9 +7,11 @@ IconButton {
     id: root
     iconText: "✨"
 
+    tooltip: "Generate" + "\n" + "Theme"
     property string wallpaperPath: ""
     property var apiKey: JSON.parse(jsonFile.text())['apiKey'] ?? ""
-
+    loading: colorGenerator.running
+    disabled: colorGenerator.running
     signal colorsGenerated(var json)
 
     onClicked: {

@@ -43,6 +43,7 @@ Item {
 
                     FolderButton {
                         id: folderButton
+                        toolTipContainer: rootArea
                         onOpened: flag => {
                             root.folderOpen(flag);
                         }
@@ -53,6 +54,7 @@ Item {
                     AIColorGeneratorButton {
                         id: generateColors
                         wallpaperPath: root.imagePath
+                        toolTipContainer: rootArea
                         onColorsGenerated: jsonColors => {
                             const aiGeneratedPalette = jsonColors.palette;
                             root.paletteData = Color.convertPaletteToArray(aiGeneratedPalette);
@@ -136,6 +138,7 @@ Item {
                         iconName: "emblem-default"
                         iconSize: 26
                         z: -1
+			toolTipContainer: rootArea
                         iconColor: Color.palette.base04
                         tooltip: "Save Theme"
                         property var jsonData: root.aiGeneratedTheme
