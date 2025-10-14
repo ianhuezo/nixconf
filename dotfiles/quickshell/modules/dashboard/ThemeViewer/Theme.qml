@@ -135,12 +135,13 @@ Item {
                     }
                     IconButton {
                         id: saveJsonButton
-                        iconName: "emblem-default"
+                        iconName: "object-select-symbolic"
                         iconSize: 26
                         z: -1
-			toolTipContainer: rootArea
+                        toolTipContainer: rootArea
                         iconColor: Color.palette.base04
                         tooltip: "Save Theme"
+                        disabled: root.aiGeneratedTheme == null
                         property var jsonData: root.aiGeneratedTheme
                         property string filePath: ""
                         onClicked: {
