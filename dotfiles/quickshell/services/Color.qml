@@ -1,9 +1,16 @@
 pragma Singleton
 import Quickshell
 import QtQuick
+import "root:/libs/nix/nix.js" as NixUtil
 
 Singleton {
     id: root
+
+    Component.onCompleted: {
+        // Try to load theme from a default location or config
+        let themePath = "/etc/nixos/nix/themes/dark-ethereal/default.nix"; // or read from config
+        loadTheme(themePath);
+    }
 
     // Store original colors for fallback
     readonly property QtObject defaultPalette: QtObject {
@@ -130,8 +137,6 @@ Singleton {
             color: root.palette.base0F
         }
     ]
-    function saveTheme(json: var) {
-    }
 
     function loadTheme(path: string): bool {
         try {
@@ -147,7 +152,7 @@ Singleton {
             }
 
             // Parse JSON
-            let themeData = JSON.parse(xhr.responseText);
+            let themeData = NixUtil.nixToJson(xhr.responseText);
 
             // Validate that it's a proper theme object
             if (!themeData.palette) {
@@ -156,11 +161,12 @@ Singleton {
                 return false;
             }
 
-            // Apply colors using loop
+            // Apply colors using EXPLICIT keys instead of Object.keys()
             let newPalette = themeData.palette;
-            let paletteKeys = Object.keys(palette);
-            for (let i = 0; i < paletteKeys.length; i++) {
-                let key = paletteKeys[i];
+            let baseKeys = ["base00", "base01", "base02", "base03", "base04", "base05", "base06", "base07", "base08", "base09", "base0A", "base0B", "base0C", "base0D", "base0E", "base0F"];
+
+            for (let i = 0; i < baseKeys.length; i++) {
+                let key = baseKeys[i];
                 if (newPalette.hasOwnProperty(key)) {
                     palette[key] = newPalette[key];
                 }
@@ -222,12 +228,11 @@ Singleton {
     }
 
     function resetToDefault(): void {
-        let paletteKeys = Object.keys(palette);
-        for (let i = 0; i < paletteKeys.length; i++) {
-            let key = paletteKeys[i];
-            if (defaultPalette.hasOwnProperty(key)) {
-                palette[key] = defaultPalette[key];
-            }
+        let baseKeys = ["base00", "base01", "base02", "base03", "base04", "base05", "base06", "base07", "base08", "base09", "base0A", "base0B", "base0C", "base0D", "base0E", "base0F"];
+
+        for (let i = 0; i < baseKeys.length; i++) {
+            let key = baseKeys[i];
+            palette[key] = defaultPalette[key];
         }
         console.log("Theme reset to default");
     }
