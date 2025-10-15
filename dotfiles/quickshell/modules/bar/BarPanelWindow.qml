@@ -7,6 +7,8 @@ import Quickshell.Widgets
 
 PanelWindow {
     id: panel
+
+    // Required properties
     required property var modelData
     required property var cavaValues
     required property bool useCanvasVisualization
@@ -14,17 +16,27 @@ PanelWindow {
     required property var barOffsetX
     required property var verticalPadding
     required property bool isActive
+
+    // Panel configuration
     property real panelHeight: 36
-    property real animatedHeight: panel.isActive ? 54 : 0
     property real panelRadius: 8
     property bool isSectionedBar: false
-    property bool isBarBordered: false
+    property bool isBarBordered: true
     property color barBorderColor: Color.palette.base09
     property color widgetMainColor: Color.palette.base0B
 
+    // Computed properties
+    property real animatedHeight: isActive ? 54 : 0
+
     screen: modelData
     implicitHeight: animatedHeight
-    color: '#00000000' // Transparent main panel
+    color: '#00000000'
+
+    anchors {
+        top: true
+        left: true
+        right: true
+    }
 
     Behavior on animatedHeight {
         NumberAnimation {
@@ -33,163 +45,200 @@ PanelWindow {
         }
     }
 
-    anchors {
-        top: true
-        left: true
-        right: true
-    }
+    // Main container with offset margins
+    Item {
+        id: container
+        anchors {
+            fill: parent
+            topMargin: verticalPadding
+            bottomMargin: verticalPadding
+            leftMargin: barOffsetX
+            rightMargin: barOffsetX
+        }
 
-    Rectangle {
-        id: mainContainer
-        anchors.fill: parent
-        color: panel.color
+        // Animated scale transform
+        property real targetScale: panel.isActive ? 1.0 : 0.0
 
-        Rectangle {
-            id: offsetContainer
-            anchors {
-                left: parent.left
-                right: parent.right
-                top: parent.top
-                bottom: parent.bottom
-                topMargin: panel.verticalPadding
-                bottomMargin: panel.verticalPadding
-                leftMargin: panel.barOffsetX
-                rightMargin: panel.barOffsetX
+        transform: Scale {
+            xScale: container.targetScale
+            yScale: container.targetScale
+            origin.x: container.width / 2
+            origin.y: container.height / 2
+        }
+
+        Behavior on targetScale {
+            NumberAnimation {
+                duration: 300
+                easing.type: Easing.OutCubic
             }
-            color: 'transparent' //Color.palette.base01
-            radius: 8 // Optional: rounded corners for the bar
+        }
 
-            // Animation properties for expand/collapse
-            property real scaleX: panel.isActive ? 1.0 : 0.0
-            property real scaleY: panel.isActive ? 1.0 : 0.0
+        // Main bar with blur effect
+        Item {
+            id: bar
+            anchors.fill: parent
 
-            transform: Scale {
-                xScale: offsetContainer.scaleX
-                yScale: offsetContainer.scaleY
-                origin.x: offsetContainer.width / 2
-                origin.y: offsetContainer.height / 2
-            }
-
-            // Smooth animations for scale changes
-            Behavior on scaleX {
-                NumberAnimation {
-                    duration: 300
-                    easing.type: Easing.OutCubic
-                }
-            }
-
-            Behavior on scaleY {
-                NumberAnimation {
-                    duration: 300
-                    easing.type: Easing.OutCubic
-                }
-            }
-
-            layer.enabled: true
-            layer.effect: MultiEffect {
-                blur: 10
-            }
-
+            // Outer rectangle acts as border for unified bar
             Rectangle {
                 anchors.fill: parent
-                anchors.margins: -1 // Extends slightly outward for the highlight border
-                color: "transparent"
-                radius: parent.radius + 1
+                color: barBorderColor
+                radius: panelRadius
+                visible: isBarBordered && !isSectionedBar
+                z: 0
             }
 
-            // Content container with padding
+            // Inner background rectangle
             Rectangle {
-                id: contentContainer
-                anchors {
-                    topMargin: panel.verticalPadding
-                    bottomMargin: panel.verticalPadding
-                }
-                color: panel.isSectionedBar ? "transparent" : Color.palette.base01
-                height: panel.panelHeight
-                width: parent.width
-                radius: panelRadius
-                border.width: panel.isBarBordered ? 1 : 0
-                border.color: panel.isBarBordered ? panel.barBorderColor : null
+                anchors.fill: parent
+                anchors.margins: (isBarBordered && !isSectionedBar) ? 1 : 0
+                color: isSectionedBar ? "transparent" : Color.palette.base01
+                radius: (isBarBordered && !isSectionedBar) ? panelRadius - 1 : panelRadius
+                z: 1
 
-                // Left section
-                Left {
-                    color: Color.palette.base01
-                    height: parent.height
-                    width: parent.width / 8
-                    anchors.verticalCenter: parent.verticalCenter
+                layer.enabled: true
+                layer.effect: MultiEffect {
+                    blur: 10
+                }
+            }
+        }
+
+        // Three-section layout
+        Row {
+            anchors.fill: parent
+            anchors.margins: (isBarBordered && !isSectionedBar) ? 1 : 0
+            spacing: 0
+            z: 2
+
+            // LEFT SECTION
+            Item {
+                id: leftSection
+                width: parent.width / 8
+                height: parent.height
+
+                // Outer rectangle acts as border (only for separate sections)
+                Rectangle {
+                    anchors.fill: parent
+                    color: barBorderColor
                     radius: panelRadius
-                    border.width: panel.isBarBordered ? 1 : 0
-                    border.color: panel.isSectionedBar ? panel.barBorderColor : 'transparent'
+                    visible: isBarBordered && isSectionedBar
+                    z: 0
                 }
 
-                // Center section
+                // Inner rectangle (actual content)
+                Rectangle {
+                    anchors.fill: parent
+                    anchors.margins: (isBarBordered && isSectionedBar) ? 1 : 0
+                    color: Color.palette.base01
+                    radius: (isBarBordered && isSectionedBar) ? panelRadius - 1 : panelRadius
+                    z: 1
+
+                    // Add your left section content here
+                    Left {
+                        anchors.fill: parent
+                        color: "transparent"
+                    }
+                }
+            }
+
+            // CENTER SPACER
+            Item {
+                width: (parent.width - leftSection.width - centerSection.width - rightSection.width) / 2
+                height: parent.height
+            }
+
+            // CENTER SECTION
+            Item {
+                id: centerSection
+                width: parent.width / 7
+                height: parent.height
+
+                // Outer rectangle acts as border (only for separate sections)
+                Rectangle {
+                    anchors.fill: parent
+                    color: barBorderColor
+                    radius: panelRadius
+                    visible: isBarBordered && isSectionedBar
+                    z: 0
+                }
+
+                // Inner rectangle (actual content)
                 ClippingRectangle {
-                    id: centerSection
-                    height: parent.height
-                    width: parent.width / 7
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.fill: parent
+                    anchors.margins: (isBarBordered && isSectionedBar) ? 1 : 0
                     color: Color.palette.base01
-                    radius: panelRadius
-                    border.width: panel.isBarBordered ? 1 : 0
-                    border.color: panel.isSectionedBar ? panel.barBorderColor : 'transparent'
+                    radius: (isBarBordered && isSectionedBar) ? panelRadius - 1 : panelRadius
+                    z: 1
 
                     VisualizerContainer {
                         anchors.centerIn: parent
-                        height: panel.isSectionedBar ? parent.height : parent.height - 4
+                        height: isSectionedBar ? parent.height : parent.height - 4
                         cavaValues: panel.cavaValues
                         useCanvas: panel.useCanvasVisualization
                         waveColor: panel.widgetMainColor
-                        barColor: "transparent" // Use transparent for bar background
+                        barColor: "transparent"
                         onToggleVisualization: panel.useCanvasVisualization = !panel.useCanvasVisualization
                     }
                 }
+            }
 
-                //Right Section
+            // RIGHT SPACER
+            Item {
+                width: (parent.width - leftSection.width - centerSection.width - rightSection.width) / 2
+                height: parent.height
+            }
+
+            // RIGHT SECTION
+            Item {
+                id: rightSection
+                width: parent.width / 8
+                height: parent.height
+
+                // Outer rectangle acts as border (only for separate sections)
                 Rectangle {
-                    color: Color.palette.base01
-                    height: parent.height
-                    width: parent.width / 8
-                    border.width: panel.isBarBordered ? 1 : 0
-                    border.color: panel.isSectionedBar ? panel.barBorderColor : 'transparent'
-
-                    anchors {
-                        right: parent.right  // Add this line
-                        verticalCenter: parent.verticalCenter
-                    }
+                    anchors.fill: parent
+                    color: barBorderColor
                     radius: panelRadius
-                    Row {
-                        id: rightSection
-                        height: parent.height
-                        width: parent.width / 4
-                        property real ramPercentage: GetRam.ram
-                        property int cpuPercentage: GetCPU.cpu
-                        property int gpuPercentage: GetGPU.gpu
+                    visible: isBarBordered && isSectionedBar
+                    z: 0
+                }
 
-                        property var circleStatsData: [
+                // Inner rectangle (actual content)
+                Rectangle {
+                    anchors.fill: parent
+                    anchors.margins: (isBarBordered && isSectionedBar) ? 1 : 0
+                    color: Color.palette.base01
+                    radius: (isBarBordered && isSectionedBar) ? panelRadius - 1 : panelRadius
+                    z: 1
+
+                    Row {
+                        id: statsRow
+                        anchors {
+                            right: parent.right
+                            verticalCenter: parent.verticalCenter
+                        }
+                        height: parent.height
+                        layoutDirection: Qt.RightToLeft
+
+                        property var statsData: [
                             {
-                                percentage: gpuPercentage,
-                                statText: gpuPercentage + "%",
+                                percentage: GetGPU.gpu,
+                                statText: GetGPU.gpu + "%",
                                 iconSource: FileConfig.icons.gpu
                             },
                             {
-                                percentage: cpuPercentage,
-                                statText: cpuPercentage + "%",
+                                percentage: GetCPU.cpu,
+                                statText: GetCPU.cpu + "%",
                                 iconSource: FileConfig.icons.cpu
                             },
                             {
-                                percentage: ramPercentage,
-                                statText: ramPercentage + "%",
+                                percentage: GetRam.ram,
+                                statText: GetRam.ram + "%",
                                 iconSource: FileConfig.icons.ram
                             }
                         ]
-                        anchors {
-                            right: parent.right
-                            top: parent.top
-                        }
-                        layoutDirection: Qt.RightToLeft
+
                         Repeater {
-                            model: rightSection.circleStatsData
+                            model: statsRow.statsData
                             delegate: CircleProgress {
                                 percentage: modelData.percentage
                                 statText: modelData.statText
@@ -197,14 +246,11 @@ PanelWindow {
                                 textColor: panel.widgetMainColor
                                 backgroundColor: Color.palette.base01
                                 progressColor: panel.widgetMainColor
-                                color: mainContainer.color
+                                color: panel.color
                             }
                         }
                     }
                 }
-
-                // Right section
-
             }
         }
     }
