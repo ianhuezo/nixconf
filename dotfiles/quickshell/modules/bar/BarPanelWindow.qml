@@ -21,7 +21,7 @@ PanelWindow {
     property real panelHeight: 36
     property real panelRadius: 8
     property bool isSectionedBar: false
-    property bool isBarBordered: true
+    property bool isBarBordered: false
     property color barBorderColor: Color.palette.base09
     property color widgetMainColor: Color.palette.base0B
 
@@ -96,9 +96,6 @@ PanelWindow {
                 z: 1
 
                 layer.enabled: true
-                layer.effect: MultiEffect {
-                    blur: 10
-                }
             }
         }
 
