@@ -69,6 +69,8 @@ PanelWindow {
             anchors.fill: parent
             color: Color.palette.base00
             radius: 20
+            border.width: 1
+            border.color: Color.palette.base09
 
             SplashPanel {
                 id: splashPanel

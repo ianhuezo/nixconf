@@ -18,6 +18,9 @@ PanelWindow {
     property real animatedHeight: panel.isActive ? 54 : 0
     property real panelRadius: 8
     property bool isSectionedBar: false
+    property bool isBarBordered: false
+    property color barBorderColor: Color.palette.base09
+    property color widgetMainColor: Color.palette.base0B
 
     screen: modelData
     implicitHeight: animatedHeight
@@ -91,19 +94,7 @@ PanelWindow {
                 anchors.fill: parent
                 anchors.margins: -1 // Extends slightly outward for the highlight border
                 color: "transparent"
-                // border.color: Color.palette.base08 // A mid-tone blue from the wallpaper's spectrum
-                // border.width: 1
                 radius: parent.radius + 1
-            }
-
-            // Accent Glow Line (the "frieren flowers" glow effect)
-            Rectangle {
-                anchors.fill: parent
-                anchors.margins: 1 // Inset for a fine line
-                color: "transparent"
-                border.color: Color.palette.base0B // Bright, ethereal blue/cyan for accent (like the flowers)
-                border.width: 0 // Slightly thicker for more glow
-                radius: parent.radius - 1
             }
 
             // Content container with padding
@@ -117,6 +108,8 @@ PanelWindow {
                 height: panel.panelHeight
                 width: parent.width
                 radius: panelRadius
+                border.width: panel.isBarBordered ? 1 : 0
+                border.color: panel.isBarBordered ? panel.barBorderColor : null
 
                 // Left section
                 Left {
@@ -125,8 +118,8 @@ PanelWindow {
                     width: parent.width / 8
                     anchors.verticalCenter: parent.verticalCenter
                     radius: panelRadius
-                    border.width: panel.isSectionedBar ? 2 : 0
-                    border.color: panel.isSectionedBar ? Color.palette.base03 : 'transparent'
+                    border.width: panel.isBarBordered ? 1 : 0
+                    border.color: panel.isSectionedBar ? panel.barBorderColor : 'transparent'
                 }
 
                 // Center section
@@ -138,26 +131,27 @@ PanelWindow {
                     anchors.horizontalCenter: parent.horizontalCenter
                     color: Color.palette.base01
                     radius: panelRadius
-                    border.width: panel.isSectionedBar ? 2 : 0
-                    border.color: panel.isSectionedBar ? Color.palette.base03 : 'transparent'
+                    border.width: panel.isBarBordered ? 1 : 0
+                    border.color: panel.isSectionedBar ? panel.barBorderColor : 'transparent'
 
                     VisualizerContainer {
                         anchors.centerIn: parent
                         height: panel.isSectionedBar ? parent.height : parent.height - 4
                         cavaValues: panel.cavaValues
                         useCanvas: panel.useCanvasVisualization
-                        waveColor: Color.palette.base09
+                        waveColor: panel.widgetMainColor
                         barColor: "transparent" // Use transparent for bar background
                         onToggleVisualization: panel.useCanvasVisualization = !panel.useCanvasVisualization
                     }
                 }
 
+                //Right Section
                 Rectangle {
                     color: Color.palette.base01
                     height: parent.height
                     width: parent.width / 8
-                    border.width: panel.isSectionedBar ? 2 : 0
-                    border.color: panel.isSectionedBar ? Color.palette.base03 : 'transparent'
+                    border.width: panel.isBarBordered ? 1 : 0
+                    border.color: panel.isSectionedBar ? panel.barBorderColor : 'transparent'
 
                     anchors {
                         right: parent.right  // Add this line
@@ -200,9 +194,9 @@ PanelWindow {
                                 percentage: modelData.percentage
                                 statText: modelData.statText
                                 iconSource: modelData.iconSource
-                                textColor: Color.palette.base09
+                                textColor: panel.widgetMainColor
                                 backgroundColor: Color.palette.base01
-                                progressColor: Color.palette.base09
+                                progressColor: panel.widgetMainColor
                                 color: mainContainer.color
                             }
                         }
