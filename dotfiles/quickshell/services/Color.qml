@@ -1,6 +1,7 @@
 pragma Singleton
 import Quickshell
 import QtQuick
+import Quickshell.Io
 import "root:/libs/nix/nix.js" as NixUtil
 
 Singleton {
@@ -8,7 +9,7 @@ Singleton {
 
     Component.onCompleted: {
         // Try to load theme from a default location or config
-        let themePath = "/etc/nixos/nix/themes/dark-ethereal/default.nix"; // or read from config
+        let themePath = "/etc/nixos/nix/themes/kanto-starters-light/default.nix"; // or read from config
         loadTheme(themePath);
     }
 
@@ -138,21 +139,25 @@ Singleton {
         }
     ]
 
+    FileView {
+        id: themeFile
+        blockLoading: true
+    }
+
     function loadTheme(path: string): bool {
         try {
-            // Read the JSON file
-            let xhr = new XMLHttpRequest();
-            xhr.open("GET", "file://" + path, false);
-            xhr.send();
+            // Set the path and read the file
+            themeFile.path = Qt.resolvedUrl(path);
+            let fileContent = themeFile.text();
 
-            if (xhr.status !== 200) {
+            if (!fileContent) {
                 console.warn("Failed to load theme file:", path);
                 resetToDefault();
                 return false;
             }
 
             // Parse JSON
-            let themeData = NixUtil.nixToJson(xhr.responseText);
+            let themeData = NixUtil.nixToJson(fileContent);
 
             // Validate that it's a proper theme object
             if (!themeData.palette) {

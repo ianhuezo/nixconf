@@ -8,9 +8,8 @@ Rectangle {
     Row {
         id: leftContent
         anchors.verticalCenter: parent.verticalCenter
-        anchors.left: parent.left
-        anchors.leftMargin: 15
-        spacing: 30
+        anchors.centerIn: parent
+        spacing: 24
 
         Rectangle {
             id: nixosRect

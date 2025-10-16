@@ -129,10 +129,8 @@ PanelWindow {
                     radius: (isBarBordered && isSectionedBar) ? panelRadius - 1 : panelRadius
                     z: 1
 
-                    // Add your left section content here
                     Left {
                         anchors.fill: parent
-                        color: "transparent"
                     }
                 }
             }
@@ -210,11 +208,12 @@ PanelWindow {
                     Row {
                         id: statsRow
                         anchors {
-                            right: parent.right
                             verticalCenter: parent.verticalCenter
+                            horizontalCenter: parent.horizontalCenter
                         }
                         height: parent.height
                         layoutDirection: Qt.RightToLeft
+                        spacing: 5
 
                         property var statsData: [
                             {
@@ -233,7 +232,6 @@ PanelWindow {
                                 iconSource: FileConfig.icons.ram
                             }
                         ]
-
                         Repeater {
                             model: statsRow.statsData
                             delegate: CircleProgress {
