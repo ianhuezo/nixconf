@@ -23,7 +23,7 @@ PanelWindow {
     property bool isSectionedBar: false
     property bool isBarBordered: false
     property color barBorderColor: Color.palette.base09
-    property color widgetMainColor: Color.palette.base0B
+    property color widgetMainColor: Color.palette.base0C
 
     // Computed properties
     property real animatedHeight: isActive ? 54 : 0

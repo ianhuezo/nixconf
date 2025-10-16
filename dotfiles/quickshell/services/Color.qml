@@ -15,22 +15,27 @@ Singleton {
 
     // Store original colors for fallback
     readonly property QtObject defaultPalette: QtObject {
-        readonly property color base00: "#0D121B"
-        readonly property color base01: "#111A2C"
-        readonly property color base02: "#1A263B"
-        readonly property color base03: "#2A3E5C"
-        readonly property color base04: "#6C8CB7"
-        readonly property color base05: "#E0F2F7"
-        readonly property color base06: "#F0F8FA"
-        readonly property color base07: "#FDFEFF"
-        readonly property color base08: "#F7768E"
-        readonly property color base09: "#FF9E64"
-        readonly property color base0A: "#B7C5D3"
-        readonly property color base0B: "#A0E6FF"
-        readonly property color base0C: "#89DDFF"
-        readonly property color base0D: "#7AA2F7"
-        readonly property color base0E: "#BB9AF7"
-        readonly property color base0F: "#BB9AF7"
+        // Background colors (darkest to lighter)
+        readonly property color base00: "#0D121B"  // UI: Main window background, panel fills | Terminal: Default background
+        readonly property color base01: "#111A2C"  // UI: Slightly lighter backgrounds (sidebars, cards) | Terminal: Lighter background (for selections, not commonly used)
+        readonly property color base02: "#1A263B"  // UI: Selection backgrounds, hover states, input fields | Terminal: Selection background, highlighted text background
+        readonly property color base03: "#2A3E5C"  // UI: Borders, separators, disabled elements | Terminal: Comments, invisibles, line highlighting
+
+        // Foreground colors (darker to brightest text)
+        readonly property color base04: "#6C8CB7"  // UI: Secondary text, placeholder text, icons | Terminal: Dark foreground (for prompts, secondary text)
+        readonly property color base05: "#E0F2F7"  // UI: Primary text, main body content | Terminal: Default foreground (main text color)
+        readonly property color base06: "#F0F8FA"  // UI: Emphasized text, headings | Terminal: Light foreground (not commonly used, for emphasis)
+        readonly property color base07: "#FDFEFF"  // UI: Brightest text, important highlights | Terminal: Bright/bold text variants
+
+        // Accent colors (semantic highlighting)
+        readonly property color base08: "#F7768E"  // UI: Errors, destructive actions, alerts | Terminal: Red (errors, deletions, ANSI red)
+        readonly property color base09: "#FF9E64"  // UI: Warnings, secondary CTAs, notifications | Terminal: Orange (warnings, special numbers, ANSI bright red)
+        readonly property color base0A: "#B7C5D3"  // UI: Information highlights, search results | Terminal: Yellow (search, classes, ANSI yellow)
+        readonly property color base0B: "#A0E6FF"  // UI: Success states, confirmations, growth | Terminal: Green (success, additions, strings, ANSI green)
+        readonly property color base0C: "#89DDFF"  // UI: Info badges, links, auxiliary actions | Terminal: Cyan (escape codes, regex, ANSI cyan)
+        readonly property color base0D: "#7AA2F7"  // UI: Primary actions (buttons), focus states, links | Terminal: Blue (functions, keywords, ANSI blue)
+        readonly property color base0E: "#BB9AF7"  // UI: Special elements, tags, tertiary CTAs | Terminal: Magenta (variables, keywords, ANSI magenta)
+        readonly property color base0F: "#BB9AF7"  // UI: Deprecated warnings, misc. highlights | Terminal: Brown/deprecated (constants, special chars, ANSI bright black)
     }
 
     // Current palette (modifiable)
