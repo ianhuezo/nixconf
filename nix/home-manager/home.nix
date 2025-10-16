@@ -91,6 +91,7 @@ in
     typescript
     typescript-language-server
     syncplay
+    claude-code
     inputs.hyprland-qtutils.packages.${pkgs.system}.default
   ];
 
