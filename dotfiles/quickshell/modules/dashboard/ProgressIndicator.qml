@@ -16,18 +16,18 @@ Item {
     property real containerHeight: 250
 
     // Configurable colors
-    property string progressColor: Color.palette.base09
-    property string progressGlowColor: Qt.lighter(progressColor, 1.2)
+    property string progressColor: Color.palette.base09  // Warnings, notifications
+    property string progressGlowColor: Color.palette.base0A  // Information highlights
     property string backgroundColor: "transparent"
-    property string progressBarBackgroundColor: Qt.darker(backgroundColor, 1.5)
-    property string progressBarBorderColor: Qt.lighter(backgroundColor, 1.2)
-    property string titleTextColor: Color.palette.base07
-    property string percentageTextColor: Color.palette.base07
+    property string progressBarBackgroundColor: Color.palette.base01  // Slightly lighter backgrounds
+    property string progressBarBorderColor: Color.palette.base03  // Borders, separators
+    property string titleTextColor: Color.palette.base05  // Primary text
+    property string percentageTextColor: Color.palette.base05  // Primary text
     property string containerColor: 'transparent'
-    property string progressSectionBackgroundColor: Color.palette.base03
-    property string progressSectionBorderColor: Color.palette.base03
-    property string inactiveProgressColor: Color.palette.base03
-    property string inactiveProgressBorderColor: Color.palette.base04
+    property string progressSectionBackgroundColor: Color.palette.base01  // Slightly lighter backgrounds
+    property string progressSectionBorderColor: Color.palette.base03  // Borders, separators
+    property string inactiveProgressColor: Color.palette.base02  // Selection backgrounds, input fields
+    property string inactiveProgressBorderColor: Color.palette.base03  // Borders, separators
 
     // Progress section properties
     property bool showProgressSection: true

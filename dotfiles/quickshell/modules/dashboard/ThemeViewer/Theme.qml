@@ -171,7 +171,9 @@ Item {
                                         id: tooltip
                                         width: tooltipText.width + 16
                                         height: tooltipText.height + 12
-                                        color: Color.palette.base0E
+                                        color: Color.palette.base01  // Slightly lighter backgrounds (sidebars, cards)
+                                        border.color: Color.palette.base03  // Borders, separators
+                                        border.width: 1
                                         radius: 6
 
                                         anchors.horizontalCenter: parent.horizontalCenter
@@ -192,7 +194,7 @@ Item {
                                             id: tooltipText
                                             anchors.centerIn: parent
                                             text: modelData.name + "\n" + colorRect.color.toString().toUpperCase()
-                                            color: Color.palette.base06
+                                            color: Color.palette.base05  // Primary text, main body content
                                             font.pixelSize: 11
                                             horizontalAlignment: Text.AlignHCenter
                                         }

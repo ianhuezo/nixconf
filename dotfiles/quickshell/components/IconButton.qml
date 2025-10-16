@@ -30,7 +30,7 @@ Rectangle {
     // Public properties - Colors
     property color iconColor: disabled || loading ? Color.palette.base03 : Color.palette.base05
     property color textColor: disabled || loading ? Color.palette.base03 : Color.palette.base05
-    property color backgroundColor: disabled || loading ? Color.palette.base01 : Color.palette.base02
+    property color backgroundColor: disabled || loading ? Color.palette.base00 : Color.palette.base02
     property int buttonRadius: AppearanceConfig.calculateRadius(width, height, 'xl')
 
     // Signals
@@ -65,6 +65,21 @@ Rectangle {
     // Styling
     radius: buttonRadius
     color: backgroundColor
+    opacity: disabled || loading ? 0.5 : 1.0
+
+    Behavior on opacity {
+        NumberAnimation {
+            duration: 150
+            easing.type: Easing.OutQuad
+        }
+    }
+
+    Behavior on color {
+        ColorAnimation {
+            duration: 150
+            easing.type: Easing.OutQuad
+        }
+    }
 
     layer.enabled: true
     layer.effect: MultiEffect {
@@ -166,6 +181,13 @@ Rectangle {
             font.weight: root.iconWeight
             text: root.iconText
             font.family: root.fontFamily
+
+            Behavior on color {
+                ColorAnimation {
+                    duration: 150
+                    easing.type: Easing.OutQuad
+                }
+            }
         }
 
         // Button text label
@@ -178,6 +200,13 @@ Rectangle {
             font.weight: Font.Medium
             text: root.text
             font.family: root.fontFamily
+
+            Behavior on color {
+                ColorAnimation {
+                    duration: 150
+                    easing.type: Easing.OutQuad
+                }
+            }
         }
     }
 
@@ -234,7 +263,9 @@ Rectangle {
     Rectangle {
         id: tooltipPopup
         visible: false // Start with visible: false
-        color: Color.palette.base0E
+        color: Color.palette.base01  // Slightly lighter backgrounds (sidebars, cards)
+        border.color: Color.palette.base03  // Borders, separators
+        border.width: 1
         radius: 6
         width: tooltipText.implicitWidth + 16
         height: tooltipText.implicitHeight + 12
@@ -261,11 +292,10 @@ Rectangle {
             id: tooltipText
             anchors.centerIn: parent
             text: root.tooltip
-            color: Color.palette.base06
+            color: Color.palette.base05  // Primary text, main body content
             font.pixelSize: 11
             font.family: root.fontFamily
             horizontalAlignment: Text.AlignHCenter
-            // No rotation needed!
         }
 
         // Tooltip arrow (now pointing up, positioned at the bottom)

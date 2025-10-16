@@ -122,11 +122,11 @@ Column {
                     source: lampIcon
                     anchors.fill: lampIcon
                     colorization: 1
-                    colorizationColor: Color.palette.base08  // Red tint for inactive lamps
+                    colorizationColor: Color.palette.base08  // Errors, alerts - good for "off" state
                     blur: 0.1
                     blurMax: 4
                     shadowEnabled: true
-                    shadowColor: "#AAAAAA"  // Dark red glow
+                    shadowColor: Color.palette.base03  // Borders/separators/disabled elements
                     shadowHorizontalOffset: 0
                     shadowVerticalOffset: 0
                     shadowBlur: 0.6
@@ -138,7 +138,7 @@ Column {
                     source: lampIcon
                     anchors.fill: lampIcon
                     colorization: 1
-                    colorizationColor: Color.palette.base08
+                    colorizationColor: Color.palette.base08  // Errors, alerts - good for "off" state
                     visible: (index + 1) !== activeWsId
                 }
 

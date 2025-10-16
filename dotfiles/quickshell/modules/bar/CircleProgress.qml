@@ -21,18 +21,21 @@ Rectangle {
 
     Rectangle {
         id: statTextContainer
-        width: 32
+        width: 36  // Slightly wider to accommodate 3-digit percentages
         height: parent.height
         x: 34
         color: 'transparent'
+        clip: true  // Prevent text overflow
 
         Text {
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
-            anchors.rightMargin: 5
+            anchors.rightMargin: 2  // Reduced margin since container is wider
             text: circleProgressRoot.statText
             color: circleProgressRoot.textColor
             font.pointSize: 10
+            elide: Text.ElideRight  // Truncate if still too long
+            width: parent.width - anchors.rightMargin  // Constrain width
         }
     }
 

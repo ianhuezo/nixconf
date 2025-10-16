@@ -213,7 +213,7 @@ PanelWindow {
                         }
                         height: parent.height
                         layoutDirection: Qt.RightToLeft
-                        spacing: 5
+                        spacing: 4  // Reduced for sectioned mode
 
                         property var statsData: [
                             {
