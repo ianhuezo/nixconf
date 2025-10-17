@@ -46,6 +46,8 @@ in
     home.packages = [
       inputs.hyprland-qtutils.packages.${pkgs.system}.default
       inputs.swww.packages.${pkgs.system}.swww
+      pkgs.slurp
+      pkgs.grim
     ];
     modules.hypridle = {
       enable = true;
@@ -131,8 +133,7 @@ in
           "$mod SHIFT, F, fullscreen"
           "$mod, N, exec, hyprctl dispatch togglefloating"
           #mod with left mouse moves windows
-          ", Print, exec, grimblast copy area"
-          #Kitty specific open another kitty terminal instead of splitting the kitty terminal
+          ", Print, exec, grim -g \"$(slurp -d)\" - | tee ~/Pictures/screenshot.png | wl-copy" # Kitty specific open another kitty terminal instead of splitting the kitty terminal
           "CTRL_SHIFT, Return, exec, kitty --directory=$HOME"
           "CTRL_SHIFT, bracketleft, cyclenext, prev"
           "CTRL_SHIFT, bracketright, cyclenext"
