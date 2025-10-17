@@ -182,9 +182,6 @@ L_glow_avg = mean(L values of luminescent pixels)
 **If L_glow_avg > 60% AND L_median < 40%:**
 → **FORCE DARK MODE** (bright glows on dark background)
 
-**If L_glow_avg < 40% AND L_median > 60%:**
-→ **FORCE LIGHT MODE** (dark elements on light background)
-
 **Rationale:** High-contrast luminescent effects are **intentional focal points**. The theme mode must preserve this contrast, not flatten it.
 
 ---
