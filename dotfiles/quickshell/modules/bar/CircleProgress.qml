@@ -21,19 +21,20 @@ Rectangle {
 
     Rectangle {
         id: statTextContainer
-        width: 36  // Slightly wider to accommodate 3-digit percentages
+        width: 34  // Tighter spacing
         height: parent.height
-        x: 34
+        x: 32      // Move closer to icon
         color: 'transparent'
         clip: true  // Prevent text overflow
 
         Text {
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
-            anchors.rightMargin: 2  // Reduced margin since container is wider
+            anchors.rightMargin: 1  // Tighter margin
             text: circleProgressRoot.statText
             color: circleProgressRoot.textColor
-            font.pointSize: 10
+            font.pixelSize: AppearanceConfig.font.size.sm
+            font.family: AppearanceConfig.font.mono
             elide: Text.ElideRight  // Truncate if still too long
             width: parent.width - anchors.rightMargin  // Constrain width
         }
@@ -98,8 +99,13 @@ Rectangle {
             source: circleProgressRoot.iconSource
             width: 15
             height: 15
+            sourceSize.width: 30  // 2x resolution for crisp rendering
+            sourceSize.height: 30
             antialiasing: true
+            smooth: true
+            fillMode: Image.PreserveAspectFit
             layer.enabled: true
+            layer.textureSize: Qt.size(60, 60)  // Higher resolution for layer effect
             anchors.centerIn: parent
             layer.effect: MultiEffect {
                 brightness: 1.0

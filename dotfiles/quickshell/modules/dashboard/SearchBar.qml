@@ -57,9 +57,9 @@ FocusScope {
             anchors.fill: parent
             anchors.leftMargin: searchIcon.width + parent.width * 0.04
 
-            font.family: 'JetBrains Mono Nerd Font'
-            font.weight: 400
-            font.pixelSize: 16
+            font.family: AppearanceConfig.font.ui
+            font.weight: AppearanceConfig.font.weight.regular
+            font.pixelSize: AppearanceConfig.font.size.md
             text: ''
             readOnly: searchBarContainer.readOnly
             color: Color.palette.base07

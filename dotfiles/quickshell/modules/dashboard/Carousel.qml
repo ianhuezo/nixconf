@@ -107,9 +107,9 @@ Item {
                     carouselRadius: narrowedAppChooser.width
                     textColor: Color.palette.base07
                     underlineColor: Color.palette.base08
-                    fontFamily: 'JetBrains Mono Nerd Font'
-                    fontSize: 20
-                    fontWeight: 500
+                    fontFamily: AppearanceConfig.font.ui
+                    fontSize: AppearanceConfig.font.size.lg
+                    fontWeight: AppearanceConfig.font.weight.medium
                 }
             }
         }

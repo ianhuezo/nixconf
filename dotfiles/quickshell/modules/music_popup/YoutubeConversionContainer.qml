@@ -153,9 +153,9 @@ FocusScope {
                     anchors.centerIn: parent
                     text: "♪ Add to Library"
                     color: Color.palette.base05
-                    font.family: 'JetBrains Mono Nerd Font'
-                    font.weight: 500
-                    font.pixelSize: 16
+                    font.family: AppearanceConfig.font.ui
+                    font.weight: AppearanceConfig.font.weight.medium
+                    font.pixelSize: AppearanceConfig.font.size.md
                     opacity: acceptSelection.animationRunning ? 0 : 1
 
                     Behavior on opacity {

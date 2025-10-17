@@ -9,7 +9,7 @@ Singleton {
 
     Component.onCompleted: {
         // Try to load theme from a default location or config
-        let themePath = "/etc/nixos/nix/themes/dark-ethereal/default.nix"; // or read from config
+        let themePath = "/etc/nixos/nix/themes/trust-in-teto/default.nix"; // or read from config
         loadTheme(themePath);
     }
 

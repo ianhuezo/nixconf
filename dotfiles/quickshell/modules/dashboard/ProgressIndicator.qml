@@ -66,8 +66,9 @@ Item {
                 id: titleText
                 text: root.title
                 color: root.titleTextColor
-                font.pixelSize: 16
-                font.weight: Font.Medium
+                font.pixelSize: AppearanceConfig.font.size.md
+                font.weight: AppearanceConfig.font.weight.medium
+                font.family: AppearanceConfig.font.ui
                 width: parent.width
                 wrapMode: Text.WordWrap
                 horizontalAlignment: Text.AlignHCenter
@@ -152,7 +153,8 @@ Item {
                     Text {
                         text: Math.round(Math.max(0, Math.min(100, root.progress))) + "%"
                         color: root.percentageTextColor
-                        font.pixelSize: 16
+                        font.pixelSize: AppearanceConfig.font.size.md
+                        font.family: AppearanceConfig.font.mono
                         anchors.horizontalCenter: parent.horizontalCenter
                         visible: root.showPercentage
                     }

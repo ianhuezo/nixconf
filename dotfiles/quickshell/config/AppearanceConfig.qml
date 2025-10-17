@@ -32,12 +32,31 @@ Singleton {
     }
 
     readonly property QtObject font: QtObject {
-        readonly property string family: "JetBrains Mono Nerd Font"
+        // Font families
+        readonly property string mono: "JetBrains Mono Nerd Font"
+        readonly property string ui: "Inter" // Fallback: system default sans-serif
+        readonly property string display: "Inter" // For headings, can be different
+        
+        // Legacy support
+        readonly property string family: mono
+        
+        // Font sizes
         readonly property QtObject size: QtObject {
-            readonly property real sm: 16
-            readonly property real md: 20
-            readonly property real lg: 24
-            readonly property real xl: 32
+            readonly property real xs: 11
+            readonly property real sm: 14
+            readonly property real md: 16
+            readonly property real lg: 20
+            readonly property real xl: 24
+            readonly property real xxl: 32
+        }
+        
+        // Font weights
+        readonly property QtObject weight: QtObject {
+            readonly property int light: 300
+            readonly property int regular: 400
+            readonly property int medium: 500
+            readonly property int semibold: 600
+            readonly property int bold: 700
         }
     }
     readonly property QtObject transitions: QtObject {
