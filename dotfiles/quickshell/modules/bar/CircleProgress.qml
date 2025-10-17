@@ -45,6 +45,7 @@ Rectangle {
         width: 30
         height: 30
         anchors.verticalCenter: parent.verticalCenter
+        x: 0
 
         Canvas {
             id: progressCanvas
