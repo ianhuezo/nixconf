@@ -137,6 +137,18 @@ PanelWindow {
                 id: appCarousel
                 topLevelModel: root.carouselModel
                 containerBottomMargin: 32
+                onSelectionChanged: newIndex => {
+                    // Create a new array with updated selection
+                    root.carouselModel = root.carouselModel.map((item, i) => {
+                        return {
+                            appName: item.appName,
+                            iconLocation: item.iconLocation,
+                            mipmap: item.mipmap,
+                            loaderComponent: item.loaderComponent,
+                            selected: i === newIndex
+                        };
+                    });
+                }
             }
 
             Rectangle {

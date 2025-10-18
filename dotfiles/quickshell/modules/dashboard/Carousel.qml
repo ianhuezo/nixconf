@@ -8,6 +8,7 @@ Item {
     height: parent.height * 0.2
     width: parent.width * 0.8
     signal appRequested(var appName)
+    signal selectionChanged(int newIndex)
     readonly property var unfocusedScale: 0.6
     property var containerBottomMargin: 2
     required property var topLevelModel
@@ -27,13 +28,8 @@ Item {
         const totalItems = topLevelModel.length;
         const prevIndex = (currentIndex - 1 + totalItems) % totalItems;
 
-        // Update selection
-        topLevelModel[currentIndex].selected = false;
-        topLevelModel[prevIndex].selected = true;
-
-        // Force property binding update
-        topLevelModelChanged();
-        selectedIndexChanged();
+        // Notify parent to update selection
+        selectionChanged(prevIndex);
         appRequested(topLevelModel[prevIndex].appName);
     }
 
@@ -41,13 +37,8 @@ Item {
         const currentIndex = selectedIndex;
         const nextIndex = (currentIndex + 1) % topLevelModel.length;
 
-        // Update selection
-        topLevelModel[currentIndex].selected = false;
-        topLevelModel[nextIndex].selected = true;
-
-        // Force property binding update
-        topLevelModelChanged();
-        selectedIndexChanged();
+        // Notify parent to update selection
+        selectionChanged(nextIndex);
         appRequested(topLevelModel[nextIndex].appName);
     }
 
