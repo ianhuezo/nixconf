@@ -33,6 +33,9 @@ Item {
     property real shimmerWidth: 0.2
     property int shimmerCount: 3
 
+    // Border radius to match parent button
+    property real radius: 0
+
     anchors.fill: parent
     visible: active
 
@@ -64,6 +67,22 @@ Item {
                 onPaint: {
                     var ctx = getContext("2d");
                     ctx.clearRect(0, 0, width, height);
+                    ctx.save();
+
+                    // Create rounded rectangle path
+                    ctx.beginPath();
+                    var x = 0, y = 0, w = width, h = height, r = root.radius;
+                    ctx.moveTo(x + r, y);
+                    ctx.lineTo(x + w - r, y);
+                    ctx.arcTo(x + w, y, x + w, y + r, r);
+                    ctx.lineTo(x + w, y + h - r);
+                    ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+                    ctx.lineTo(x + r, y + h);
+                    ctx.arcTo(x, y + h, x, y + h - r, r);
+                    ctx.lineTo(x, y + r);
+                    ctx.arcTo(x, y, x + r, y, r);
+                    ctx.closePath();
+                    ctx.clip();
 
                     // Convert angle to radians
                     var angleRad = root.gradientAngle * Math.PI / 180;
@@ -92,6 +111,7 @@ Item {
 
                     ctx.fillStyle = gradient;
                     ctx.fillRect(0, 0, width, height);
+                    ctx.restore();
                 }
 
                 NumberAnimation on offset {

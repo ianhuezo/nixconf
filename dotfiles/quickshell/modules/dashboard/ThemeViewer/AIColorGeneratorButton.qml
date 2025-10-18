@@ -1,6 +1,7 @@
 import qs.components
 import QtQuick
 import qs.config
+import qs.services
 import Quickshell.Io
 
 IconButton {
@@ -13,6 +14,16 @@ IconButton {
     loading: colorGenerator.running
     disabled: colorGenerator.running
     signal colorsGenerated(var json)
+
+    // Use gradient loading effect with gold/orange colors
+    loadingEffectType: "gradient"
+    loadingPrimaryColor: Color.palette.base09
+    loadingSecondaryColor: Qt.rgba(Color.palette.base09.r, Color.palette.base09.g, Color.palette.base09.b, 0.1)
+
+    // Add active state glow when ready
+    active: wallpaperPath.length > 0 && !colorGenerator.running
+    stateEffectType: "glow"
+    stateActiveColor: Color.palette.base09
 
     onClicked: {
         if (wallpaperPath.length == 0) {

@@ -29,6 +29,9 @@ Item {
     // Transition speed
     property int transitionDuration: 300
 
+    // Border radius to match parent button
+    property real radius: 0
+
     readonly property color currentColor: active ? activeColor : inactiveColor
 
     anchors.fill: parent
@@ -59,7 +62,7 @@ Item {
                 color: "transparent"
                 border.color: root.currentColor
                 border.width: 1
-                radius: parent.radius || 0
+                radius: root.radius
                 visible: false
             }
 
@@ -91,7 +94,7 @@ Item {
             color: "transparent"
             border.color: root.currentColor
             border.width: root.active ? root.borderWidth : 0
-            radius: parent.radius || 0
+            radius: root.radius
 
             Behavior on border.width {
                 NumberAnimation {
@@ -117,7 +120,7 @@ Item {
             color: "transparent"
             border.color: root.currentColor
             border.width: 2
-            radius: parent.radius || 0
+            radius: root.radius
             opacity: root.active ? 1.0 : 0
 
             property real pulseIntensity: 1.0
@@ -171,7 +174,7 @@ Item {
                 color: "transparent"
                 border.color: root.currentColor
                 border.width: 1
-                radius: parent.radius || 0
+                radius: root.radius
 
                 Behavior on border.color {
                     ColorAnimation {

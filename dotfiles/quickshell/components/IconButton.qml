@@ -26,12 +26,23 @@ Rectangle {
     // Public properties - State
     property bool disabled: false
     property bool loading: false
+    property bool active: false // For active/inactive state indicators
+    property bool hovered: false // Internal hover state
+
+    // Composable effects - set these to customize loading/state effects
+    property string loadingEffectType: "spinner" // "gradient", "spinner", "pulse", "shimmer"
+    property string stateEffectType: "" // "glow", "border", "pulse", "shimmer", or "" for none
+    property string hoverEffectType: "glow" // Effect to show on hover
+    property color loadingPrimaryColor: Color.palette.base05
+    property color loadingSecondaryColor: "transparent"
+    property color stateActiveColor: Color.palette.base09
+    property color stateInactiveColor: Color.palette.base03
 
     // Public properties - Colors
     property color iconColor: disabled || loading ? Color.palette.base03 : Color.palette.base05
     property color textColor: disabled || loading ? Color.palette.base03 : Color.palette.base05
     property color backgroundColor: disabled || loading ? Color.palette.base00 : Color.palette.base02
-    property int buttonRadius: AppearanceConfig.calculateRadius(width, height, 'xl')
+    property int buttonRadius: AppearanceConfig.radius.md
 
     // Signals
     signal clicked
@@ -81,6 +92,46 @@ Rectangle {
         }
     }
 
+    // Composable loading effect overlay
+    ButtonLoadingEffect {
+        id: loadingEffect
+        active: root.loading
+        effectType: root.loadingEffectType
+        primaryColor: root.loadingPrimaryColor
+        secondaryColor: root.loadingSecondaryColor
+        radius: root.radius
+        anchors.fill: parent
+        z: 10
+    }
+
+    // Composable state effect (active/inactive indicator)
+    ButtonStateEffect {
+        id: stateEffect
+        active: root.active && !root.disabled && !root.loading
+        effectType: root.stateEffectType
+        activeColor: root.stateActiveColor
+        inactiveColor: root.stateInactiveColor
+        radius: root.radius
+        anchors.fill: parent
+        z: 5
+    }
+
+    // Hover effect - simple opacity change
+    Rectangle {
+        id: hoverOverlay
+        anchors.fill: parent
+        radius: root.radius
+        color: Color.palette.base05
+        opacity: root.hovered && !root.disabled && !root.loading ? 0.1 : 0
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 150
+                easing.type: Easing.OutQuad
+            }
+        }
+    }
+
     layer.enabled: true
     layer.effect: MultiEffect {
         shadowEnabled: true
@@ -89,56 +140,6 @@ Rectangle {
         shadowHorizontalOffset: 0
         shadowBlur: 0.4
         shadowOpacity: 0.6
-    }
-
-    // Loading spinner overlay
-    Item {
-        id: loadingSpinner
-        visible: root.loading
-        anchors.fill: parent
-
-        Canvas {
-            id: spinnerCanvas
-            anchors.fill: parent
-            rotation: 0
-
-            onPaint: {
-                var ctx = getContext("2d");
-                ctx.reset();
-
-                var centerX = width / 2;
-                var centerY = height / 2;
-                var radius = Math.min(width, height) / 2 - 2;
-
-                // Draw arc
-                ctx.strokeStyle = root.iconColor;
-                ctx.lineWidth = 2;
-                ctx.lineCap = "round";
-                ctx.beginPath();
-                ctx.arc(centerX, centerY, radius, 0, Math.PI * 1.5);
-                ctx.stroke();
-            }
-
-            RotationAnimator on rotation {
-                running: root.loading
-                from: 0
-                to: 360
-                duration: 1000
-                loops: Animation.Infinite
-            }
-
-            onVisibleChanged: {
-                if (visible)
-                    requestPaint();
-            }
-        }
-
-        Connections {
-            target: root
-            function onIconColorChanged() {
-                spinnerCanvas.requestPaint();
-            }
-        }
     }
 
     // Content container
@@ -215,8 +216,7 @@ Rectangle {
             if (root.disabled || root.loading) {
                 return;
             }
-            root.border.color = Color.palette.base05;
-            root.border.width = 1;
+            root.hovered = true;
 
             if (root.tooltip !== "") {
                 tooltipTimer.start();
@@ -224,8 +224,7 @@ Rectangle {
         }
 
         onExited: {
-            root.border.color = '';
-            root.border.width = 0;
+            root.hovered = false;
             tooltipTimer.stop();
             tooltipPopup.visible = false;
         }
