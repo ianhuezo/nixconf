@@ -60,19 +60,52 @@ Column {
                     workspaceRow.registerSwingAnimation(index, swingAnimation);
                 }
 
+                // Inactive workspace icon (always rendered to show the base icon)
                 Image {
-                    id: lampIcon
+                    id: inactiveLampIcon
                     anchors.centerIn: parent
                     sourceSize.width: parent.width * 1.5
                     sourceSize.height: parent.height * 1.5
                     fillMode: Image.PreserveAspectFit
                     mipmap: true
                     source: FileConfig.icons.workspace
-                    visible: true // Always visible - effects will handle inactive state
-
-                    // Swing animation
-
+                    visible: (index + 1) !== activeWsId
+                    layer.enabled: true
+                    layer.effect: MultiEffect {
+                        colorization: 1
+                        colorizationColor: Color.palette.base08
+                        shadowEnabled: true
+                        shadowColor: Color.palette.base08
+                        shadowHorizontalOffset: 0
+                        shadowVerticalOffset: 0
+                        shadowBlur: 0.5
+                        shadowOpacity: 0.5
+                    }
                 }
+
+                // Active workspace icon
+                Image {
+                    id: activeLampIcon
+                    anchors.centerIn: parent
+                    sourceSize.width: parent.width * 1.5
+                    sourceSize.height: parent.height * 1.5
+                    fillMode: Image.PreserveAspectFit
+                    mipmap: true
+                    source: FileConfig.icons.workspace
+                    visible: (index + 1) === activeWsId
+                    layer.enabled: true
+                    layer.effect: MultiEffect {
+                        blur: 0.2
+                        blurMax: 8
+                        brightness: 0.1
+                        shadowEnabled: true
+                        shadowColor: Color.palette.base09
+                        shadowHorizontalOffset: 0
+                        shadowVerticalOffset: 0
+                        shadowBlur: 1.0
+                    }
+                }
+
                 SequentialAnimation {
                     id: swingAnimation
                     loops: 1
@@ -116,45 +149,6 @@ Column {
                         duration: 250
                         easing.type: Easing.InOutQuad
                     }
-                }
-                // MultiEffect elements outside the Image to avoid weird interactions
-                MultiEffect {
-                    source: lampIcon
-                    anchors.fill: lampIcon
-                    colorization: 1
-                    colorizationColor: Color.palette.base08  // Errors, alerts - good for "off" state
-                    blur: 0.1
-                    blurMax: 4
-                    shadowEnabled: true
-                    shadowColor: Color.palette.base03  // Borders/separators/disabled elements
-                    shadowHorizontalOffset: 0
-                    shadowVerticalOffset: 0
-                    shadowBlur: 0.6
-                    visible: (index + 1) !== activeWsId
-                }
-
-                // Inactive lamp effect
-                MultiEffect {
-                    source: lampIcon
-                    anchors.fill: lampIcon
-                    colorization: 1
-                    colorizationColor: Color.palette.base08  // Errors, alerts - good for "off" state
-                    visible: (index + 1) !== activeWsId
-                }
-
-                // Glow effect for active lamp
-                MultiEffect {
-                    source: lampIcon
-                    anchors.fill: lampIcon
-                    blur: 0.2
-                    blurMax: 8
-                    brightness: 0.1
-                    shadowEnabled: true
-                    shadowColor: Color.palette.base09
-                    shadowHorizontalOffset: 0
-                    shadowVerticalOffset: 0
-                    shadowBlur: 1.0
-                    visible: (index + 1) === activeWsId
                 }
                 MouseArea {
                     anchors.fill: parent

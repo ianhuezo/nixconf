@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Window
+import qs.components
 
 Rectangle {
     id: container
@@ -38,34 +39,22 @@ Rectangle {
         Item {
             id: vizContainer
             height: parent.height
-            width: 166  // Move the explicit width here instead of in the Loader
-            Loader {
-                id: loader
-                sourceComponent: container.useCanvas ? waveComponent : barComponent
-                height: parent.height
-                anchors.fill: parent  // Fill the vizContainer
+            width: 166
+
+            AudioVisualizer {
+                id: visualizer
+                anchors.fill: parent
+                cavaValues: container.cavaValues
+                visualizerColor: container.waveColor
+                mode: container.useCanvas ? "wave" : "bars"
+                mirrored: true
+                sensitivity: container.useCanvas ? 1.0 : 0.5
             }
+
             MouseArea {
                 anchors.fill: parent
                 onClicked: container.toggleVisualization()
             }
-        }
-    }
-
-    Component {
-        id: waveComponent
-        WaveVisualizer {
-            cavaValues: container.cavaValues
-            waveColor: container.waveColor
-            height: parent.height
-        }
-    }
-    Component {
-        id: barComponent
-        BarsVisualizer {
-            cavaValues: container.cavaValues
-            barColor: container.waveColor
-            height: parent.height
         }
     }
 }
