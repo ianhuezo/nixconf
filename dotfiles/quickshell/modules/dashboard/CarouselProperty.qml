@@ -5,4 +5,5 @@ QtObject {
     property string iconLocation
     property bool selected
     property bool mipmap
+    property Component loaderComponent
 }

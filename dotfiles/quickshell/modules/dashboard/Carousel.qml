@@ -10,25 +10,7 @@ Item {
     signal appRequested(var appName)
     readonly property var unfocusedScale: 0.6
     property var containerBottomMargin: 2
-    property var topLevelModel: [
-        {
-            appName: 'Applications',
-            iconLocation: FileConfig.dashboardAppLauncher,
-            selected: true,
-            mipmap: false
-        },
-        {
-            appName: 'Youtube Converter',
-            iconLocation: FileConfig.youtubeConverter,
-            selected: false,
-            mipmap: true
-        },
-        {
-            appName: 'Desktop Theme Creator',
-            iconLocation: FileConfig.themeChooser,
-            selected: false
-        }
-    ]
+    required property var topLevelModel
 
     // Get the currently selected index
     property int selectedIndex: {

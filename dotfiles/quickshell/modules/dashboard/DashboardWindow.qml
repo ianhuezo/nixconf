@@ -28,18 +28,76 @@ PanelWindow {
 
     signal closeRequested
 
+    Component {
+        id: appViewerComponent
+        AppViewer {
+            id: mainAppViewer
+            onAppSelected: {
+                root.closeRequested();
+            }
+        }
+    }
+
+    Component {
+        id: youtubeComponent
+        YoutubeConversionContainer {
+            id: youtubeConverter
+        }
+    }
+
+    Component {
+        id: themeComponent
+        Theme {
+            id: themePicker
+
+            onFolderOpen: isOpen => {
+                console.log(isOpen);
+                root.currentWlrLayer = isOpen ? WlrLayer.Bottom : WlrLayer.Top;
+            }
+        }
+    }
+
+    property var carouselModel: [
+        {
+            appName: 'Applications',
+            iconLocation: FileConfig.dashboardAppLauncher,
+            selected: true,
+            mipmap: false,
+            loaderComponent: appViewerComponent
+        },
+        {
+            appName: 'Youtube Converter',
+            iconLocation: FileConfig.youtubeConverter,
+            selected: false,
+            mipmap: true,
+            loaderComponent: youtubeComponent
+        },
+        {
+            appName: 'Desktop Theme Creator',
+            iconLocation: FileConfig.themeChooser,
+            selected: false,
+            mipmap: true,
+            loaderComponent: themeComponent
+        }
+    ]
+
+    // Get the currently selected app data
+    property var selectedApp: {
+        for (let i = 0; i < carouselModel.length; i++) {
+            if (carouselModel[i].selected) {
+                return carouselModel[i];
+            }
+        }
+        return carouselModel[0];
+    }
+
     Item {
         id: contentItem
         anchors.fill: parent
         focus: true
         Keys.onEscapePressed: root.closeRequested()
         function isSearchBarActiveForComponent() {
-            let activeComponent = null;
-            if (appLoader.componentType === "Applications" && appViewerLoader.item) {
-                activeComponent = appViewerLoader.item;
-            } else if (appLoader.componentType === "Youtube Converter" && youtubeLoader.item) {
-                activeComponent = youtubeLoader.item;
-            }
+            let activeComponent = appLoader.item;
             return activeComponent && activeComponent.userText && activeComponent.userText.length > 0;
         }
         Keys.onPressed: event => {
@@ -77,9 +135,7 @@ PanelWindow {
             }
             Carousel {
                 id: appCarousel
-                onAppRequested: appName => {
-                    appLoader.componentType = appName;
-                }
+                topLevelModel: root.carouselModel
                 containerBottomMargin: 32
             }
 
@@ -90,57 +146,10 @@ PanelWindow {
                 width: parent.width - splashPanel.width
                 y: parent.y + appCarousel.height + appCarousel.containerBottomMargin
                 bottomLeftRadius: mainDrawArea.radius
-                Item {
+                Loader {
                     id: appLoader
-                    property string componentType: "Applications"
                     anchors.fill: parent
-
-                    Loader {
-                        id: appViewerLoader
-                        anchors.fill: parent
-                        visible: appLoader.componentType === "Applications"
-                        active: visible || appLoader.componentType === "Applications"
-
-                        sourceComponent: Component {
-                            AppViewer {
-                                id: mainAppViewer
-                                onAppSelected: {
-                                    root.closeRequested();
-                                }
-                            }
-                        }
-                    }
-
-                    Loader {
-                        id: youtubeLoader
-                        anchors.fill: parent
-                        visible: appLoader.componentType === "Youtube Converter"
-                        active: visible || appLoader.componentType === "Youtube Converter"
-
-                        sourceComponent: Component {
-                            YoutubeConversionContainer {
-                                id: youtubeConverter
-                            }
-                        }
-                    }
-
-                    Loader {
-                        id: desktopThemes
-                        anchors.fill: parent
-                        visible: appLoader.componentType === "Desktop Theme Creator"
-                        active: visible || appLoader.componentType === "Desktop Theme Creator"
-
-                        sourceComponent: Component {
-                            Theme {
-                                id: themePicker
-
-                                onFolderOpen: isOpen => {
-                                    console.log(isOpen);
-                                    root.currentWlrLayer = isOpen ? WlrLayer.Bottom : WlrLayer.Top;
-                                }
-                            }
-                        }
-                    }
+                    sourceComponent: root.selectedApp.loaderComponent
                 }
             }
         }
