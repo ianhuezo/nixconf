@@ -4,6 +4,7 @@ import QtQuick.Controls
 import QtQuick.Effects
 import qs.config
 import qs.services
+import qs.components
 
 Rectangle {
     id: circleProgressRoot
@@ -96,7 +97,7 @@ Rectangle {
             }
         }
 
-        Image {
+        ColorizedImage {
             source: circleProgressRoot.iconSource
             width: 15
             height: 15
@@ -104,15 +105,10 @@ Rectangle {
             sourceSize.height: 30
             antialiasing: true
             smooth: true
-            fillMode: Image.PreserveAspectFit
-            layer.enabled: true
             layer.textureSize: Qt.size(60, 60)  // Higher resolution for layer effect
             anchors.centerIn: parent
-            layer.effect: MultiEffect {
-                brightness: 1.0
-                colorization: 1.0
-                colorizationColor: circleProgressRoot.textColor // Use textColor for icon colorization
-            }
+            brightness: 1.0
+            iconColor: circleProgressRoot.textColor
         }
     }
 }

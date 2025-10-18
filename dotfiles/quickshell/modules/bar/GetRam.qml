@@ -1,35 +1,21 @@
 pragma Singleton
 
 import Quickshell
-import Quickshell.Io
 import QtQuick
+import qs.components
 
-// your singletons should always have Singleton as the type
 Singleton {
-    property real ram: 0
+    property real ram: poller.value
 
-    Process {
-        id: ramProc
-	command: ["sh", "-c", "echo \"scale=2; $(cat /proc/meminfo | awk '/MemAvailable/ {print $2}') / $(cat /proc/meminfo | awk '/MemTotal/ {print $2}')\" | bc"]
-        running: true
-
-        stdout: SplitParser {
-            onRead: data => {
-                const number = parseFloat(data);
-                if (number === "NaN") {
-                    ram = 0;
-                    return;
-                }
-
-                ram = Math.round(100 - parseFloat(data) * 100);
+    property MetricPoller poller: MetricPoller {
+        command: "echo \"scale=2; $(cat /proc/meminfo | awk '/MemAvailable/ {print $2}') / $(cat /proc/meminfo | awk '/MemTotal/ {print $2}')\" | bc"
+        pollInterval: 1000
+        parseFunction: (data) => {
+            const number = parseFloat(data);
+            if (isNaN(number)) {
+                return 0;
             }
+            return Math.round(100 - number * 100);
         }
-    }
-
-    Timer {
-        interval: 1000
-        running: true
-        repeat: true
-        onTriggered: ramProc.running = true
     }
 }

@@ -1,27 +1,15 @@
 pragma Singleton
 
 import Quickshell
-import Quickshell.Io
 import QtQuick
+import qs.components
 
-// your singletons should always have Singleton as the type
 Singleton {
-    property real gpu: 0
+    property real gpu: poller.value
 
-    Process {
-        id: gpuProc
-        command: ["sh", "-c", "echo $(nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader,nounits)"]
-        running: true
-
-        stdout: SplitParser {
-            onRead: data => gpu = data
-        }
-    }
-
-    Timer {
-        interval: 1000
-        running: true
-        repeat: true
-        onTriggered: gpuProc.running = true
+    property MetricPoller poller: MetricPoller {
+        command: "echo $(nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader,nounits)"
+        pollInterval: 1000
+        parseFunction: (data) => parseFloat(data)
     }
 }

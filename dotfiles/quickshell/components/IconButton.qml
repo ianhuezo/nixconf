@@ -155,19 +155,13 @@ Rectangle {
             width: root.iconSize
             height: root.iconSize
 
-            Image {
+            ColorizedImage {
                 id: svgImage
                 anchors.fill: parent
                 source: root.resolvedIconSource
                 sourceSize.width: root.iconSize
                 sourceSize.height: root.iconSize
-                fillMode: Image.PreserveAspectFit
-                visible: true
-                layer.enabled: true
-                layer.effect: MultiEffect {
-                    colorization: 1.0
-                    colorizationColor: root.iconColor
-                }
+                iconColor: root.iconColor
             }
         }
 

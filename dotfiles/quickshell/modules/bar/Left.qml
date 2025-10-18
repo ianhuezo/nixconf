@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Effects
 import qs.config
 import qs.services
+import qs.components
 
 Rectangle {
     id: leftSection
@@ -20,23 +21,19 @@ Rectangle {
             radius: 10
             color: 'transparent'
             
-            Image {
+            ColorizedImage {
                 id: nixosIcon
                 sourceSize.width: parent.width
                 sourceSize.height: parent.height
-                fillMode: Image.PreserveAspectFit
                 source: FileConfig.icons.nix
-                layer.enabled: true
-                layer.effect: MultiEffect {
-                    colorization: 0.8
-                    colorizationColor: Color.palette.base0D
-                    shadowEnabled: true
-                    shadowColor: Color.palette.base0C
-                    shadowVerticalOffset: 0
-                    shadowHorizontalOffset: 0
-                    shadowBlur: 1.5
-                    shadowOpacity: 0.9
-                }
+                colorization: 0.8
+                iconColor: Color.palette.base0D
+                enableShadow: true
+                shadowColor: Color.palette.base0C
+                shadowVerticalOffset: 0
+                shadowHorizontalOffset: 0
+                shadowBlur: 1.5
+                shadowOpacity: 0.9
             }
             
             // Focused glow effect using icon color
