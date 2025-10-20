@@ -221,6 +221,38 @@
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
+    extraConfig.pipewire."99-virtual-mic" = {
+      "context.modules" = [
+        # Virtual Microphone Output (where your script sends audio)
+        {
+          name = "libpipewire-module-null-sink";
+          args = {
+            "sink.name" = "VirtualMic";
+            "node.name" = "VirtualMic";
+            "node.description" = "Virtual Microphone Output";
+            "media.class" = "Audio/Sink";
+            "audio.position" = [
+              "FL"
+              "FR"
+            ];
+          };
+        }
+        # Virtual Microphone Input (what Discord/apps see as a microphone)
+        {
+          name = "libpipewire-module-remap-source";
+          args = {
+            "source.name" = "VirtualMicInput";
+            "node.name" = "VirtualMicInput";
+            "node.description" = "Virtual Microphone Input";
+            "remix.name" = "VirtualMic.monitor";
+            "audio.position" = [
+              "FL"
+              "FR"
+            ];
+          };
+        }
+      ];
+    };
     # If you want to use JACK applications, uncomment this
     #jack.enable = true;
 
