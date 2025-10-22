@@ -225,35 +225,30 @@
       "context.modules" = [
         # Virtual Microphone Output (where your script sends audio)
         {
-          name = "libpipewire-module-null-sink";
+          name = "libpipewire-module-loopback";
           args = {
-            "sink.name" = "VirtualMic";
             "node.name" = "VirtualMic";
             "node.description" = "Virtual Microphone Output";
-            "media.class" = "Audio/Sink";
-            "audio.position" = [
-              "FL"
-              "FR"
-            ];
-          };
-        }
-        # Virtual Microphone Input (what Discord/apps see as a microphone)
-        {
-          name = "libpipewire-module-remap-source";
-          args = {
-            "source.name" = "VirtualMicInput";
-            "node.name" = "VirtualMicInput";
-            "node.description" = "Virtual Microphone Input";
-            "remix.name" = "VirtualMic.monitor";
-            "audio.position" = [
-              "FL"
-              "FR"
-            ];
+            "capture.props" = {
+              "media.class" = "Audio/Sink";
+              "audio.position" = [
+                "FL"
+                "FR"
+              ];
+            };
+            "playback.props" = {
+              "node.name" = "VirtualMicInput";
+              "node.description" = "Virtual Microphone Input";
+              "media.class" = "Audio/Source";
+              "audio.position" = [
+                "FL"
+                "FR"
+              ];
+            };
           };
         }
       ];
-    };
-    # If you want to use JACK applications, uncomment this
+    }; # If you want to use JACK applications, uncomment this
     #jack.enable = true;
 
     # use the example session manager (no others are packaged yet so this is enabled by default,
