@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell.Services.Mpris
 import Quickshell.Io
+import QtQuick.Effects
 import qs.services
 import qs.modules.music_popup
 
@@ -14,9 +15,24 @@ Image {
     antialiasing: true                  // Improved rendering quality
     asynchronous: true                  // Load image asynchronously
     cache: true
+    visible: true
     layer.enabled: true
     layer.smooth: true
     layer.samples: 4  // Antialiasing samples
+    layer.effect: MultiEffect {
+        maskEnabled: true
+        maskThresholdMin: 0.5
+        maskSpreadAtMin: 1.0
+        maskSource: ShaderEffectSource {
+            sourceItem: Rectangle {
+                width: root.width
+                height: root.height
+                radius: 5
+            }
+            width: root.width
+            height: root.height
+        }
+    }
     // Separate property to determine the art URL
     property var currentPlayer: null
     property string defaultFilePath: root.getPreferredPlayer()?.trackArtUrl || ""
@@ -108,4 +124,27 @@ Image {
         // Rounded corners for placeholder too
         radius: 4
     }
+    // Item {
+    //     id: mask
+    //     width: root.width
+    //     height: root.height
+    //     layer.enabled: true
+    //     visible: false
+    //
+    //     Rectangle {
+    //         width: root.width
+    //         height: root.height
+    //         radius: width / 2
+    //         color: "white"  // Mask should use white/black, not palette colors
+    //     }
+    // }
+    //
+    // MultiEffect {
+    //     source: root
+    //     anchors.fill: root
+    //     maskEnabled: true
+    //     maskSource: mask
+    //     maskThresholdMin: 0.5
+    //     maskSpreadAtMin: 1.0
+    // }
 }
