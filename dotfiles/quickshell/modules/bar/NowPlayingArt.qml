@@ -91,6 +91,23 @@ Image {
     }
     // Use the stable property instead of the complex binding
     source: currentSource
+
+    // Handle HTTP/2 and other loading errors
+    onStatusChanged: {
+        if (status === Image.Error) {
+            console.warn("Failed to load album art:", currentSource);
+            // On error, try to reload or clear the source
+            if (currentSource && !currentSource.startsWith("/tmp/")) {
+                // If it's a remote URL that failed, trigger local extraction as fallback
+                const player = root.getPreferredPlayer();
+                if (player?.identity === "Spotify" && player?.trackTitle) {
+                    console.log("Attempting to load local album art for:", player.trackTitle);
+                    root.localTrackFile = player.trackTitle;
+                }
+            }
+        }
+    }
+
     ExtractMP3Image {
         id: extractMP3Image
         mediaFolder: '/home/ianh/Music'

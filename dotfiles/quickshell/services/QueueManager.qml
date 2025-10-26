@@ -4,15 +4,20 @@ import Quickshell
 import QtQuick
 
 Singleton {
+    id: queue
 
-    property list<var> jobs: [
-        //queue name it's a part of
-        //id of queue job
-        //args from whatever is needed to run the job
-        //
-        {}
-    ]
+    QtObject {
+        id: internal
+        property list<var> jobs: []
+        property int MAX_QUEUE_SIZE: 10
+    }
 
     function enqueue() {
+    }
+
+    function dequeue() {
+    }
+
+    function showQueue() {
     }
 }
