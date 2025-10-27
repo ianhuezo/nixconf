@@ -147,14 +147,26 @@ in
         dofile(colors_file)
       end
 
-      -- Auto-reload colors when the file changes
-      vim.api.nvim_create_autocmd("BufWritePost", {
-        pattern = colors_file,
-        callback = function()
-          dofile(colors_file)
-          vim.notify("Colors reloaded!", vim.log.levels.INFO)
-        end,
-      })
+      -- Watch colors.lua file for external changes using libuv file system watcher
+      local function setup_color_watcher()
+        local watch_handle = vim.loop.new_fs_event()
+        if watch_handle then
+          watch_handle:start(colors_file, {}, vim.schedule_wrap(function(err, filename, events)
+            if err then
+              vim.notify("Error watching colors file: " .. err, vim.log.levels.ERROR)
+              return
+            end
+            -- Reload colors when file changes
+            if vim.fn.filereadable(colors_file) == 1 then
+              dofile(colors_file)
+              vim.notify("Colors reloaded!", vim.log.levels.INFO)
+            end
+          end))
+        end
+      end
+
+      -- Start watching after a short delay to ensure file exists
+      vim.defer_fn(setup_color_watcher, 100)
 
       vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "${base16Colors.base09}", bold = true })
 
