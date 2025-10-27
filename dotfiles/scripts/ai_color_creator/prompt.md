@@ -552,3 +552,5 @@ Return **ONLY** a valid JSON object with this exact structure:
 19. **Inspired, Not Literal**: Create a richer color story
 
 Analyze the uploaded wallpaper and generate the color palette now.
+
+**CRITICAL: Your response must contain ONLY the JSON object specified in the Output Format section above. Do not include any explanatory text, analysis, reasoning, or commentary before or after the JSON. Start your response with `{` and end with `}`.**
