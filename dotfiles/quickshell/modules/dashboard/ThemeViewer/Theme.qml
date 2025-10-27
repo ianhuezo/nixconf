@@ -80,6 +80,7 @@ Item {
                             disabled: root.aiGeneratedTheme == null
                             property var jsonData: root.aiGeneratedTheme
                             property string filePath: ""
+                            property string savedThemePath: ""
                             onClicked: {
                                 if (!jsonData) {
                                     return;
@@ -125,6 +126,41 @@ Item {
                                     const nixString = jsonToNix(json, 2);
                                     const builtCommand = `mkdir -p ${filePath}/${folderName} && echo '${nixString}' > ${filePath}/${folderName}/default.nix`;
                                     return ["sh", "-c", builtCommand];
+                                }
+                                onExited: (code, status) => {
+                                    if (code === 0 && json) {
+                                        const folderName = json["slug"];
+                                        if (folderName) {
+                                            saveJsonButton.savedThemePath = `${filePath}/${folderName}/default.nix`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        IconButton {
+                            id: applyThemeButton
+                            iconName: "dialog-ok-apply"
+                            iconSize: 26
+                            z: -1
+                            toolTipContainer: rootArea
+                            iconColor: Color.palette.base0B
+                            tooltip: "Apply Theme" + (root.imagePath.length > 0 ? "\n& Wallpaper" : "")
+                            disabled: saveJsonButton.savedThemePath.length === 0
+
+                            // Add active state glow when theme is saved
+                            active: saveJsonButton.savedThemePath.length > 0
+                            stateEffectType: "glow"
+                            stateActiveColor: Color.palette.base0B
+
+                            onClicked: {
+                                if (saveJsonButton.savedThemePath.length > 0) {
+                                    Color.loadTheme(saveJsonButton.savedThemePath);
+
+                                    // Also apply wallpaper if one is selected
+                                    if (root.imagePath.length > 0) {
+                                        Swww.updateWallpaper(root.imagePath);
+                                    }
                                 }
                             }
                         }

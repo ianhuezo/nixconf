@@ -14,6 +14,33 @@ Singleton {
         return color.toString();
     }
 
+    // Watch /tmp directory for new kitty sockets using inotify
+    Process {
+        id: socketWatcher
+        command: ["sh", "-c", "inotifywait -m -e create -e moved_to /tmp 2>/dev/null | grep --line-buffered 'kitty-'"]
+        running: true
+
+        stdout: SplitParser {
+            onRead: data => {
+                // inotifywait output: /tmp/ CREATE kitty-12345
+                // Extract the socket name
+                let match = data.match(/kitty-\d+/);
+                if (match) {
+                    let socketPath = "/tmp/" + match[0];
+                    console.log("New Kitty instance detected:", socketPath);
+
+                    // Add to our list
+                    if (!root.kittySockets.includes(socketPath)) {
+                        root.kittySockets.push(socketPath);
+                    }
+
+                    // Apply colors to the new instance
+                    updateKittyInstance(socketPath, 0);
+                }
+            }
+        }
+    }
+
     // Find all kitty sockets
     function findKittySockets() {
         if (!findingSocketsInProgress) {
@@ -49,8 +76,8 @@ Singleton {
             return;
         }
 
-        // If we don't have the sockets yet, find them first
-        if (kittySockets.length === 0 && !findingSocketsInProgress) {
+        // Always refresh the socket list to catch new instances
+        if (!findingSocketsInProgress) {
             findKittySockets();
             return;
         }

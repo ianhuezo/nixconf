@@ -146,14 +146,17 @@ Singleton {
 
     FileView {
         id: themeFile
-        blockLoading: true
+        blockAllReads: true  // Force reload when path changes
     }
 
     function loadTheme(path: string): bool {
+        console.log("loadTheme() called with path:", path);
         try {
-            // Set the path and read the file
+            // Set the path and force reload to avoid caching
             themeFile.path = Qt.resolvedUrl(path);
+            themeFile.reload();  // Force fresh read of the file
             let fileContent = themeFile.text();
+            console.log("File content length:", fileContent ? fileContent.length : 0);
 
             if (!fileContent) {
                 console.warn("Failed to load theme file:", path);
@@ -163,6 +166,7 @@ Singleton {
 
             // Parse JSON
             let themeData = NixUtil.nixToJson(fileContent);
+            console.log("Parsed theme data:", JSON.stringify(themeData, null, 2));
 
             // Validate that it's a proper theme object
             if (!themeData.palette) {
@@ -173,6 +177,7 @@ Singleton {
 
             // Apply colors using EXPLICIT keys instead of Object.keys()
             let newPalette = themeData.palette;
+            console.log("About to apply palette - first color base00:", newPalette.base00);
             let baseKeys = ["base00", "base01", "base02", "base03", "base04", "base05", "base06", "base07", "base08", "base09", "base0A", "base0B", "base0C", "base0D", "base0E", "base0F"];
 
             for (let i = 0; i < baseKeys.length; i++) {
@@ -183,12 +188,20 @@ Singleton {
             }
 
             console.log("Theme loaded successfully:", path);
+            console.log("New palette base00:", palette.base00.toString(), "base0D:", palette.base0D.toString());
+            console.log("Triggering color updates for all services...");
 
-            // Trigger color updates for all services
-            Kitty.updateColors();
-            Mako.updateColors();
-            Hyprland.updateColors();
-            Neovim.updateColors();
+            // Trigger color updates for all services after palette changes propagate
+            Qt.callLater(() => {
+                Kitty.updateColors();
+                console.log("Kitty update triggered");
+                Mako.updateColors();
+                console.log("Mako update triggered");
+                Hyprland.updateColors();
+                console.log("Hyprland update triggered");
+                Neovim.updateColors();
+                console.log("Neovim update triggered");
+            });
 
             return true;
         } catch (error) {
