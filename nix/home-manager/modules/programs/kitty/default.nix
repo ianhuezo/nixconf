@@ -29,6 +29,10 @@ in
 
     programs.kitty = {
       enable = true;
+      settings = {
+        allow_remote_control = "yes";
+        listen_on = "unix:/tmp/kitty";
+      };
       extraConfig = ''
         font_family Maple Mono NF CN
         bold_font Maple Mono NF CN
@@ -38,8 +42,6 @@ in
         map ctrl+shift+[ no_op
         map ctrl+shift+] no_op
         background_opacity 0.85
-        allow_remote_control yes
-        listen_on unix:/tmp/kitty
         foreground #${cfg.colorScheme.palette.base05} 
         background #${cfg.colorScheme.palette.base00} 
         # grayish
