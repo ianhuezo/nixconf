@@ -10,9 +10,10 @@ IconButton {
 
     tooltip: "Generate" + "\n" + "Theme"
     property string wallpaperPath: ""
+    property bool useClaude: true
     property var apiKey: JSON.parse(jsonFile.text())['apiKey'] ?? ""
-    loading: colorGenerator.running
-    disabled: colorGenerator.running
+    loading: geminiGenerator.running || claudeGenerator.running
+    disabled: geminiGenerator.running || claudeGenerator.running
     signal colorsGenerated(var json)
 
     // Use gradient loading effect with gold/orange colors
@@ -21,7 +22,7 @@ IconButton {
     loadingSecondaryColor: Qt.rgba(Color.palette.base09.r, Color.palette.base09.g, Color.palette.base09.b, 0.1)
 
     // Add active state glow when ready
-    active: wallpaperPath.length > 0 && !colorGenerator.running
+    active: wallpaperPath.length > 0 && !geminiGenerator.running && !claudeGenerator.running
     stateEffectType: "glow"
     stateActiveColor: Color.palette.base09
 
@@ -30,20 +31,27 @@ IconButton {
             console.error("A path must be provided to generate a wallpaper color configuration");
             return;
         }
-        if (apiKey.length == 0) {
-            console.error("API Key could not be read");
-        }
-        if (!colorGenerator.running) {
-            console.log("starting color generation");
-            colorGenerator.wallpaperPath = wallpaperPath;
-            colorGenerator.geminiAPIKey = apiKey;
-            colorGenerator.running = true;
+
+        if (useClaude) {
+            console.log("starting Claude color generation");
+            claudeGenerator.wallpaperPath = wallpaperPath;
+            claudeGenerator.running = true;
+        } else {
+            if (apiKey.length == 0) {
+                console.error("API Key could not be read");
+                return;
+            }
+            console.log("starting Gemini color generation");
+            geminiGenerator.wallpaperPath = wallpaperPath;
+            geminiGenerator.geminiAPIKey = apiKey;
+            geminiGenerator.running = true;
         }
     }
 
     onWallpaperPathChanged: data => {
         console.log(`Wallpaper path changed to ${wallpaperPath}`);
     }
+
     FileView {
         id: jsonFile
         path: FileConfig.environment.geminiAPIKeyPath
@@ -51,15 +59,28 @@ IconButton {
     }
 
     GeminiColorGenerator {
-        id: colorGenerator
+        id: geminiGenerator
         onClosed: jsonColors => {
             root.colorsGenerated(jsonColors);
-            colorGenerator.running = false;
+            geminiGenerator.running = false;
         }
         wallpaperPath: root.wallpaperPath
         onError: error => {
             console.debug(`${error}`);
-            colorGenerator.running = false;
+            geminiGenerator.running = false;
+        }
+    }
+
+    ClaudeColorGenerator {
+        id: claudeGenerator
+        onClosed: jsonColors => {
+            root.colorsGenerated(jsonColors);
+            claudeGenerator.running = false;
+        }
+        wallpaperPath: root.wallpaperPath
+        onError: error => {
+            console.debug(`${error}`);
+            claudeGenerator.running = false;
         }
     }
 }
