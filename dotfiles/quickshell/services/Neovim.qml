@@ -99,7 +99,7 @@ base16.setup({
 `;
 
         // Write to ~/.config/nvim/colors.lua using a shell command
-        let cmd = ["sh", "-c", "mkdir -p ~/.config/nvim && cat > ~/.config/nvim/colors.lua << 'LUAEOF'\\n" + luaContent + "\\nLUAEOF"];
+        let cmd = ["sh", "-c", "mkdir -p ~/.config/nvim && cat > ~/.config/nvim/colors.lua << 'LUAEOF'\n" + luaContent + "\nLUAEOF"];
 
         let processQml = `
             import Quickshell

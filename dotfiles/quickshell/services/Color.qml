@@ -195,8 +195,8 @@ Singleton {
             Qt.callLater(() => {
                 Kitty.updateColors();
                 console.log("Kitty update triggered");
-                Mako.updateColors();
-                console.log("Mako update triggered");
+                // Mako.updateColors();
+                // console.log("Mako update triggered");
                 Hyprland.updateColors();
                 console.log("Hyprland update triggered");
                 // Neovim.updateColors();
