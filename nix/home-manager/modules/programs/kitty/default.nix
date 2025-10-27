@@ -38,6 +38,8 @@ in
         map ctrl+shift+[ no_op
         map ctrl+shift+] no_op
         background_opacity 0.85
+        allow_remote_control yes
+        listen_on unix:/tmp/kitty
         foreground #${cfg.colorScheme.palette.base05} 
         background #${cfg.colorScheme.palette.base00} 
         # grayish

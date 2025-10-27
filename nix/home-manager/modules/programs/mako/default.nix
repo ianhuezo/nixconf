@@ -28,6 +28,8 @@ in
         padding=10,5,10,5
         border-color=#${config.colorScheme.palette.base0C}
         border-size=2
+
+        [include ${config.home.homeDirectory}/.config/mako/colors.conf]
       '';
     };
   };

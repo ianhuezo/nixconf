@@ -7,6 +7,6 @@ self: super: {
       hash = "sha256-uQ+iosjjs6dUT8MtnFwubJqp85pBtBYkmIXTlRGufQw=";
     };
 
-    npmDepsHash = "sha256-g03tfNJjx/KIUu14/mqranKR4G8mo9ig74iRgCdiJuE=";
+    npmDepsHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   });
 }

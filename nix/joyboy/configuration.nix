@@ -176,8 +176,8 @@
       noto-fonts-cjk-sans
       noto-fonts-emoji
       maple-mono.NF-CN
-    ]
-    ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
+      nerd-fonts.jetbrains-mono
+    ];
 
   # Enable steam
   programs.steam = {

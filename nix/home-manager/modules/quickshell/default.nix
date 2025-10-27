@@ -20,9 +20,12 @@ in
   config = mkIf (cfg.enable && isLinux && hasQuickshell) {
     home.packages = [
       inputs.quickshell.packages.${pkgs.system}.default
-      pkgs.qt6.full
+      pkgs.qt6.qtbase
       pkgs.qt6.qtdeclarative
-      #TODO: These aren't all the deps.  I need to also look at the configuration.nix
+      pkgs.qt6.qtsvg
+      pkgs.qt6.qtimageformats
+      pkgs.qt6.qtmultimedia
+      pkgs.qt6.qt5compat
     ];
 
     home.file.".config/quickshell".source = config.lib.file.mkOutOfStoreSymlink quickshellPath;

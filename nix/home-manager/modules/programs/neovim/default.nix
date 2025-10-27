@@ -141,6 +141,20 @@ in
     ));
 
     programs.nixvim.extraConfigLua = ''
+      -- Source dynamic colors if they exist
+      local colors_file = vim.fn.expand('${config.home.homeDirectory}/.config/nvim/colors.lua')
+      if vim.fn.filereadable(colors_file) == 1 then
+        dofile(colors_file)
+      end
+
+      -- Auto-reload colors when the file changes
+      vim.api.nvim_create_autocmd("BufWritePost", {
+        pattern = colors_file,
+        callback = function()
+          dofile(colors_file)
+          vim.notify("Colors reloaded!", vim.log.levels.INFO)
+        end,
+      })
 
       vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "${base16Colors.base09}", bold = true })
 

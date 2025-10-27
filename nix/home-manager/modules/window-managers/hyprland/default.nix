@@ -11,6 +11,7 @@ let
   cfg = config.modules.hyprland;
   leftMonitor = "HDMI-A-1";
   rightMonitor = "DP-2";
+  quickshellPath = "/etc/nixos/dotfiles/quickshell/shell.qml";
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
     xrandr --output DP-2 --primary & disown
     hyprlock & disown
@@ -24,7 +25,7 @@ let
     nm-applet --indicator & disown
     systemctl --user import-environment XDG_CURRENT_DESKTOP XDG_SESSION_TYPE & disown
     sleep 1
-    QS_ICON_THEME="Tela-dark" quickshell & disown
+    QS_ICON_THEME="Tela-dark" quickshell -p ${quickshellPath} & disown
   '';
 
 in
@@ -111,7 +112,7 @@ in
           "10,monitor:${leftMonitor}"
         ];
         "$mod" = "SUPER";
-        "$menu" = "qs ipc call dashboard toggleDashboard";
+        "$menu" = "qs ipc -p ${quickshellPath} call dashboard toggleDashboard";
         binds.allow_workspace_cycles = true;
         # binds.allow_pin_fullscreen = false;
         bindm = [
@@ -128,7 +129,7 @@ in
           "$mod SHIFT, S, exec, hyprshot -m region --clipboard-only"
           # "CTRL, TAB, overview:toggle"
           "$mod, Q, killactive"
-          "$mod, B, exec, qs ipc call bar toggleBar"
+          "$mod, B, exec, qs ipc -p ${quickshellPath} call bar toggleBar"
           "$mod SHIFT, Q, exec,loginctl terminate-user $USER"
           "$mod SHIFT, F, fullscreen"
           "$mod, N, exec, hyprctl dispatch togglefloating"
