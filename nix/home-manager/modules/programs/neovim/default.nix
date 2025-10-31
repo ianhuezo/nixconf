@@ -51,7 +51,7 @@ let
 in
 {
   imports = [
-    inputs.nixvim.homeManagerModules.nixvim
+    inputs.nixvim.homeModules.nixvim
 
   ];
 
@@ -359,12 +359,14 @@ in
           };
         };
       };
-      presence-nvim = {
+      presence = {
         enable = true;
-        debounceTimeout = 30;
-        blacklist = [
-          "^%.env"
-        ];
+        settings = {
+          debounce_timeout = 30;
+          blacklist = [
+            "^%.env"
+          ];
+        };
       };
       bufferline = {
         enable = true;
