@@ -30,23 +30,19 @@ Process {
                 if (claudeResponse.result) {
                     // Parse the nested JSON string in the result field
                     try {
-                        // Strip markdown code fences if present (```json\n...\n```)
+                        // Extract JSON from markdown code fences if present
                         let resultText = claudeResponse.result.trim();
 
-                        // Remove leading ```json or ``` and trailing ```
-                        if (resultText.startsWith('```')) {
-                            // Find the first newline after the opening fence
-                            const firstNewline = resultText.indexOf('\n');
-                            if (firstNewline !== -1) {
-                                resultText = resultText.substring(firstNewline + 1);
+                        // Look for JSON code block anywhere in the text (```json\n...\n```)
+                        const jsonBlockMatch = resultText.match(/```json\s*\n([\s\S]*?)\n```/);
+                        if (jsonBlockMatch) {
+                            resultText = jsonBlockMatch[1].trim();
+                        } else {
+                            // Fallback: try generic code fences (```\n...\n```)
+                            const codeBlockMatch = resultText.match(/```\s*\n([\s\S]*?)\n```/);
+                            if (codeBlockMatch) {
+                                resultText = codeBlockMatch[1].trim();
                             }
-
-                            // Remove trailing ```
-                            if (resultText.endsWith('```')) {
-                                resultText = resultText.substring(0, resultText.length - 3);
-                            }
-
-                            resultText = resultText.trim();
                         }
 
                         const jsonData = JSON.parse(resultText);
