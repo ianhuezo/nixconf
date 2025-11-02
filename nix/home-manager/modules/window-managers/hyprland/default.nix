@@ -47,6 +47,7 @@ in
     home.packages = [
       inputs.hyprland-qtutils.packages.${pkgs.system}.default
       inputs.swww.packages.${pkgs.system}.swww
+      inputs.hexecute.packages.${pkgs.system}.default
       pkgs.slurp
       pkgs.grim
     ];
@@ -112,6 +113,8 @@ in
           "10,monitor:${leftMonitor}"
         ];
         "$mod" = "SUPER";
+        #bound to extra mouse button
+        "$mod1" = "Super_L";
         "$menu" = "qs ipc -p ${quickshellPath} call dashboard toggleDashboard";
         binds.allow_workspace_cycles = true;
         # binds.allow_pin_fullscreen = false;
@@ -133,6 +136,7 @@ in
           "$mod SHIFT, Q, exec,loginctl terminate-user $USER"
           "$mod SHIFT, F, fullscreen"
           "$mod, N, exec, hyprctl dispatch togglefloating"
+          ", mouse:276, exec, hexecute"
           #mod with left mouse moves windows
           ", Print, exec, grim -g \"$(slurp -d)\" - | tee ~/Pictures/screenshot.png | wl-copy" # Kitty specific open another kitty terminal instead of splitting the kitty terminal
           "CTRL_SHIFT, Return, exec, kitty --directory=$HOME"

@@ -34,6 +34,10 @@
     hyprland-qtutils = {
       url = "github:hyprwm/hyprland-qtutils";
     };
+    hexecute = {
+      url = "github:ThatOtherAndrew/Hexecute";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
