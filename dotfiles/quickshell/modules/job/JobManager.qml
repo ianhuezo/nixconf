@@ -5,6 +5,9 @@ import Quickshell
 Singleton {
     id: jobManager
 
+    // Base path for job runners
+    property string jobRunnersPath: "runners/"
+
     // Job type registry
     property var jobComponents: ({
             "YoutubeConversion": "YoutubeConversionJob.qml",
@@ -40,7 +43,7 @@ Singleton {
         }
 
         // Create job component
-        const component = Qt.createComponent("jobs/" + componentPath);
+        const component = Qt.createComponent(jobRunnersPath + componentPath);
 
         if (component.status === Component.Error) {
             console.error("Error loading job component:", component.errorString());

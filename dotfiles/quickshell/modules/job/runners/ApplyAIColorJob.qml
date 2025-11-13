@@ -1,6 +1,6 @@
 import QtQuick
 import Quickshell.Io
-import "." as Jobs
+import ".." as Jobs
 
 Jobs.BaseJob {
     id: job
