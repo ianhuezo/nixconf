@@ -1,8 +1,8 @@
-import QtQuick
-
 pragma Singleton
+import QtQuick
+import Quickshell
 
-QtObject {
+Singleton {
     id: jobQueue
 
     // Configuration
@@ -25,7 +25,7 @@ QtObject {
     signal jobStarted(var job)
     signal jobCompleted(var job, var result)
     signal jobFailed(var job, string error)
-    signal queueEmpty()
+    signal queueEmpty
 
     // Public API
 
@@ -48,8 +48,8 @@ QtObject {
 
         // Connect to job signals
         job.started.connect(() => _onJobStarted(job));
-        job.completed.connect((result) => _onJobCompleted(job, result));
-        job.failed.connect((error) => _onJobFailed(job, error));
+        job.completed.connect(result => _onJobCompleted(job, result));
+        job.failed.connect(error => _onJobFailed(job, error));
 
         // Try to start immediately if slots available
         _processQueue();
@@ -123,15 +123,18 @@ QtObject {
 
         // Check running jobs first
         let job = runningJobs.find(j => j.contextId === contextId);
-        if (job) return job;
+        if (job)
+            return job;
 
         // Check queued jobs
         job = queuedJobs.find(j => j.contextId === contextId);
-        if (job) return job;
+        if (job)
+            return job;
 
         // Check completed jobs
         job = completedJobs.find(j => j.contextId === contextId);
-        if (job) return job;
+        if (job)
+            return job;
 
         return null;
     }
@@ -151,9 +154,7 @@ QtObject {
             completed: completedJobs.length,
             totalProcessed: totalJobsProcessed,
             totalFailed: totalJobsFailed,
-            successRate: totalJobsProcessed > 0 ?
-                ((totalJobsProcessed - totalJobsFailed) / totalJobsProcessed * 100).toFixed(1) + "%" :
-                "N/A"
+            successRate: totalJobsProcessed > 0 ? ((totalJobsProcessed - totalJobsFailed) / totalJobsProcessed * 100).toFixed(1) + "%" : "N/A"
         };
     }
 
@@ -185,15 +186,18 @@ QtObject {
     function _findJobById(jobId) {
         // Search in running jobs
         let job = runningJobs.find(j => j.jobId === jobId);
-        if (job) return job;
+        if (job)
+            return job;
 
         // Search in queued jobs
         job = queuedJobs.find(j => j.jobId === jobId);
-        if (job) return job;
+        if (job)
+            return job;
 
         // Search in completed jobs
         job = completedJobs.find(j => j.jobId === jobId);
-        if (job) return job;
+        if (job)
+            return job;
 
         return null;
     }

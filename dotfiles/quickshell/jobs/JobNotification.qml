@@ -1,9 +1,8 @@
-import QtQuick
-import Quickshell.Io
-
 pragma Singleton
+import QtQuick
+import Quickshell
 
-QtObject {
+Singleton {
     id: jobNotification
 
     // Configuration
@@ -49,24 +48,13 @@ QtObject {
 
     // Send custom notification
     function sendCustomNotification(title, body, icon, imagePath, urgency, expireTime) {
-        _sendNotification(
-            title || "Notification",
-            body || "",
-            icon || "dialog-information",
-            imagePath || "",
-            urgency || "normal",
-            expireTime !== undefined ? expireTime : defaultExpireTime
-        );
+        _sendNotification(title || "Notification", body || "", icon || "dialog-information", imagePath || "", urgency || "normal", expireTime !== undefined ? expireTime : defaultExpireTime);
     }
 
     // Private method to send notification via notify-send
     function _sendNotification(title, body, icon, imagePath, urgency, expireTime) {
         // Build notify-send command
-        let args = [
-            "--app-name=" + appName,
-            "--icon=" + icon,
-            "--urgency=" + urgency
-        ];
+        let args = ["--app-name=" + appName, "--icon=" + icon, "--urgency=" + urgency];
 
         // Add expire time if specified
         if (expireTime > 0) {
@@ -104,7 +92,7 @@ QtObject {
 
         // Handle errors
         if (process.stderr) {
-            process.stderr.read.connect((data) => {
+            process.stderr.read.connect(data => {
                 if (data && data.length > 0) {
                     console.warn("Notification error:", data);
                 }
@@ -112,7 +100,7 @@ QtObject {
         }
 
         // Cleanup on completion
-        process.finished.connect((exitCode) => {
+        process.finished.connect(exitCode => {
             if (exitCode !== 0) {
                 console.warn("notify-send exited with code:", exitCode);
             }
@@ -142,7 +130,7 @@ QtObject {
 
         let available = false;
 
-        testProcess.finished.connect((exitCode) => {
+        testProcess.finished.connect(exitCode => {
             available = (exitCode === 0);
             if (!available) {
                 console.warn("notify-send not found. Install libnotify for notifications.");
@@ -152,11 +140,5 @@ QtObject {
 
         testProcess.running = true;
         return available;
-    }
-
-    // Component initialization
-    Component.onCompleted: {
-        // Optional: Test notification support on startup
-        // testNotifySupport();
     }
 }

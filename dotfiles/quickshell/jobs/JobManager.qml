@@ -1,25 +1,19 @@
+pragma Singleton
 import QtQuick
 import Quickshell
-import Quickshell.Io
-import "." as Jobs
 
-pragma Singleton
-
-QtObject {
+Singleton {
     id: jobManager
 
     // Job type registry
     property var jobComponents: ({
-        "YoutubeConversion": "YoutubeConversionJob.qml",
-        "SaveAIColorFile": "SaveAIColorFileJob.qml",
-        "ApplyAIColor": "ApplyAIColorJob.qml"
-    })
+            "YoutubeConversion": "YoutubeConversionJob.qml",
+            "SaveAIColorFile": "SaveAIColorFileJob.qml",
+            "ApplyAIColor": "ApplyAIColorJob.qml"
+        })
 
     // Job ID counter
     property int _nextJobId: 0
-
-    // Button registry (maps contextId to button component)
-    property var _buttonRegistry: ({})
 
     // Signals
     signal jobEnqueued(var job)
@@ -78,14 +72,14 @@ QtObject {
             _onJobProgressUpdated(job, percent, message);
         });
 
-        job.completed.connect((result) => {
+        job.completed.connect(result => {
             _onJobCompleted(job, result);
             if (onComplete) {
                 onComplete(result);
             }
         });
 
-        job.failed.connect((error) => {
+        job.failed.connect(error => {
             _onJobFailed(job, error);
         });
 
@@ -96,11 +90,7 @@ QtObject {
             jobEnqueued(job);
 
             // Send notification
-            Jobs.JobNotification.sendJobStarted(
-                job.jobName || job.jobType,
-                job.jobId,
-                job.notificationIcon
-            );
+            Jobs.JobNotification.sendJobStarted(job.jobName || job.jobType, job.jobId, job.notificationIcon);
 
             return jobId;
         } else {
@@ -108,48 +98,6 @@ QtObject {
             job.destroy();
             return -1;
         }
-    }
-
-    /**
-     * Enqueue a job from an IconButton component
-     * @param buttonComponent - The IconButton instance
-     * @returns Job ID or -1 on error
-     */
-    function enqueueJobForButton(buttonComponent) {
-        if (!buttonComponent) {
-            console.error("Invalid button component");
-            return -1;
-        }
-
-        if (!buttonComponent.canJobify || !buttonComponent.jobType) {
-            console.error("Button is not jobifiable");
-            return -1;
-        }
-
-        // Get job args from button
-        const args = buttonComponent.jobArgs ? buttonComponent.jobArgs() : [];
-        const contextId = buttonComponent.jobContextId;
-
-        // Register button for updates
-        if (contextId && contextId.length > 0) {
-            _buttonRegistry[contextId] = buttonComponent;
-
-            // Set button to running state
-            buttonComponent._setJobRunning(true);
-        }
-
-        // Enqueue job
-        return enqueueJob(
-            buttonComponent.jobType,
-            args,
-            contextId,
-            (result) => {
-                // Update button with result
-                if (buttonComponent._setJobCompleted) {
-                    buttonComponent._setJobCompleted(result);
-                }
-            }
-        );
     }
 
     /**
@@ -192,11 +140,7 @@ QtObject {
         }
 
         // Re-enqueue with same parameters
-        return enqueueJob(
-            job.jobType,
-            job.args,
-            job.contextId
-        );
+        return enqueueJob(job.jobType, job.args, job.contextId);
     }
 
     /**
@@ -238,65 +182,22 @@ QtObject {
 
     function _onJobStarted(job) {
         jobStarted(job);
-
-        // Update button if registered
-        const button = _buttonRegistry[job.contextId];
-        if (button && button._setJobRunning) {
-            button._setJobRunning(true);
-        }
     }
 
     function _onJobProgressUpdated(job, percent, message) {
-        // Update button progress if registered
-        const button = _buttonRegistry[job.contextId];
-        if (button && button._updateJobProgress) {
-            button._updateJobProgress(percent);
-        }
-
-        // Send progress notification if enabled
         if (job.enableProgressNotifications) {
-            Jobs.JobNotification.sendJobProgress(
-                job.jobName || job.jobType,
-                percent,
-                message,
-                job.notificationIcon
-            );
+            Jobs.JobNotification.sendJobProgress(job.jobName || job.jobType, percent, message, job.notificationIcon);
         }
     }
 
     function _onJobCompleted(job, result) {
         jobCompleted(job, result);
-
-        // Update button if registered
-        const button = _buttonRegistry[job.contextId];
-        if (button && button._setJobCompleted) {
-            button._setJobCompleted(result);
-        }
-
-        // Send completion notification
-        Jobs.JobNotification.sendJobCompleted(
-            job.jobName || job.jobType,
-            result,
-            job.notificationImage,
-            job.notificationIcon
-        );
+        Jobs.JobNotification.sendJobCompleted(job.jobName || job.jobType, result, job.notificationImage, job.notificationIcon);
     }
 
     function _onJobFailed(job, error) {
         jobFailed(job, error);
-
-        // Update button if registered
-        const button = _buttonRegistry[job.contextId];
-        if (button && button._setJobRunning) {
-            button._setJobRunning(false);
-        }
-
-        // Send failure notification
-        Jobs.JobNotification.sendJobFailed(
-            job.jobName || job.jobType,
-            error,
-            "critical"
-        );
+        Jobs.JobNotification.sendJobFailed(job.jobName || job.jobType, error, "critical");
     }
 
     Component.onCompleted: {
