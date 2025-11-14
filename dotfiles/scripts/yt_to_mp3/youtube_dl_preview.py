@@ -8,6 +8,7 @@ from datetime import datetime
 import hashlib
 import re
 import glob
+import subprocess
 
 current_time = datetime.now().strftime("%Y%m%d%H%M%S")
 hash_input = current_time.encode()
@@ -72,6 +73,28 @@ def extract_metadata(url):
         print(json.dumps(status, ensure_ascii=False))
         sys.exit(1)
 
+def crop_to_square(image_path):
+    """Crop image to square centered on the original image"""
+    try:
+        if not os.path.exists(image_path):
+            return False
+
+        # Use FFmpeg to crop to a square centered on the image
+        # crop=min(iw,ih):min(iw,ih) creates a square with size equal to the smaller dimension
+        temp_path = image_path + ".temp.png"
+        result = subprocess.run([
+            "ffmpeg", "-i", image_path,
+            "-vf", "crop=min(iw\\,ih):min(iw\\,ih)",
+            "-y", temp_path
+        ], capture_output=True, text=True)
+
+        if result.returncode == 0 and os.path.exists(temp_path):
+            os.replace(temp_path, image_path)
+            return True
+        return False
+    except Exception as e:
+        return False
+
 def progress_hook(d):
     """Improved progress callback with regex and path pre-generation"""
     try:
@@ -79,7 +102,7 @@ def progress_hook(d):
             # Regex pattern to handle various percentage formats
             percent_str = d.get("_percent_str", "0%")
             match = re.search(r"(\d+[\.,]?\d*)%?", percent_str)
-            
+
             if match:
                 percent_value = match.group(1).replace(',', '.')
                 status["percentage"] = min(100, max(0, round(float(percent_value))))
@@ -183,13 +206,17 @@ def main():
                 # Look for any png file with our hash
                 png_files = glob.glob(f"/tmp/*_{sha_hash}.png")
                 thumbnail_path = png_files[0] if png_files else ""
-            
+
+            # Crop thumbnail to square if it exists
+            if thumbnail_path and os.path.exists(thumbnail_path):
+                crop_to_square(thumbnail_path)
+
             # Update status with verified paths
             status.update({
                 "audio_path": audio_path if os.path.exists(audio_path) else "",
                 "thumbnail_path": thumbnail_path if os.path.exists(thumbnail_path) else ""
             })
-            
+
             print(json.dumps(status, ensure_ascii=False))
             
     except Exception as e:
