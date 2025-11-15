@@ -150,10 +150,10 @@ def analyze_wallpaper(file_uri, file_path, prompt, api_key, quiet=False):
             ]
         }],
         "generationConfig": {
-            "temperature": 0.7,
-            "topK": 40,
-            "topP": 0.95,
-            "maxOutputTokens": 8192,
+              "temperature": 1.0,
+              "topK": 64,
+              "topP": 0.95,
+              "maxOutputTokens": 8192
         }
     }
     
