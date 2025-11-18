@@ -31,11 +31,6 @@
     fsType = "ext4";
   };
 
-  fileSystems."/mnt/storage" = {
-    device = "/dev/disk/by-uuid/b9fb163b-a1e3-4494-b357-a3dbd0f6393f";
-    fsType = "ext4";
-  };
-
   fileSystems."/boot" = {
     device = "/dev/disk/by-uuid/EF00-84A5";
     fsType = "vfat";
@@ -43,6 +38,16 @@
       "fmask=0077"
       "dmask=0077"
     ];
+  };
+
+  fileSystems."/mnt/storage" = {
+    device = "/dev/disk/by-uuid/b9fb163b-a1e3-4494-b357-a3dbd0f6393f";
+    fsType = "ext4";
+  };
+
+  fileSystems."/home/ianh/nvme2" = {
+    device = "/mnt/storage";
+    options = [ "bind" ];
   };
 
   swapDevices = [ ];

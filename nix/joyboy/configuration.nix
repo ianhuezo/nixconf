@@ -165,19 +165,17 @@
     package = config.boot.kernelPackages.nvidiaPackages.beta;
   };
 
-  fonts.packages =
-    with pkgs;
-    [
-      meslo-lgs-nf
-      jetbrains-mono
-      font-awesome
-      inter
-      noto-fonts
-      noto-fonts-cjk-sans
-      noto-fonts-emoji
-      maple-mono.NF-CN
-      nerd-fonts.jetbrains-mono
-    ];
+  fonts.packages = with pkgs; [
+    meslo-lgs-nf
+    jetbrains-mono
+    font-awesome
+    inter
+    noto-fonts
+    noto-fonts-cjk-sans
+    noto-fonts-emoji
+    maple-mono.NF-CN
+    nerd-fonts.jetbrains-mono
+  ];
 
   # Enable steam
   programs.steam = {
@@ -285,6 +283,10 @@
     ];
     shell = pkgs.zsh;
   };
+  systemd.tmpfiles.rules = [
+    "d /mnt/storage 0775 ianh users -"
+    "Z /mnt/storage 0775 ianh users -"
+  ];
   programs.zsh.enable = true;
   # Install firefox.
   programs.firefox.enable = true;
