@@ -47,25 +47,18 @@ in
         # grayish
         color0 #${cfg.colorScheme.palette.base03} 
         color8 #${cfg.colorScheme.palette.base03} 
-        # Salmon
         color1 #${cfg.colorScheme.palette.base08} 
         color9 #${cfg.colorScheme.palette.base08} 
-        # Green
         color2  #${cfg.colorScheme.palette.base0C} 
         color10 #${cfg.colorScheme.palette.base0C} 
-        # Yellow-brown
         color3  #${cfg.colorScheme.palette.base09} 
         color11 #${cfg.colorScheme.palette.base09} 
-        # Blue
         color4  #${cfg.colorScheme.palette.base0D} 
         color12 #${cfg.colorScheme.palette.base0D}
-        # Magenta
         color5  #${cfg.colorScheme.palette.base0E} 
         color13 #${cfg.colorScheme.palette.base0E}
-        # Cyan
         color6  #${cfg.colorScheme.palette.base0C} 
         color14 #${cfg.colorScheme.palette.base0C} 
-        # White
         color7  #${cfg.colorScheme.palette.base05} 
         color15 #${cfg.colorScheme.palette.base05} 
         # Cursor

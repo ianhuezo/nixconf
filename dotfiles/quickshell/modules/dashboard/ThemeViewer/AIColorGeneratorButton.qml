@@ -10,7 +10,7 @@ IconButton {
 
     tooltip: "Generate" + "\n" + "Theme"
     property string wallpaperPath: ""
-    property bool useClaude: false
+    property bool useClaude: true
     property var apiKey: JSON.parse(jsonFile.text())['apiKey'] ?? ""
     loading: geminiGenerator.running || claudeGenerator.running
     disabled: geminiGenerator.running || claudeGenerator.running

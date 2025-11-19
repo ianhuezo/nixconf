@@ -1,207 +1,122 @@
-# Wallpaper Color Palette Generator (Base16)
+# Wallpaper-to-System Theme Generator (Base16 for Kitty/Neovim/Qt)
 
-You are a color palette extraction expert. Generate accessible, beautiful Base16 color palettes from wallpaper images for use in terminals and desktop UIs.
+Extract a **cohesive color scheme** from the wallpaper for terminal, editor, and desktop UI. Prioritize mood authenticity over conventional color assignments.
 
-## Core Philosophy
+## Philosophy
+**Anti-Pattern**: Forcing Red/Green/Blue/Yellow into monochromatic images.
+**Goal**: If the wallpaper is sepia-orange, your palette should be sepia-orange. No outliers.
 
-**Create a functional UI theme that complements the wallpaper, not a literal translation of it.**
+---
 
-Balance three goals:
-1. **Usability** - Readable text, clear hierarchy, accessible contrast
-2. **Harmony** - Colors that feel cohesive with the wallpaper
-3. **Interest** - Enough variety to prevent monotony
+## Analysis Phase
 
-## Analysis Process
+**1. Identify the Mood**
+- Visual style: Painterly? Neon? Muted? Noir? Pastel?
+- Hue range: Full spectrum (rare) or 2-4 color families (common)?
+- Saturation: Bold (80-100%) or soft/dusty (30-50%)?
+- Brightness: High-key (light) or low-key (dark)?
 
-### 1. Understand the Image
+**2. Determine Variant**
+- Dark wallpaper → `"variant": "dark"`, base00 = deep atmospheric tone
+- Light wallpaper → `"variant": "light"`, base00 = warm/cool white
 
-Look at the wallpaper and identify:
+---
 
-**Color Inventory:**
-- What are the main subjects? (Characters, objects, focal points)
-- What colors are the main subjects?
-- What colors make up the background/environment?
-- Are the subjects vibrant against a muted background (or vice versa)?
-- What's the overall luminosity? (Dark, bright, mixed?)
+## Color Extraction Rules
 
-**Color Story:**
-- What mood does this image convey?
-- What colors are *implied* but not shown?
-- If this were a movie scene, what complementary colors would enrich it?
+### **Base00-07: The Foundation**
+Must feel like the wallpaper's material:
 
-**Key Metrics:**
-- **Hue Diversity**: Does it span the color wheel, or cluster in one area?
-- **Saturation Profile**: Muted/desaturated, vibrant, or mixed?
-- **Luminosity Distribution**: Median brightness, contrast range
+**Backgrounds (base00-03)**:
+- base00: Main background (never pure black/white)
+- base01: UI panels, sidebars (+5-10% lighter)
+- base02: Selection/hover states (+10-15% lighter)
+- base03: Borders, disabled elements (+15-25% lighter, visible but recessive)
 
-### 2. Choose Your Mode (Dark or Light)
+**Foregrounds (base04-07)**:
+- base04: Secondary text, icons (60% contrast with base00)
+- base05: Primary text (4.5:1 contrast minimum with base00)
+- base06: Emphasized text (+10% brighter than base05)
+- base07: Brightest highlights (+20% brighter than base05)
 
-**Quick Decision Guide:**
+**Temperature Rule**: Warm wallpaper → warm grays. Cool wallpaper → cool grays.
 
-- **Dark Mode** for:
-  - Images with median luminosity < 40%
-  - Images with bright colorful subjects on dark backgrounds
-  - High-contrast images where you want to preserve dramatic lighting
+### **Base08-0F: The Accents** — ABANDON THE RAINBOW
 
-- **Light Mode** for:
-  - Images with median luminosity > 65%
-  - Soft, pastel, or high-key photography
-  - When the bright areas are the main subject
+**Standard Base16 (IGNORE THIS)**:
+- base08=Red, base0B=Green, base0D=Blue, base0E=Magenta
 
-**Special Cases:**
+**YOUR APPROACH**: Extract the 8 most expressive colors from the wallpaper's actual palette.
 
-- **Tiny vibrant subjects on pale backgrounds** (like colorful icons on beige): Use DARK mode and treat the pale background as negative space. Extract colors from the subjects.
-- **Glowing/luminescent elements**: Choose the mode that preserves their impact (usually dark mode for glowing lights, light mode for dark silhouettes)
+#### **Functional Requirements** (for usability):
+You need **4+ visually distinct** colors for:
 
-When in doubt, default to what makes the wallpaper's main subject pop.
+1. **base08** (Alerts/Errors): The "danger" color — typically warmest or most saturated
+2. **base0B** (Success/Strings): The "safe" color — can be any mid-tone that contrasts with base08
+3. **base0D** (Actions/Functions): The "interactive" color — most prominent/saturated accent
+4. **base0E** (Special/Keywords): The "unique" color — distinct hue from base08/0B/0D
 
-### 3. Design Your Base Colors (base00-base07)
+**Remaining (base09/0A/0C/0F)**: Can be:
+- Variations of the above (warmer/cooler shifts)
+- Neutral bridges (desaturated tones between main accents)
+- Duplicates if the wallpaper is truly limited (base0C = base0B is acceptable)
 
-**The Background Progression (base00-base03):**
+#### **Desktop UI Considerations**:
+- **base0D**: Primary buttons, focus rings — make it **bold and inviting**
+- **base08**: Destructive actions — ensure it **visually warns**
+- **base0B**: Success states — should feel **affirming**
+- **base02**: Hover states — must have **subtle contrast** with base00
 
-These create your UI surface hierarchy - terminal background, panels, hover states, etc.
+#### **The Cluster Strategy**:
+If the wallpaper is:
+- **Monochrome Blue**: Use navy, sky, teal, periwinkle for all accents
+- **Earth Tones**: Use ochre, rust, olive, umber — no electric blue
+- **Sunset Palette**: Use coral, amber, rose, burgundy — no cyan
+- **Cyberpunk**: Go full neon in existing hues — no pastels
 
-**Approach A: Extract from Image** (use when the wallpaper has a clear dominant color)
-- Choose base00 from the image's most prominent background tone
-- Create smooth progression with subtle steps (each ~5-10% lighter)
-- Can be chromatic (colored grays) or neutral - match the image's character
+**Anti-Patterns**:
+❌ Adding bright blue to a sepia image "for links"
+❌ Forcing green into a red/orange palette "for success"
+❌ Using base0A (yellow) if the wallpaper has zero yellow
 
-**Approach B: Contrasting Base** (use for low-diversity or monochromatic images)
-- If the image is all warm tones, consider a cool-tinted base
-- If the image is all one color family, give the base a different hue
-- Creates tension and prevents the theme from feeling flat
+---
 
-**Key Principles:**
-- Each step should be clearly distinguishable (aim for 5-10% luminosity increase per step)
-- **Chromatic bases need commitment** - saturation of 15-35%, not timid 5%
-  - If base00 is blueish, it should read as "dark blue," not "grayish"
-  - Test: Would someone immediately name the color? ("purple-toned" vs "dark gray")
-- Ensure clear progression: base00 → base01 → base02 → base03 should feel like going from back to front
+## Validation Checklist
+- [ ] **Cohesion**: Palette blends seamlessly with wallpaper
+- [ ] **No Outliers**: Every color exists (or could exist) in the image
+- [ ] **UI Clarity**: base0D/base08/base0B are visually separable
+- [ ] **Contrast**: base05 readable on base00 (test small text)
+- [ ] **Desktop Usability**: Hover states (base02) are noticeable but subtle
 
-**The Foreground Progression (base04-base07):**
+---
 
-These are your text colors - comments, body text, headers, bright highlights.
-
-- base04: Dim text (comments, disabled)
-- base05: Primary text (body copy)
-- base06: Emphasized text  
-- base07: Bright highlights
-
-**Requirements:**
-- base05 must have 7:1 contrast with base00 (body text readability)
-- base07 should be noticeably brighter than base05
-- Smooth luminosity steps between each
-
-### 4. Design Your Accent Colors (base08-base0F)
-
-These are your syntax highlighting, link colors, status indicators, etc.
-
-**Extraction Strategy:**
-
-**For Colorful Images (diverse hues):**
-- Extract 5-7 colors directly from the image
-- Add 1-3 complementary/harmonic colors for balance
-- **Look for "hidden harmonies"**: If the image has blues and greens, consider adding a complementary orange or warm accent even if it's not prominent in the image
-- Ensure you cover different areas of the color wheel
-
-**For Monochromatic Images (one color family):**
-- Extract 3-4 colors from the image  
-- Add 4-5 contrasting colors using complementary/triadic harmony
-- Force variety - don't let all accents be slight variations of the same hue
-
-**Color Balance Targets:**
-- Span at least 4-5 distinct hue families (reds, oranges, yellows, greens, blues, purples)
-- **Temperature balance is critical**: Even in cool images, include 2-3 warm accents (oranges, yellows, warm reds)
-  - Typical split: 60% match image temperature, 40% contrasting temperature
-  - This prevents monotony and adds depth
-- Include at least one highly saturated "hero" color for emphasis
-
-**Making Accents Pop:**
-
-Each accent needs to be clearly visible against base00. Ensure:
-- **Luminosity gap**: At least 30-40% difference from base00
-- **Saturation**: Either rich (50%+) or intentionally desaturated (20% or less) - avoid muddy middle ground
-- **Hue distinction**: Spread across the color wheel
-
-For hero accents (base08, base0A, base0D), aim for maximum impact:
-- Higher saturation
-- Stronger luminosity contrast
-- Colors that command attention
-
-**Common Pitfall:** Don't create 8 variations of the same color. "Red, slightly different red, orange-ish red, dark red..." is boring. Be bold with variety.
-
-### 5. Semantic Flexibility
-
-Base16 has conventional mappings (base08=red for errors, base0B=green for strings, etc.), but **don't force it**.
-
-Assign colors based on:
-- Visual properties first
-- Harmony with the base colors
-- Creating an interesting, balanced palette
-
-If your wallpaper has an amazing purple and meh red, use the purple for base08. The theme should look good first, follow conventions second.
-
-### 6. Validation
-
-Before finalizing, check:
-
-**Contrast:**
-- [ ] base05 on base00: ≥ 7:1 (body text)
-- [ ] base06/07 on base00: ≥ 7:1 (headings)
-- [ ] All accents on base00: ≥ 4.5:1 (UI elements)
-
-**Visual Quality:**
-- [ ] Each base00-03 step is clearly distinguishable
-- [ ] Accents span multiple hue families (not all similar)
-- [ ] At least one "wow" color that pops
-- [ ] No two accents are hard to tell apart
-
-**Artistic Goals:**
-- [ ] Theme feels harmonious with the wallpaper
-- [ ] Palette is more interesting than the wallpaper alone
-- [ ] Works as a functional UI (not just pretty)
-
-## Output Format
-
-Return ONLY valid JSON (no explanation text):
-
+## Output
+Return ONLY valid JSON:
 ```json
 {
-  "slug": "descriptive-theme-name",
-  "name": "Evocative Theme Name",
+  "slug": "theme-name",
+  "name": "Theme Name",
   "author": "AI Assistant",
-  "theme": "dark",
+  "variant": "dark",
   "palette": {
-    "base00": "#1a1b26",
-    "base01": "#24283b",
-    "base02": "#414868",
-    "base03": "#545c7e",
-    "base04": "#787c99",
-    "base05": "#a9b1d6",
-    "base06": "#cbccd1",
-    "base07": "#d5d6db",
-    "base08": "#f7768e",
-    "base09": "#ff9e64",
-    "base0A": "#e0af68",
-    "base0B": "#9ece6a",
-    "base0C": "#73daca",
-    "base0D": "#7aa2f7",
-    "base0E": "#bb9af7",
-    "base0F": "#d18616"
+    "base00": "#HEX",
+    "base01": "#HEX",
+    "base02": "#HEX",
+    "base03": "#HEX",
+    "base04": "#HEX",
+    "base05": "#HEX",
+    "base06": "#HEX",
+    "base07": "#HEX",
+    "base08": "#HEX",
+    "base09": "#HEX",
+    "base0A": "#HEX",
+    "base0B": "#HEX",
+    "base0C": "#HEX",
+    "base0D": "#HEX",
+    "base0E": "#HEX",
+    "base0F": "#HEX"
   }
 }
 ```
 
-## Key Principles Summary
-
-1. **Function First**: UI must be usable above all else
-2. **Extract, Don't Copy**: Use the wallpaper as inspiration, not a literal source
-3. **Embrace Contrast**: Dramatic differences make themes interesting  
-4. **Force Variety**: Especially for monochromatic images, add contrasting colors
-5. **Make Bold Choices**: Chromatic bases need commitment; accents need saturation
-6. **Trust Your Eye**: If it looks good and passes contrast checks, it's good
-7. **Adapt to Context**: Low-diversity images need different treatment than colorful ones
-
----
-
-**Now analyze the wallpaper and create a beautiful, functional palette.**
+**Now analyze the wallpaper. Extract its true color story. Generate the JSON.**
