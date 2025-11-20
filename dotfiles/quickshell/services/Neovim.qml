@@ -15,6 +15,32 @@ Singleton {
         return color.toString();
     }
 
+    // Apply the same offset that nix config uses to avoid transparent background in kitty
+    // This increments the last hex character by 1
+    function offsetColor(hexColor) {
+        const hexSuccessor = {
+            "0": "1", "1": "2", "2": "3", "3": "4", "4": "5",
+            "5": "6", "6": "7", "7": "8", "8": "9", "9": "a",
+            "a": "b", "b": "c", "c": "d", "d": "e", "e": "f", "f": "0"
+        };
+
+        let hex = hexColor.toLowerCase();
+        if (hex.startsWith('#')) {
+            hex = hex.substring(1);
+        }
+
+        let lastChar = hex[hex.length - 1];
+        let newLastChar = hexSuccessor[lastChar] || lastChar;
+        let newHex = hex.substring(0, hex.length - 1) + newLastChar;
+
+        return "#" + newHex;
+    }
+
+    // Get offset color from palette (same offset as nix config applies)
+    function getOffsetColor(color) {
+        return offsetColor(colorToHex(color));
+    }
+
     // Watch /run/user directory for new nvim sockets using inotify
     Process {
         id: serverWatcher
@@ -46,28 +72,63 @@ Singleton {
         }
     }
 
-    // Helper function to build the lua command
+    // Helper function to build the lua command for RPC updates
     function buildLuaCommand() {
+        // Note: RPC updates are now redundant since we use file watching,
+        // but keeping this for new instances before the file is watched
         return `lua << EOF
-local base16 = require("base16-colorscheme")
-base16.setup({
-    base00 = "${colorToHex(Color.palette.base00)}",
-    base01 = "${colorToHex(Color.palette.base01)}",
-    base02 = "${colorToHex(Color.palette.base02)}",
-    base03 = "${colorToHex(Color.palette.base03)}",
-    base04 = "${colorToHex(Color.palette.base04)}",
-    base05 = "${colorToHex(Color.palette.base05)}",
-    base06 = "${colorToHex(Color.palette.base06)}",
-    base07 = "${colorToHex(Color.palette.base07)}",
-    base08 = "${colorToHex(Color.palette.base08)}",
-    base09 = "${colorToHex(Color.palette.base09)}",
-    base0A = "${colorToHex(Color.palette.base0A)}",
-    base0B = "${colorToHex(Color.palette.base0B)}",
-    base0C = "${colorToHex(Color.palette.base0C)}",
-    base0D = "${colorToHex(Color.palette.base0D)}",
-    base0E = "${colorToHex(Color.palette.base0E)}",
-    base0F = "${colorToHex(Color.palette.base0F)}",
+require('base16-colorscheme').setup({
+    base00 = "${getOffsetColor(Color.palette.base00)}",
+    base01 = "${getOffsetColor(Color.palette.base01)}",
+    base02 = "${getOffsetColor(Color.palette.base02)}",
+    base03 = "${getOffsetColor(Color.palette.base03)}",
+    base04 = "${getOffsetColor(Color.palette.base04)}",
+    base05 = "${getOffsetColor(Color.palette.base05)}",
+    base06 = "${getOffsetColor(Color.palette.base06)}",
+    base07 = "${getOffsetColor(Color.palette.base07)}",
+    base08 = "${getOffsetColor(Color.palette.base08)}",
+    base09 = "${getOffsetColor(Color.palette.base09)}",
+    base0A = "${getOffsetColor(Color.palette.base0A)}",
+    base0B = "${getOffsetColor(Color.palette.base0B)}",
+    base0C = "${getOffsetColor(Color.palette.base0C)}",
+    base0D = "${getOffsetColor(Color.palette.base0D)}",
+    base0E = "${getOffsetColor(Color.palette.base0E)}",
+    base0F = "${getOffsetColor(Color.palette.base0F)}",
 })
+vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "${getOffsetColor(Color.palette.base09)}", bold = true })
+vim.api.nvim_set_hl(0, "TelescopeNormal", { bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "TelescopeBorder", { fg = "${getOffsetColor(Color.palette.base0B)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "TelescopePromptNormal", { bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "TelescopePromptBorder", { fg = "${getOffsetColor(Color.palette.base0B)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "TelescopePromptTitle", { fg = "${getOffsetColor(Color.palette.base00)}", bg = "${getOffsetColor(Color.palette.base0B)}", bold = true })
+vim.api.nvim_set_hl(0, "TelescopePromptPrefix", { fg = "${getOffsetColor(Color.palette.base0D)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "TelescopeResultsNormal", { bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "TelescopeResultsBorder", { fg = "${getOffsetColor(Color.palette.base0C)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "TelescopeResultsTitle", { fg = "${getOffsetColor(Color.palette.base00)}", bg = "${getOffsetColor(Color.palette.base0C)}", bold = true })
+vim.api.nvim_set_hl(0, "TelescopePreviewNormal", { bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "TelescopePreviewBorder", { fg = "${getOffsetColor(Color.palette.base0E)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "TelescopePreviewTitle", { fg = "${getOffsetColor(Color.palette.base00)}", bg = "${getOffsetColor(Color.palette.base0E)}", bold = true })
+vim.api.nvim_set_hl(0, "TelescopeSelection", { fg = "${getOffsetColor(Color.palette.base05)}", bg = "${getOffsetColor(Color.palette.base02)}", bold = true })
+vim.api.nvim_set_hl(0, "TelescopeSelectionCaret", { fg = "${getOffsetColor(Color.palette.base0D)}", bg = "${getOffsetColor(Color.palette.base02)}" })
+vim.api.nvim_set_hl(0, "TelescopeMatching", { fg = "${getOffsetColor(Color.palette.base0B)}", bold = true })
+vim.api.nvim_set_hl(0, "TelescopePromptCounter", { fg = "${getOffsetColor(Color.palette.base04)}" })
+vim.api.nvim_set_hl(0, "@function", { fg = "${getOffsetColor(Color.palette.base0D)}", bold = true })
+vim.api.nvim_set_hl(0, "@method", { fg = "${getOffsetColor(Color.palette.base0D)}", italic = true })
+vim.api.nvim_set_hl(0, "@variable", { fg = "${getOffsetColor(Color.palette.base0C)}" })
+vim.api.nvim_set_hl(0, "@property", { fg = "${getOffsetColor(Color.palette.base0E)}" })
+vim.api.nvim_set_hl(0, "BufferLineFill", { bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "BufferLineBackground", { fg = "${getOffsetColor(Color.palette.base04)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineBuffer", { fg = "${getOffsetColor(Color.palette.base04)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineBufferSelected", { fg = "${getOffsetColor(Color.palette.base05)}", bg = "${getOffsetColor(Color.palette.base00)}", bold = true, italic = false })
+vim.api.nvim_set_hl(0, "BufferLineBufferVisible", { fg = "${getOffsetColor(Color.palette.base04)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineTab", { fg = "${getOffsetColor(Color.palette.base04)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineTabSelected", { fg = "${getOffsetColor(Color.palette.base0D)}", bg = "${getOffsetColor(Color.palette.base00)}", bold = true })
+vim.api.nvim_set_hl(0, "BufferLineSeparator", { fg = "${getOffsetColor(Color.palette.base00)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineSeparatorSelected", { fg = "${getOffsetColor(Color.palette.base00)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "BufferLineIndicatorSelected", { fg = "${getOffsetColor(Color.palette.base0D)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "BufferLineModified", { fg = "${getOffsetColor(Color.palette.base09)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineModifiedSelected", { fg = "${getOffsetColor(Color.palette.base09)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+if pcall(require, 'lualine') then require('lualine').setup() end
 EOF
 `;
     }
@@ -77,25 +138,70 @@ EOF
         let luaContent = `-- Auto-generated by QuickShell - DO NOT EDIT MANUALLY
 -- This file is watched by Neovim and reloaded automatically
 
-local base16 = require("base16-colorscheme")
-base16.setup({
-    base00 = "${colorToHex(Color.palette.base00)}",
-    base01 = "${colorToHex(Color.palette.base01)}",
-    base02 = "${colorToHex(Color.palette.base02)}",
-    base03 = "${colorToHex(Color.palette.base03)}",
-    base04 = "${colorToHex(Color.palette.base04)}",
-    base05 = "${colorToHex(Color.palette.base05)}",
-    base06 = "${colorToHex(Color.palette.base06)}",
-    base07 = "${colorToHex(Color.palette.base07)}",
-    base08 = "${colorToHex(Color.palette.base08)}",
-    base09 = "${colorToHex(Color.palette.base09)}",
-    base0A = "${colorToHex(Color.palette.base0A)}",
-    base0B = "${colorToHex(Color.palette.base0B)}",
-    base0C = "${colorToHex(Color.palette.base0C)}",
-    base0D = "${colorToHex(Color.palette.base0D)}",
-    base0E = "${colorToHex(Color.palette.base0E)}",
-    base0F = "${colorToHex(Color.palette.base0F)}",
+require('base16-colorscheme').setup({
+    base00 = "${getOffsetColor(Color.palette.base00)}",
+    base01 = "${getOffsetColor(Color.palette.base01)}",
+    base02 = "${getOffsetColor(Color.palette.base02)}",
+    base03 = "${getOffsetColor(Color.palette.base03)}",
+    base04 = "${getOffsetColor(Color.palette.base04)}",
+    base05 = "${getOffsetColor(Color.palette.base05)}",
+    base06 = "${getOffsetColor(Color.palette.base06)}",
+    base07 = "${getOffsetColor(Color.palette.base07)}",
+    base08 = "${getOffsetColor(Color.palette.base08)}",
+    base09 = "${getOffsetColor(Color.palette.base09)}",
+    base0A = "${getOffsetColor(Color.palette.base0A)}",
+    base0B = "${getOffsetColor(Color.palette.base0B)}",
+    base0C = "${getOffsetColor(Color.palette.base0C)}",
+    base0D = "${getOffsetColor(Color.palette.base0D)}",
+    base0E = "${getOffsetColor(Color.palette.base0E)}",
+    base0F = "${getOffsetColor(Color.palette.base0F)}",
 })
+
+-- Apply custom highlight groups for plugins
+vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "${getOffsetColor(Color.palette.base09)}", bold = true })
+
+-- Telescope highlights
+vim.api.nvim_set_hl(0, "TelescopeNormal", { bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "TelescopeBorder", { fg = "${getOffsetColor(Color.palette.base0B)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "TelescopePromptNormal", { bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "TelescopePromptBorder", { fg = "${getOffsetColor(Color.palette.base0B)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "TelescopePromptTitle", { fg = "${getOffsetColor(Color.palette.base00)}", bg = "${getOffsetColor(Color.palette.base0B)}", bold = true })
+vim.api.nvim_set_hl(0, "TelescopePromptPrefix", { fg = "${getOffsetColor(Color.palette.base0D)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "TelescopeResultsNormal", { bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "TelescopeResultsBorder", { fg = "${getOffsetColor(Color.palette.base0C)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "TelescopeResultsTitle", { fg = "${getOffsetColor(Color.palette.base00)}", bg = "${getOffsetColor(Color.palette.base0C)}", bold = true })
+vim.api.nvim_set_hl(0, "TelescopePreviewNormal", { bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "TelescopePreviewBorder", { fg = "${getOffsetColor(Color.palette.base0E)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "TelescopePreviewTitle", { fg = "${getOffsetColor(Color.palette.base00)}", bg = "${getOffsetColor(Color.palette.base0E)}", bold = true })
+vim.api.nvim_set_hl(0, "TelescopeSelection", { fg = "${getOffsetColor(Color.palette.base05)}", bg = "${getOffsetColor(Color.palette.base02)}", bold = true })
+vim.api.nvim_set_hl(0, "TelescopeSelectionCaret", { fg = "${getOffsetColor(Color.palette.base0D)}", bg = "${getOffsetColor(Color.palette.base02)}" })
+vim.api.nvim_set_hl(0, "TelescopeMatching", { fg = "${getOffsetColor(Color.palette.base0B)}", bold = true })
+vim.api.nvim_set_hl(0, "TelescopePromptCounter", { fg = "${getOffsetColor(Color.palette.base04)}" })
+
+-- Treesitter highlights
+vim.api.nvim_set_hl(0, "@function", { fg = "${getOffsetColor(Color.palette.base0D)}", bold = true })
+vim.api.nvim_set_hl(0, "@method", { fg = "${getOffsetColor(Color.palette.base0D)}", italic = true })
+vim.api.nvim_set_hl(0, "@variable", { fg = "${getOffsetColor(Color.palette.base0C)}" })
+vim.api.nvim_set_hl(0, "@property", { fg = "${getOffsetColor(Color.palette.base0E)}" })
+
+-- Bufferline highlights (top tabs)
+vim.api.nvim_set_hl(0, "BufferLineFill", { bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "BufferLineBackground", { fg = "${getOffsetColor(Color.palette.base04)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineBuffer", { fg = "${getOffsetColor(Color.palette.base04)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineBufferSelected", { fg = "${getOffsetColor(Color.palette.base05)}", bg = "${getOffsetColor(Color.palette.base00)}", bold = true, italic = false })
+vim.api.nvim_set_hl(0, "BufferLineBufferVisible", { fg = "${getOffsetColor(Color.palette.base04)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineTab", { fg = "${getOffsetColor(Color.palette.base04)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineTabSelected", { fg = "${getOffsetColor(Color.palette.base0D)}", bg = "${getOffsetColor(Color.palette.base00)}", bold = true })
+vim.api.nvim_set_hl(0, "BufferLineSeparator", { fg = "${getOffsetColor(Color.palette.base00)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineSeparatorSelected", { fg = "${getOffsetColor(Color.palette.base00)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "BufferLineIndicatorSelected", { fg = "${getOffsetColor(Color.palette.base0D)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "BufferLineModified", { fg = "${getOffsetColor(Color.palette.base09)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineModifiedSelected", { fg = "${getOffsetColor(Color.palette.base09)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+
+-- Lualine will automatically use base16 colors, but we can ensure it refreshes
+if pcall(require, 'lualine') then
+    require('lualine').setup()
+end
 `;
 
         // Write to ~/.config/nvim/colors.lua using a shell command
@@ -158,15 +264,18 @@ base16.setup({
 
     // Update neovim colors using RPC
     function updateColors() {
+        console.log("Neovim.updateColors() called");
         if (!Color.palette) {
             console.warn("Color palette not available for Neovim");
             return;
         }
 
         if (updatingColors || findingServers) {
+            console.log("Skipping update - updatingColors:", updatingColors, "findingServers:", findingServers);
             return;
         }
 
+        console.log("Writing colors file and finding servers...");
         // Write colors.lua file for auto-reload via BufWritePost autocmd
         writeColorsFile();
 
@@ -178,10 +287,12 @@ base16.setup({
         if (nvimServers.length === 0) {
             // No servers found, nothing to update
             updatingColors = false;
+            console.log("No neovim servers found");
             return;
         }
 
         updatingColors = true;
+        console.log("Updating colors for", nvimServers.length, "neovim instance(s)");
 
         // Build the lua command using helper function
         let luaCmd = buildLuaCommand();
@@ -190,11 +301,15 @@ base16.setup({
         for (let i = 0; i < nvimServers.length; i++) {
             updateNvimInstance(nvimServers[i], luaCmd);
         }
+
+        // Reset the flag after all updates are queued
+        updatingColors = false;
     }
 
     function updateNvimInstance(serverPath, luaCmd) {
-        // Create a command to send to this nvim instance
-        let cmd = `nvim --server "${serverPath}" --remote-send '<Esc>:${luaCmd.replace(/\n/g, '<CR>:')}<CR>'`;
+        // Instead of sending complex multi-line Lua via RPC, just tell nvim to source the colors file
+        // This is more reliable and works better across workspaces
+        let cmd = `nvim --server "${serverPath}" --remote-expr "execute('source ~/.config/nvim/colors.lua')"`;
 
         let processQml = `
             import Quickshell
@@ -205,10 +320,18 @@ base16.setup({
                 running: true
 
                 onExited: (code, status) => {
-                    if (code !== 0) {
-                        console.error("Failed to update neovim colors for:", serverPath);
+                    if (code === 0) {
+                        console.log("Successfully updated neovim colors for:", serverPath);
+                    } else {
+                        console.error("Failed to update neovim colors for:", serverPath, "exit code:", code);
                     }
                     destroy();
+                }
+
+                stderr: SplitParser {
+                    onRead: data => {
+                        console.error("Neovim RPC error for", serverPath, ":", data);
+                    }
                 }
             }
         `;

@@ -199,8 +199,8 @@ Singleton {
                 // console.log("Mako update triggered");
                 Hyprland.updateColors();
                 console.log("Hyprland update triggered");
-                // Neovim.updateColors();
-                // console.log("Neovim update triggered");
+                Neovim.updateColors();
+                console.log("Neovim update triggered");
             });
 
             return true;
