@@ -5,20 +5,20 @@
     variant = "dark";
     palette = {
       base00 = "#1a0f0a";
-      base01 = "#2a1810";
-      base02 = "#3d2418";
-      base03 = "#5a3a28";
-      base04 = "#8b6f5c";
-      base05 = "#e8d5b7";
-      base06 = "#f0e4d0";
-      base07 = "#faf4ea";
-      base08 = "#ff5733";
-      base09 = "#c4421a";
-      base0A = "#ff9466";
-      base0B = "#e8d5b7";
-      base0C = "#d17a5a";
-      base0D = "#ff6f3c";
-      base0E = "#cc3311";
-      base0F = "#8b4513";
+      base01 = "#2d1710";
+      base02 = "#442318";
+      base03 = "#5c3020";
+      base04 = "#a87860";
+      base05 = "#e8d4c0";
+      base06 = "#f2e5d8";
+      base07 = "#fdf5ed";
+      base08 = "#d94a2a";
+      base09 = "#e85c38";
+      base0A = "#ea7850";
+      base0B = "#c86848";
+      base0C = "#b85840";
+      base0D = "#ee6842";
+      base0E = "#dc5535";
+      base0F = "#a84530";
     };
   }

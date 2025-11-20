@@ -32,6 +32,7 @@ in
       settings = {
         allow_remote_control = "yes";
         listen_on = "unix:/tmp/kitty";
+        shell_integration = "enabled";
       };
       extraConfig = ''
         font_family Maple Mono NF CN
@@ -83,6 +84,10 @@ in
         inactive_tab_background #${cfg.colorScheme.palette.base00}
         inactive_tab_font_style bold
         tab_bar_background #${cfg.colorScheme.palette.base00}
+
+        # Watch the current-colors.conf file and reload when it changes
+        # This ensures colors are refreshed even when programs like neovim are running
+        include ${config.home.homeDirectory}/.config/kitty/current-colors.conf
       '';
     };
   };
