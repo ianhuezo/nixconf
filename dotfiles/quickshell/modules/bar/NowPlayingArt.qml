@@ -5,32 +5,184 @@ import QtQuick.Effects
 import qs.services
 import qs.modules.music_popup
 
-Image {
+Item {
     id: root
-    fillMode: Image.PreserveAspectFit
-    sourceSize.width: height
-    sourceSize.height: height
-    mipmap: true
-    smooth: true                        // Enable smooth scaling
-    antialiasing: true                  // Improved rendering quality
-    asynchronous: true                  // Load image asynchronously
-    cache: true
-    visible: true
-    layer.enabled: true
-    layer.smooth: true
-    layer.samples: 4  // Antialiasing samples
-    layer.effect: MultiEffect {
-        maskEnabled: true
-        maskThresholdMin: 0.5
-        maskSpreadAtMin: 1.0
-        maskSource: ShaderEffectSource {
-            sourceItem: Rectangle {
-                width: root.width
-                height: root.height
-                radius: 5
+
+    // Animated border that travels around the perimeter
+    Canvas {
+        id: borderCanvas
+        anchors.fill: parent
+        anchors.margins: -3
+        z: 0
+
+        property real phase: 0
+        property color glowColor: Color.palette.base0D
+
+        onPaint: {
+            var ctx = getContext("2d");
+            ctx.clearRect(0, 0, width, height);
+
+            var borderWidth = 3;
+            var radius = 8;
+            var glowLength = 60; // Length of the glowing section in pixels
+            var offset = borderWidth / 2;
+
+            // Calculate rounded rect path
+            var w = width - borderWidth;
+            var h = height - borderWidth;
+
+            // Calculate perimeter including rounded corners
+            var straightW = w - 2 * radius;
+            var straightH = h - 2 * radius;
+            var cornerPerimeter = Math.PI * radius / 2; // Quarter circle
+            var perimeter = 2 * straightW + 2 * straightH + 4 * cornerPerimeter;
+
+            // Current position along perimeter based on phase
+            var currentPos = (phase / 360) * perimeter;
+
+            ctx.lineWidth = borderWidth;
+            ctx.lineCap = "round";
+
+            // Draw the glowing segment
+            for (var i = 0; i < glowLength; i++) {
+                var pos = (currentPos + i) % perimeter;
+
+                // Calculate opacity (fade from full to transparent)
+                var opacity = 1 - (i / glowLength);
+                opacity = opacity * opacity; // Ease out
+
+                ctx.strokeStyle = Qt.rgba(
+                    glowColor.r,
+                    glowColor.g,
+                    glowColor.b,
+                    opacity * 0.9
+                );
+
+                // Draw a small segment at this position
+                ctx.beginPath();
+                var segmentLength = 2;
+                drawRoundedRectSegment(ctx, pos, segmentLength, w, h, radius, offset);
+                ctx.stroke();
             }
-            width: root.width
-            height: root.height
+        }
+
+        onGlowColorChanged: requestPaint()
+
+        function drawRoundedRectSegment(ctx, startPos, length, w, h, radius, offset) {
+            var straightW = w - 2 * radius;
+            var straightH = h - 2 * radius;
+            var cornerPerimeter = Math.PI * radius / 2;
+
+            var pos = startPos;
+
+            // Top edge (excluding corners)
+            if (pos < straightW) {
+                ctx.moveTo(offset + radius + pos, offset);
+                ctx.lineTo(offset + radius + Math.min(pos + length, straightW), offset);
+                return;
+            }
+            pos -= straightW;
+
+            // Top-right corner
+            if (pos < cornerPerimeter) {
+                var angle = -Math.PI / 2 + (pos / cornerPerimeter) * (Math.PI / 2);
+                var endAngle = -Math.PI / 2 + (Math.min(pos + length, cornerPerimeter) / cornerPerimeter) * (Math.PI / 2);
+                ctx.arc(offset + radius + straightW, offset + radius, radius, angle, endAngle, false);
+                return;
+            }
+            pos -= cornerPerimeter;
+
+            // Right edge
+            if (pos < straightH) {
+                ctx.moveTo(offset + w, offset + radius + pos);
+                ctx.lineTo(offset + w, offset + radius + Math.min(pos + length, straightH));
+                return;
+            }
+            pos -= straightH;
+
+            // Bottom-right corner
+            if (pos < cornerPerimeter) {
+                var angle = 0 + (pos / cornerPerimeter) * (Math.PI / 2);
+                var endAngle = 0 + (Math.min(pos + length, cornerPerimeter) / cornerPerimeter) * (Math.PI / 2);
+                ctx.arc(offset + radius + straightW, offset + radius + straightH, radius, angle, endAngle, false);
+                return;
+            }
+            pos -= cornerPerimeter;
+
+            // Bottom edge
+            if (pos < straightW) {
+                ctx.moveTo(offset + radius + straightW - pos, offset + h);
+                ctx.lineTo(offset + radius + straightW - Math.min(pos + length, straightW), offset + h);
+                return;
+            }
+            pos -= straightW;
+
+            // Bottom-left corner
+            if (pos < cornerPerimeter) {
+                var angle = Math.PI / 2 + (pos / cornerPerimeter) * (Math.PI / 2);
+                var endAngle = Math.PI / 2 + (Math.min(pos + length, cornerPerimeter) / cornerPerimeter) * (Math.PI / 2);
+                ctx.arc(offset + radius, offset + radius + straightH, radius, angle, endAngle, false);
+                return;
+            }
+            pos -= cornerPerimeter;
+
+            // Left edge
+            if (pos < straightH) {
+                ctx.moveTo(offset, offset + radius + straightH - pos);
+                ctx.lineTo(offset, offset + radius + straightH - Math.min(pos + length, straightH));
+                return;
+            }
+            pos -= straightH;
+
+            // Top-left corner
+            if (pos < cornerPerimeter) {
+                var angle = Math.PI + (pos / cornerPerimeter) * (Math.PI / 2);
+                var endAngle = Math.PI + (Math.min(pos + length, cornerPerimeter) / cornerPerimeter) * (Math.PI / 2);
+                ctx.arc(offset + radius, offset + radius, radius, angle, endAngle, false);
+                return;
+            }
+        }
+
+        NumberAnimation on phase {
+            from: 0
+            to: 360
+            duration: 2500
+            loops: Animation.Infinite
+            easing.type: Easing.InOutSine
+            running: true
+        }
+
+        onPhaseChanged: requestPaint()
+    }
+
+    Image {
+        id: artImage
+        anchors.fill: parent
+        fillMode: Image.PreserveAspectFit
+        sourceSize.width: height
+        sourceSize.height: height
+        mipmap: true
+        smooth: true
+        antialiasing: true
+        asynchronous: true
+        cache: true
+        visible: true
+        layer.enabled: true
+        layer.smooth: true
+        layer.samples: 4
+        layer.effect: MultiEffect {
+            maskEnabled: true
+            maskThresholdMin: 0.5
+            maskSpreadAtMin: 1.0
+            maskSource: ShaderEffectSource {
+                sourceItem: Rectangle {
+                    width: artImage.width
+                    height: artImage.height
+                    radius: 5
+                }
+                width: artImage.width
+                height: artImage.height
+            }
         }
     }
     // Separate property to determine the art URL
@@ -89,24 +241,6 @@ Image {
         extractMP3Image.mp3FileName = root.localTrackFile + '.mp3';
         extractMP3Image.running = true;
     }
-    // Use the stable property instead of the complex binding
-    source: currentSource
-
-    // Handle HTTP/2 and other loading errors
-    onStatusChanged: {
-        if (status === Image.Error) {
-            console.warn("Failed to load album art:", currentSource);
-            // On error, try to reload or clear the source
-            if (currentSource && !currentSource.startsWith("/tmp/")) {
-                // If it's a remote URL that failed, trigger local extraction as fallback
-                const player = root.getPreferredPlayer();
-                if (player?.identity === "Spotify" && player?.trackTitle) {
-                    console.log("Attempting to load local album art for:", player.trackTitle);
-                    root.localTrackFile = player.trackTitle;
-                }
-            }
-        }
-    }
 
     ExtractMP3Image {
         id: extractMP3Image
@@ -116,7 +250,6 @@ Image {
         onFileCreated: fileName => {
             localFilePath = fileName;
             extractMP3Image.running = false;
-            root.sourceChanged(localFilePath);
             root.updateSource(); // Update source when local file is ready
         }
         onError: error => {}
@@ -126,11 +259,12 @@ Image {
             root.updateSource(); // Update source when local file is cleared
         }
     }
+
     Rectangle {
         id: placeholder
-        anchors.fill: parent
+        anchors.fill: artImage
         color: Color.palette.base03// Darker gray for better contrast
-        visible: root.status !== Image.Ready
+        visible: artImage.status !== Image.Ready
         // Music note icon as placeholder
         Text {
             anchors.centerIn: parent
@@ -140,6 +274,32 @@ Image {
         }
         // Rounded corners for placeholder too
         radius: 4
+    }
+
+    // Bind the source to artImage
+    Binding {
+        target: artImage
+        property: "source"
+        value: root.currentSource
+    }
+
+    // Handle HTTP/2 and other loading errors
+    Connections {
+        target: artImage
+        function onStatusChanged() {
+            if (artImage.status === Image.Error) {
+                console.warn("Failed to load album art:", root.currentSource);
+                // On error, try to reload or clear the source
+                if (root.currentSource && !root.currentSource.startsWith("/tmp/")) {
+                    // If it's a remote URL that failed, trigger local extraction as fallback
+                    const player = root.getPreferredPlayer();
+                    if (player?.identity === "Spotify" && player?.trackTitle) {
+                        console.log("Attempting to load local album art for:", player.trackTitle);
+                        root.localTrackFile = player.trackTitle;
+                    }
+                }
+            }
+        }
     }
     // Item {
     //     id: mask
