@@ -50,7 +50,7 @@ Item {
         z: 0
 
         property real phase: 0
-        property color glowColor: Color.palette.base0D
+        property color glowColor: Color.palette.base0C
 
         onPaint: {
             var ctx = getContext("2d");
