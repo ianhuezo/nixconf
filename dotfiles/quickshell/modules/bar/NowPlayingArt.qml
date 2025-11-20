@@ -8,6 +8,40 @@ import qs.modules.music_popup
 Item {
     id: root
 
+    property var cavaValues: []
+    property real audioThreshold: 0.05  // Threshold below which animation pauses
+    property bool hasAudio: false
+    property real borderOpacity: 0.0  // Controls fade in/out
+
+    // Calculate if there's active audio
+    onCavaValuesChanged: {
+        if (!cavaValues || cavaValues.length === 0) {
+            hasAudio = false;
+            return;
+        }
+
+        // Check if any cava value exceeds threshold
+        let maxValue = 0;
+        for (let i = 0; i < cavaValues.length; i++) {
+            if (cavaValues[i] > maxValue) {
+                maxValue = cavaValues[i];
+            }
+        }
+        hasAudio = maxValue > audioThreshold;
+    }
+
+    // Fade in when audio starts, fade out when it stops
+    Behavior on borderOpacity {
+        NumberAnimation {
+            duration: hasAudio ? 300 : 800  // Faster fade in, slower fade out
+            easing.type: Easing.InOutQuad
+        }
+    }
+
+    onHasAudioChanged: {
+        borderOpacity = hasAudio ? 1.0 : 0.0;
+    }
+
     // Animated border that travels around the perimeter
     Canvas {
         id: borderCanvas
@@ -21,6 +55,11 @@ Item {
         onPaint: {
             var ctx = getContext("2d");
             ctx.clearRect(0, 0, width, height);
+
+            // Only draw if there's any opacity
+            if (root.borderOpacity <= 0) {
+                return;
+            }
 
             var borderWidth = 3;
             var radius = 8;
@@ -51,11 +90,12 @@ Item {
                 var opacity = 1 - (i / glowLength);
                 opacity = opacity * opacity; // Ease out
 
+                // Multiply by borderOpacity for fade in/out
                 ctx.strokeStyle = Qt.rgba(
                     glowColor.r,
                     glowColor.g,
                     glowColor.b,
-                    opacity * 0.9
+                    opacity * 0.9 * root.borderOpacity
                 );
 
                 // Draw a small segment at this position
@@ -67,6 +107,13 @@ Item {
         }
 
         onGlowColorChanged: requestPaint()
+
+        Connections {
+            target: root
+            function onBorderOpacityChanged() {
+                borderCanvas.requestPaint();
+            }
+        }
 
         function drawRoundedRectSegment(ctx, startPos, length, w, h, radius, offset) {
             var straightW = w - 2 * radius;
@@ -149,7 +196,7 @@ Item {
             duration: 2500
             loops: Animation.Infinite
             easing.type: Easing.InOutSine
-            running: true
+            running: root.borderOpacity > 0  // Keep running during fade out
         }
 
         onPhaseChanged: requestPaint()

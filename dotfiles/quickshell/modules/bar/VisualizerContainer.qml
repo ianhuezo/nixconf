@@ -30,6 +30,7 @@ Rectangle {
                 id: playingArt
                 height: parent.height
                 width: parent.height
+                cavaValues: container.cavaValues
             }
             MouseArea {
                 anchors.fill: playingArt
