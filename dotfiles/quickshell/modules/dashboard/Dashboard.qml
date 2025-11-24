@@ -7,6 +7,8 @@ import Quickshell.Wayland
 Item {
     id: dashboard
     property bool active: false
+    // Eagerly cache DesktopEntries on startup to avoid lag when dashboard opens
+    property var _desktopEntriesCache: DesktopEntries.applications
     IpcHandler {
         target: "dashboard"
 
