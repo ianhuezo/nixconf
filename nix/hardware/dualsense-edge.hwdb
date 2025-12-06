@@ -1,0 +1,58 @@
+# PS5 DualSense Edge Controller (054c:0df2) - Button and Axis Remapping
+#
+# This hwdb file fixes the incorrect button and axis mappings for the
+# PS5 DualSense Edge controller on Linux. The Edge controller reports
+# different mappings than the standard DualSense, causing buttons and
+# joysticks to be mapped incorrectly.
+#
+# Device IDs:
+#   Vendor: 054c (Sony)
+#   Product: 0df2 (DualSense Edge)
+#
+# Issues fixed:
+# 1. Face buttons are remapped (Square/Triangle/Circle/Cross swapped)
+# 2. Right stick axes swapped with trigger axes
+# 3. L3/R3/PS button assignments incorrect
+#
+# Based on kernel patch from November 2023 that fixed hid-playstation driver
+
+# Match DualSense Edge controller (both USB and Bluetooth)
+evdev:input:b0003v054Cp0DF2*
+evdev:input:b0005v054Cp0DF2*
+ # Remap buttons to correct positions
+ # BTN_SOUTH should be Cross (X)
+ # BTN_EAST should be Circle (O)
+ # BTN_NORTH should be Triangle
+ # BTN_WEST should be Square
+ KEYBOARD_KEY_90001=BTN_SOUTH    # Cross (X)
+ KEYBOARD_KEY_90002=BTN_EAST     # Circle (O)
+ KEYBOARD_KEY_90003=BTN_NORTH    # Triangle
+ KEYBOARD_KEY_90004=BTN_WEST     # Square
+
+ # Fix thumb stick button mappings
+ KEYBOARD_KEY_9000d=BTN_THUMBL   # L3 (left stick click)
+ KEYBOARD_KEY_9000e=BTN_THUMBR   # R3 (right stick click)
+ KEYBOARD_KEY_9000f=BTN_MODE     # PS button
+
+ # Remap axes - The Edge has RX/RY swapped with Z/RZ
+ # Standard mapping:
+ #   ABS_X/Y = Left stick
+ #   ABS_RX/RY = Right stick
+ #   ABS_Z/RZ = Triggers (L2/R2)
+ #
+ # DualSense Edge reports:
+ #   ABS_X/Y = Left stick (correct)
+ #   ABS_RX/RY = Triggers (WRONG - should be right stick)
+ #   ABS_Z/RZ = Right stick (WRONG - should be triggers)
+ #
+ # We swap them back to the correct mapping:
+ EVDEV_ABS_00=0:255:0:15:128     # Left X axis
+ EVDEV_ABS_01=0:255:0:15:128     # Left Y axis
+ EVDEV_ABS_02=0:255:0:15:128     # Right X (was Z/L2 trigger)
+ EVDEV_ABS_05=0:255:0:15:128     # Right Y (was RZ/R2 trigger)
+ EVDEV_ABS_03=0:255:0:8:0        # L2 trigger (was RX/Right X)
+ EVDEV_ABS_04=0:255:0:8:0        # R2 trigger (was RY/Right Y)
+
+ # D-pad uses hat0 (ABS_HAT0X, ABS_HAT0Y)
+ EVDEV_ABS_10=-1:1:0:0:0         # D-pad X
+ EVDEV_ABS_11=-1:1:0:0:0         # D-pad Y

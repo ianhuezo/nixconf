@@ -14,6 +14,7 @@
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
     ../gaming/proton-ge.nix
+    ../hardware/dualsense-edge.nix
   ];
 
   # Bootloader.
