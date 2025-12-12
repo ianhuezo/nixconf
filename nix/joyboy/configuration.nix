@@ -68,6 +68,8 @@
   networking.firewall.allowedUDPPorts = [
     67
     68
+    57621 # Spotify Connect
+    5353  # mDNS for Spotify device discovery
   ];
 
   #This specifically allows Spotify to find local files from phone sync
