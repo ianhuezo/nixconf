@@ -1,12 +1,13 @@
 pragma Singleton
 import QtQuick
 import Quickshell
+import "." as JobServices
 
 Singleton {
     id: jobManager
 
-    // Base path for job runners
-    property string jobRunnersPath: "runners/"
+    // Base path for job runners (relative to this file)
+    property string jobRunnersPath: Qt.resolvedUrl("runners/")
 
     // Job type registry
     property var jobComponents: ({
@@ -42,8 +43,9 @@ Singleton {
             return -1;
         }
 
-        // Create job component
-        const component = Qt.createComponent(jobRunnersPath + componentPath);
+        // Create job component using resolved URL
+        const fullPath = jobRunnersPath + componentPath;
+        const component = Qt.createComponent(fullPath);
 
         if (component.status === Component.Error) {
             console.error("Error loading job component:", component.errorString());
@@ -87,13 +89,13 @@ Singleton {
         });
 
         // Enqueue in JobQueue
-        const success = Jobs.JobQueue.enqueue(job);
+        const success = JobServices.JobQueue.enqueue(job);
 
         if (success) {
             jobEnqueued(job);
 
             // Send notification
-            Jobs.JobNotification.sendJobStarted(job.jobName || job.jobType, job.jobId, job.notificationIcon);
+            JobServices.JobNotification.sendJobStarted(job.jobName || job.jobType, job.jobId, job.notificationIcon);
 
             return jobId;
         } else {
@@ -107,14 +109,14 @@ Singleton {
      * Get a job by ID
      */
     function getJob(jobId) {
-        return Jobs.JobQueue.getJob(jobId);
+        return JobServices.JobQueue.getJob(jobId);
     }
 
     /**
      * Get a job by context ID
      */
     function getJobForContext(contextId) {
-        return Jobs.JobQueue.getJobByContext(contextId);
+        return JobServices.JobQueue.getJobByContext(contextId);
     }
 
     /**
@@ -129,7 +131,7 @@ Singleton {
      * Cancel a running job
      */
     function cancelJob(jobId) {
-        return Jobs.JobQueue.cancel(jobId);
+        return JobServices.JobQueue.cancel(jobId);
     }
 
     /**
@@ -150,35 +152,35 @@ Singleton {
      * Clear all completed jobs
      */
     function clearCompleted() {
-        Jobs.JobQueue.clearCompleted();
+        JobServices.JobQueue.clearCompleted();
     }
 
     /**
      * Get all jobs (queued, running, completed)
      */
     function getAllJobs() {
-        return Jobs.JobQueue.getAllJobs();
+        return JobServices.JobQueue.getAllJobs();
     }
 
     /**
      * Get statistics
      */
     function getStatistics() {
-        return Jobs.JobQueue.getStatistics();
+        return JobServices.JobQueue.getStatistics();
     }
 
     /**
      * Pause job processing
      */
     function pauseAll() {
-        Jobs.JobQueue.pause();
+        JobServices.JobQueue.pause();
     }
 
     /**
      * Resume job processing
      */
     function resumeAll() {
-        Jobs.JobQueue.resume();
+        JobServices.JobQueue.resume();
     }
 
     // Private event handlers
@@ -189,18 +191,18 @@ Singleton {
 
     function _onJobProgressUpdated(job, percent, message) {
         if (job.enableProgressNotifications) {
-            Jobs.JobNotification.sendJobProgress(job.jobName || job.jobType, percent, message, job.notificationIcon);
+            JobServices.JobNotification.sendJobProgress(job.jobName || job.jobType, percent, message, job.notificationIcon);
         }
     }
 
     function _onJobCompleted(job, result) {
         jobCompleted(job, result);
-        Jobs.JobNotification.sendJobCompleted(job.jobName || job.jobType, result, job.notificationImage, job.notificationIcon);
+        JobServices.JobNotification.sendJobCompleted(job.jobName || job.jobType, result, job.notificationImage, job.notificationIcon);
     }
 
     function _onJobFailed(job, error) {
         jobFailed(job, error);
-        Jobs.JobNotification.sendJobFailed(job.jobName || job.jobType, error, "critical");
+        JobServices.JobNotification.sendJobFailed(job.jobName || job.jobType, error, "critical");
     }
 
     Component.onCompleted: {
