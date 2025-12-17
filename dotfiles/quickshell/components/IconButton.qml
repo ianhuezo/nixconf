@@ -118,13 +118,175 @@ Rectangle {
     // Composable loading effect overlay
     ButtonLoadingEffect {
         id: loadingEffect
-        active: root.loading
+        active: false  // Disabled - using new animated border instead
         effectType: root.loadingEffectType
         primaryColor: root.loadingPrimaryColor
         secondaryColor: root.loadingSecondaryColor
         radius: root.radius
         anchors.fill: parent
         z: 10
+        visible: false
+    }
+
+    // Loading/processing animated border (similar to NowPlayingArt)
+    Canvas {
+        id: loadingBorder
+        anchors.fill: parent
+        anchors.margins: -3
+        z: 20
+        visible: root.loading
+        opacity: root.loading ? 1.0 : 0.0
+
+        property real phase: 0
+        property color glowColor: Color.palette.base09
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: root.loading ? 300 : 800
+                easing.type: Easing.InOutQuad
+            }
+        }
+
+        onPaint: {
+            var ctx = getContext("2d");
+            ctx.clearRect(0, 0, width, height);
+
+            // Only draw if there's any opacity
+            if (opacity <= 0) {
+                return;
+            }
+
+            var borderWidth = 3;
+            var radius = root.radius;
+            var glowLength = 60; // Length of the glowing section in pixels
+            var offset = borderWidth / 2;
+
+            // Calculate rounded rect path
+            var w = width - borderWidth;
+            var h = height - borderWidth;
+
+            // Calculate perimeter including rounded corners
+            var straightW = w - 2 * radius;
+            var straightH = h - 2 * radius;
+            var cornerPerimeter = Math.PI * radius / 2; // Quarter circle
+            var perimeter = 2 * straightW + 2 * straightH + 4 * cornerPerimeter;
+
+            // Current position along perimeter based on phase
+            var currentPos = (phase / 360) * perimeter;
+
+            ctx.lineWidth = borderWidth;
+            ctx.lineCap = "round";
+
+            // Draw the glowing segment
+            for (var i = 0; i < glowLength; i++) {
+                var pos = (currentPos + i) % perimeter;
+
+                // Calculate opacity (fade from full to transparent)
+                var segmentOpacity = 1 - (i / glowLength);
+                segmentOpacity = segmentOpacity * segmentOpacity; // Ease out
+
+                // Multiply by border opacity for fade in/out
+                ctx.strokeStyle = Qt.rgba(
+                    glowColor.r,
+                    glowColor.g,
+                    glowColor.b,
+                    segmentOpacity * 0.9 * opacity
+                );
+
+                // Draw a small segment at this position
+                ctx.beginPath();
+                var segmentLength = 2;
+                drawRoundedRectSegment(ctx, pos, segmentLength, w, h, radius, offset);
+                ctx.stroke();
+            }
+        }
+
+        function drawRoundedRectSegment(ctx, startPos, length, w, h, radius, offset) {
+            var straightW = w - 2 * radius;
+            var straightH = h - 2 * radius;
+            var cornerPerimeter = Math.PI * radius / 2;
+
+            var pos = startPos;
+
+            // Top edge (excluding corners)
+            if (pos < straightW) {
+                ctx.moveTo(offset + radius + pos, offset);
+                ctx.lineTo(offset + radius + Math.min(pos + length, straightW), offset);
+                return;
+            }
+            pos -= straightW;
+
+            // Top-right corner
+            if (pos < cornerPerimeter) {
+                var angle = -Math.PI / 2 + (pos / cornerPerimeter) * (Math.PI / 2);
+                var endAngle = -Math.PI / 2 + (Math.min(pos + length, cornerPerimeter) / cornerPerimeter) * (Math.PI / 2);
+                ctx.arc(offset + radius + straightW, offset + radius, radius, angle, endAngle, false);
+                return;
+            }
+            pos -= cornerPerimeter;
+
+            // Right edge
+            if (pos < straightH) {
+                ctx.moveTo(offset + w, offset + radius + pos);
+                ctx.lineTo(offset + w, offset + radius + Math.min(pos + length, straightH));
+                return;
+            }
+            pos -= straightH;
+
+            // Bottom-right corner
+            if (pos < cornerPerimeter) {
+                var angle = 0 + (pos / cornerPerimeter) * (Math.PI / 2);
+                var endAngle = 0 + (Math.min(pos + length, cornerPerimeter) / cornerPerimeter) * (Math.PI / 2);
+                ctx.arc(offset + radius + straightW, offset + radius + straightH, radius, angle, endAngle, false);
+                return;
+            }
+            pos -= cornerPerimeter;
+
+            // Bottom edge
+            if (pos < straightW) {
+                ctx.moveTo(offset + radius + straightW - pos, offset + h);
+                ctx.lineTo(offset + radius + straightW - Math.min(pos + length, straightW), offset + h);
+                return;
+            }
+            pos -= straightW;
+
+            // Bottom-left corner
+            if (pos < cornerPerimeter) {
+                var angle = Math.PI / 2 + (pos / cornerPerimeter) * (Math.PI / 2);
+                var endAngle = Math.PI / 2 + (Math.min(pos + length, cornerPerimeter) / cornerPerimeter) * (Math.PI / 2);
+                ctx.arc(offset + radius, offset + radius + straightH, radius, angle, endAngle, false);
+                return;
+            }
+            pos -= cornerPerimeter;
+
+            // Left edge
+            if (pos < straightH) {
+                ctx.moveTo(offset, offset + radius + straightH - pos);
+                ctx.lineTo(offset, offset + radius + straightH - Math.min(pos + length, straightH));
+                return;
+            }
+            pos -= straightH;
+
+            // Top-left corner
+            if (pos < cornerPerimeter) {
+                var angle = Math.PI + (pos / cornerPerimeter) * (Math.PI / 2);
+                var endAngle = Math.PI + (Math.min(pos + length, cornerPerimeter) / cornerPerimeter) * (Math.PI / 2);
+                ctx.arc(offset + radius, offset + radius, radius, angle, endAngle, false);
+                return;
+            }
+        }
+
+        NumberAnimation on phase {
+            from: 0
+            to: 360
+            duration: 2500
+            loops: Animation.Infinite
+            easing.type: Easing.InOutSine
+            running: root.loading
+        }
+
+        onPhaseChanged: requestPaint()
+        onOpacityChanged: requestPaint()
     }
 
     // Composable state effect (active/inactive indicator)
