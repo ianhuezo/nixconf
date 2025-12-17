@@ -29,6 +29,11 @@ Rectangle {
     property bool active: false // For active/inactive state indicators
     property bool hovered: false // Internal hover state
 
+    // Public properties - Press and hold
+    property bool pressHoldEnabled: false
+    property int pressHoldDuration: 800 // milliseconds
+    property bool isPressHolding: false // Internal state for visual feedback
+
     // Composable effects - set these to customize loading/state effects
     property string loadingEffectType: "spinner" // "gradient", "spinner", "pulse", "shimmer"
     property string stateEffectType: "" // "glow", "border", "pulse", "shimmer", or "" for none
@@ -46,6 +51,7 @@ Rectangle {
 
     // Signals
     signal clicked
+    signal pressHeld // Emitted when press-and-hold duration is reached
 
     // Internal properties
     readonly property bool hasIcon: svgSource !== "" || iconText !== "" || iconName !== ""
@@ -132,6 +138,58 @@ Rectangle {
         }
     }
 
+    // Press-hold progress indicator
+    Rectangle {
+        id: pressHoldProgress
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        anchors.margins: 2
+        height: 3
+        radius: 1.5
+        color: Color.palette.base0B // Green from base16
+        opacity: root.isPressHolding ? 0.8 : 0
+        visible: root.pressHoldEnabled
+
+        width: {
+            if (!root.isPressHolding) return 0;
+            return (parent.width - 4) * Math.min(1.0, pressHoldTimer.interval > 0 ?
+                (Date.now() - pressHoldStartTime) / pressHoldTimer.interval : 0);
+        }
+
+        property real pressHoldStartTime: 0
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 100
+                easing.type: Easing.OutQuad
+            }
+        }
+
+        Timer {
+            id: progressUpdateTimer
+            interval: 16 // ~60fps
+            repeat: true
+            running: root.isPressHolding
+            onTriggered: {
+                // Force width recalculation
+                pressHoldProgress.width = Qt.binding(function() {
+                    if (!root.isPressHolding) return 0;
+                    return (root.width - 4) * Math.min(1.0, pressHoldTimer.interval > 0 ?
+                        (Date.now() - pressHoldProgress.pressHoldStartTime) / pressHoldTimer.interval : 0);
+                });
+            }
+        }
+
+        Connections {
+            target: root
+            function onIsPressHoldingChanged() {
+                if (root.isPressHolding) {
+                    pressHoldProgress.pressHoldStartTime = Date.now();
+                }
+            }
+        }
+    }
+
     layer.enabled: true
     layer.effect: MultiEffect {
         shadowEnabled: true
@@ -209,8 +267,42 @@ Rectangle {
         id: area
         anchors.fill: parent
         cursorShape: root.disabled || root.loading ? Qt.ArrowCursor : Qt.PointingHandCursor
-        onPressed: (root.disabled || root.loading) ? () => {} : root.clicked()
         hoverEnabled: !root.disabled && !root.loading
+
+        onPressed: {
+            if (root.disabled || root.loading) {
+                return;
+            }
+
+            if (root.pressHoldEnabled) {
+                root.isPressHolding = true;
+                pressHoldTimer.start();
+            } else {
+                root.clicked();
+            }
+        }
+
+        onReleased: {
+            if (root.pressHoldEnabled) {
+                pressHoldTimer.stop();
+                if (root.isPressHolding) {
+                    root.isPressHolding = false;
+                    // If timer hasn't fired yet, treat as normal click
+                    if (!pressHoldTimer.hasTriggered) {
+                        root.clicked();
+                    }
+                    pressHoldTimer.hasTriggered = false;
+                }
+            }
+        }
+
+        onCanceled: {
+            if (root.pressHoldEnabled) {
+                pressHoldTimer.stop();
+                root.isPressHolding = false;
+                pressHoldTimer.hasTriggered = false;
+            }
+        }
 
         onEntered: {
             if (root.disabled || root.loading) {
@@ -227,6 +319,25 @@ Rectangle {
             root.hovered = false;
             tooltipTimer.stop();
             tooltipPopup.visible = false;
+
+            // Cancel press-hold if mouse leaves button
+            if (root.pressHoldEnabled && root.isPressHolding) {
+                pressHoldTimer.stop();
+                root.isPressHolding = false;
+                pressHoldTimer.hasTriggered = false;
+            }
+        }
+    }
+
+    // Press and hold timer
+    Timer {
+        id: pressHoldTimer
+        interval: root.pressHoldDuration
+        property bool hasTriggered: false
+        onTriggered: {
+            hasTriggered = true;
+            root.isPressHolding = false;
+            root.pressHeld();
         }
     }
 

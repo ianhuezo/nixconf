@@ -80,6 +80,23 @@ Singleton {
                 property var commandArgs: []
                 command: ["notify-send"].concat(commandArgs)
                 running: false
+
+                Component.onCompleted: {
+                    if (stderr) {
+                        stderr.read.connect(data => {
+                            if (data && data.length > 0) {
+                                console.warn("Notification error:", data);
+                            }
+                        });
+                    }
+
+                    exited.connect((exitCode, exitStatus) => {
+                        if (exitCode !== 0) {
+                            console.warn("notify-send exited with code:", exitCode);
+                        }
+                        notifyProcess.destroy();
+                    });
+                }
             }
         `, jobNotification);
 
@@ -89,23 +106,6 @@ Singleton {
         }
 
         process.commandArgs = args;
-
-        // Handle errors
-        if (process.stderr) {
-            process.stderr.read.connect(data => {
-                if (data && data.length > 0) {
-                    console.warn("Notification error:", data);
-                }
-            });
-        }
-
-        // Cleanup on completion
-        process.finished.connect(exitCode => {
-            if (exitCode !== 0) {
-                console.warn("notify-send exited with code:", exitCode);
-            }
-            process.destroy();
-        });
 
         // Start the process
         process.running = true;

@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell.Widgets
 import Quickshell.Io
 import qs.services
+import qs.services.jobs as Jobs
 import qs.config
 import qs.components
 
@@ -76,17 +77,52 @@ Item {
                             z: -1
                             toolTipContainer: rootArea
                             iconColor: Color.palette.base04
-                            tooltip: "Save Theme"
-                            disabled: root.aiGeneratedTheme == null
+                            tooltip: "Click: Save Now" + "\n" + "Hold: Queue Save"
+                            disabled: root.aiGeneratedTheme == null && generateColors.queuedJob == null
                             property var jsonData: root.aiGeneratedTheme
                             property string filePath: ""
                             property string savedThemePath: ""
+
+                            // Job queueing support
+                            pressHoldEnabled: true
+                            pressHoldDuration: 800
+                            property var queuedJob: null
+                            property string lastJobId: ""
+
+                            loading: saveJsonToLocation.running || queuedJob !== null
+
                             onClicked: {
                                 if (!jsonData) {
                                     return;
                                 }
+                                // Immediate execution (old behavior)
                                 saveJsonToLocation.json = root.aiGeneratedTheme;
                                 saveJsonToLocation.running = true;
+                            }
+
+                            onPressHeld: {
+                                // Queue the save job, depending on AI generation if it's queued
+                                console.log("Queueing save job");
+                                const dependsOn = generateColors.lastJobId || "";
+
+                                const jobId = Jobs.JobManager.enqueueJob(
+                                    "SaveAIColorFile",
+                                    [null, "/etc/nixos/nix/themes"], // colorData will come from dependency
+                                    "ai-color-save",
+                                    (result) => {
+                                        if (result && result.success) {
+                                            saveJsonButton.savedThemePath = result.filePath;
+                                        }
+                                        saveJsonButton.queuedJob = null;
+                                    },
+                                    dependsOn
+                                );
+
+                                if (jobId !== -1) {
+                                    saveJsonButton.queuedJob = jobId;
+                                    saveJsonButton.lastJobId = jobId;
+                                    console.log("Save job queued:", jobId, "depends on:", dependsOn);
+                                }
                             }
 
                             Process {
@@ -145,8 +181,15 @@ Item {
                             z: -1
                             toolTipContainer: rootArea
                             iconColor: Color.palette.base0B
-                            tooltip: "Apply Theme" + (root.imagePath.length > 0 ? "\n& Wallpaper" : "")
-                            disabled: saveJsonButton.savedThemePath.length === 0
+                            tooltip: "Click: Apply Now" + "\n" + "Hold: Queue Apply"
+                            disabled: saveJsonButton.savedThemePath.length === 0 && saveJsonButton.queuedJob == null
+
+                            // Job queueing support
+                            pressHoldEnabled: true
+                            pressHoldDuration: 800
+                            property var queuedJob: null
+
+                            loading: queuedJob !== null
 
                             // Add active state glow when theme is saved
                             active: saveJsonButton.savedThemePath.length > 0
@@ -154,6 +197,7 @@ Item {
                             stateActiveColor: Color.palette.base0B
 
                             onClicked: {
+                                // Immediate execution (old behavior)
                                 if (saveJsonButton.savedThemePath.length > 0) {
                                     Color.loadTheme(saveJsonButton.savedThemePath);
 
@@ -161,6 +205,30 @@ Item {
                                     if (root.imagePath.length > 0) {
                                         Swww.updateWallpaper(root.imagePath);
                                     }
+                                }
+                            }
+
+                            onPressHeld: {
+                                // Queue the apply job, depending on save if it's queued
+                                console.log("Queueing apply job");
+                                const dependsOn = saveJsonButton.lastJobId || "";
+
+                                const jobId = Jobs.JobManager.enqueueJob(
+                                    "ApplyAIColor",
+                                    ["", root.imagePath], // themePath will come from dependency
+                                    "ai-color-apply",
+                                    (result) => {
+                                        if (result && result.success) {
+                                            console.log("Theme applied successfully:", result.themePath);
+                                        }
+                                        applyThemeButton.queuedJob = null;
+                                    },
+                                    dependsOn
+                                );
+
+                                if (jobId !== -1) {
+                                    applyThemeButton.queuedJob = jobId;
+                                    console.log("Apply job queued:", jobId, "depends on:", dependsOn);
                                 }
                             }
                         }

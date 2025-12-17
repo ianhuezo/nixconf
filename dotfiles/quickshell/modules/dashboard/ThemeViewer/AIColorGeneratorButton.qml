@@ -2,19 +2,26 @@ import qs.components
 import QtQuick
 import qs.config
 import qs.services
+import qs.services.jobs as Jobs
 import Quickshell.Io
 
 IconButton {
     id: root
     iconText: "✨"
 
-    tooltip: "Generate" + "\n" + "Theme"
+    tooltip: "Click: Generate Now" + "\n" + "Hold: Queue Generation"
     property string wallpaperPath: ""
     property bool useClaude: true
     property var apiKey: JSON.parse(jsonFile.text())['apiKey'] ?? ""
-    loading: geminiGenerator.running || claudeGenerator.running
+    loading: geminiGenerator.running || claudeGenerator.running || queuedJob !== null
     disabled: geminiGenerator.running || claudeGenerator.running
     signal colorsGenerated(var json)
+
+    // Job queueing support
+    pressHoldEnabled: true
+    pressHoldDuration: 800
+    property var queuedJob: null  // Store the queued job ID
+    property string lastJobId: ""  // Last completed job ID for chaining
 
     // Use gradient loading effect with gold/orange colors
     loadingEffectType: "gradient"
@@ -32,8 +39,9 @@ IconButton {
             return;
         }
 
+        // Immediate execution (old behavior)
         if (useClaude) {
-            console.log("starting Claude color generation");
+            console.log("starting Claude color generation (immediate)");
             claudeGenerator.wallpaperPath = wallpaperPath;
             claudeGenerator.running = true;
         } else {
@@ -41,10 +49,37 @@ IconButton {
                 console.error("API Key could not be read");
                 return;
             }
-            console.log("starting Gemini color generation");
+            console.log("starting Gemini color generation (immediate)");
             geminiGenerator.wallpaperPath = wallpaperPath;
             geminiGenerator.geminiAPIKey = apiKey;
             geminiGenerator.running = true;
+        }
+    }
+
+    onPressHeld: {
+        if (wallpaperPath.length == 0) {
+            console.error("A path must be provided to generate a wallpaper color configuration");
+            return;
+        }
+
+        // Queue the job
+        console.log("Queueing AI color generation job");
+        const jobId = Jobs.JobManager.enqueueJob(
+            "GenerateAIColor",
+            [wallpaperPath, useClaude],
+            "ai-color-gen",
+            (result) => {
+                if (result && result.success) {
+                    root.colorsGenerated(result.colorData);
+                }
+                root.queuedJob = null;
+            }
+        );
+
+        if (jobId !== -1) {
+            root.queuedJob = jobId;
+            root.lastJobId = jobId;
+            console.log("AI generation job queued:", jobId);
         }
     }
 

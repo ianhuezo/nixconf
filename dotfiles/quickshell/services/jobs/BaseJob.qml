@@ -10,7 +10,11 @@ QtObject {
     property string jobName: ""
     property string contextId: ""
 
-    // Job status: "pending", "running", "completed", "failed"
+    // Dependency support
+    property string dependsOnJobId: ""  // Job ID this job depends on
+    property var dependencyResult: null // Result from the dependency job
+
+    // Job status: "pending", "running", "completed", "failed", "waiting_for_dependency"
     property string status: "pending"
 
     // Progress tracking (0-100)
@@ -125,7 +129,7 @@ QtObject {
     }
 
     // Utility: Create a process safely
-    function _createProcess(command, onStdout, onStderr, onFinished) {
+    function _createProcess(command, onStdout, onStderr, onExited) {
         try {
             const processComponent = Qt.createQmlObject(`
                 import QtQuick
@@ -134,24 +138,31 @@ QtObject {
                 Process {
                     id: proc
                     property var commandArray: []
+                    property var stdoutHandler: null
+                    property var stderrHandler: null
+                    property var exitedHandler: null
+
                     command: commandArray
                     running: false
+
+                    Component.onCompleted: {
+                        if (stdoutHandler && stdout) {
+                            stdout.read.connect(stdoutHandler);
+                        }
+                        if (stderrHandler && stderr) {
+                            stderr.read.connect(stderrHandler);
+                        }
+                        if (exitedHandler) {
+                            exited.connect(exitedHandler);
+                        }
+                    }
                 }
             `, baseJob);
 
             processComponent.commandArray = command;
-
-            if (onStdout && processComponent.stdout) {
-                processComponent.stdout.read.connect(onStdout);
-            }
-
-            if (onStderr && processComponent.stderr) {
-                processComponent.stderr.read.connect(onStderr);
-            }
-
-            if (onFinished) {
-                processComponent.finished.connect(onFinished);
-            }
+            processComponent.stdoutHandler = onStdout;
+            processComponent.stderrHandler = onStderr;
+            processComponent.exitedHandler = onExited;
 
             return processComponent;
         } catch (e) {
