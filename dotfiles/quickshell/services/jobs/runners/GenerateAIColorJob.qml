@@ -44,6 +44,50 @@ Jobs.BaseJob {
 
         const cleanScriptPath = getCleanPath(scriptPath);
 
+        // Helper to process AI response through parsing stages
+        function processAIResponse(data) {
+            // Stage 1: Parse outer JSON
+            let claudeResponse;
+            try {
+                claudeResponse = JSON.parse(data);
+            } catch (e) {
+                return { stage: "receiving", progress: 50, message: "Receiving AI response..." };
+            }
+
+            // Stage 2: Validate result field exists
+            if (!claudeResponse.result) {
+                return { stage: "error", message: "No result field in AI response" };
+            }
+
+            // Stage 3: Extract JSON from markdown if needed
+            let resultText = claudeResponse.result.trim();
+            const jsonBlockMatch = resultText.match(/```json\s*\n([\s\S]*?)\n```/);
+            if (jsonBlockMatch) {
+                resultText = jsonBlockMatch[1].trim();
+            } else {
+                const codeBlockMatch = resultText.match(/```\s*\n([\s\S]*?)\n```/);
+                if (codeBlockMatch) {
+                    resultText = codeBlockMatch[1].trim();
+                }
+            }
+
+            // Stage 4: Parse color data JSON
+            let jsonData;
+            try {
+                jsonData = JSON.parse(resultText);
+            } catch (e) {
+                return { stage: "error", message: "Failed to parse AI response: " + e.toString() };
+            }
+
+            // Stage 5: Success
+            return {
+                stage: "success",
+                progress: 90,
+                message: "Colors generated successfully",
+                data: jsonData
+            };
+        }
+
         // Create the process
         generatorProcess = _createProcess(
             [cleanScriptPath, wallpaperPath],
@@ -51,45 +95,23 @@ Jobs.BaseJob {
                 // stdout handler
                 _updateProgress(60, "Processing AI response...");
 
-                try {
-                    const claudeResponse = JSON.parse(data);
+                const outcome = processAIResponse(data);
 
-                    if (claudeResponse.result) {
-                        // Parse the nested JSON string in the result field
-                        try {
-                            // Extract JSON from markdown code fences if present
-                            let resultText = claudeResponse.result.trim();
-
-                            // Look for JSON code block
-                            const jsonBlockMatch = resultText.match(/```json\s*\n([\s\S]*?)\n```/);
-                            if (jsonBlockMatch) {
-                                resultText = jsonBlockMatch[1].trim();
-                            } else {
-                                const codeBlockMatch = resultText.match(/```\s*\n([\s\S]*?)\n```/);
-                                if (codeBlockMatch) {
-                                    resultText = codeBlockMatch[1].trim();
-                                }
-                            }
-
-                            const jsonData = JSON.parse(resultText);
-                            _updateProgress(90, "Colors generated successfully");
-
-                            const result = {
-                                success: true,
-                                colorData: jsonData,
-                                wallpaperPath: wallpaperPath
-                            };
-
-                            _setCompleted(result);
-                        } catch (e) {
-                            _setFailed("Failed to parse AI response: " + e.toString());
-                        }
-                    } else {
-                        _setFailed("No result field in AI response");
-                    }
-                } catch (e) {
-                    // Partial JSON, wait for more data
-                    _updateProgress(50, "Receiving AI response...");
+                switch (outcome.stage) {
+                    case "receiving":
+                        _updateProgress(outcome.progress, outcome.message);
+                        break;
+                    case "error":
+                        _setFailed(outcome.message);
+                        break;
+                    case "success":
+                        _updateProgress(outcome.progress, outcome.message);
+                        _setCompleted({
+                            success: true,
+                            colorData: outcome.data,
+                            wallpaperPath: wallpaperPath
+                        });
+                        break;
                 }
             },
             (data) => {
