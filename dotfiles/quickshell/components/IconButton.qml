@@ -31,7 +31,7 @@ Rectangle {
 
     // Public properties - Press and hold
     property bool pressHoldEnabled: false
-    property int pressHoldDuration: 800 // milliseconds
+    property int pressHoldDuration: 2000 // milliseconds - increased for better UX
     property bool isPressHolding: false // Internal state for visual feedback
 
     // Composable effects - set these to customize loading/state effects
@@ -84,6 +84,23 @@ Rectangle {
     color: backgroundColor
     opacity: disabled || loading ? 0.5 : 1.0
 
+    // Vertical translation for hover and press states
+    transform: Translate {
+        y: {
+            if (root.disabled || root.loading) return 0;
+            if (area.pressed || root.isPressHolding) return 2;  // Pressed: translate down
+            if (root.hovered) return -2;  // Hovered: translate up
+            return 0;  // Default: no translation
+        }
+
+        Behavior on y {
+            NumberAnimation {
+                duration: 150
+                easing.type: Easing.OutQuad
+            }
+        }
+    }
+
     Behavior on opacity {
         NumberAnimation {
             duration: 150
@@ -122,15 +139,21 @@ Rectangle {
         z: 5
     }
 
-    // Hover effect - simple opacity change
+    // Hover effect - border highlight using layered rectangle for smooth borders
     Rectangle {
-        id: hoverOverlay
+        id: hoverBorder
         anchors.fill: parent
         radius: root.radius
-        color: Color.palette.base05
-        opacity: root.hovered && !root.disabled && !root.loading ? 0.1 : 0
+        color: "transparent"
+        border.color: Color.palette.base05
+        border.width: root.hovered && !root.disabled && !root.loading && !root.isPressHolding ? 1 : 0
+        z: 10
 
-        Behavior on opacity {
+        layer.enabled: true
+        layer.smooth: true
+        layer.samples: 4
+
+        Behavior on border.width {
             NumberAnimation {
                 duration: 150
                 easing.type: Easing.OutQuad
@@ -138,24 +161,16 @@ Rectangle {
         }
     }
 
-    // Press-hold progress indicator
-    Rectangle {
-        id: pressHoldProgress
-        anchors.left: parent.left
-        anchors.bottom: parent.bottom
-        anchors.margins: 2
-        height: 3
-        radius: 1.5
-        color: Color.palette.base0B // Green from base16
-        opacity: root.isPressHolding ? 0.8 : 0
+    // Press-hold animated border indicator - draws continuous border filling to 100%
+    Canvas {
+        id: pressHoldBorder
+        anchors.fill: parent
+        anchors.margins: -2
+        z: 15
         visible: root.pressHoldEnabled
+        opacity: root.isPressHolding ? 1.0 : 0
 
-        width: {
-            if (!root.isPressHolding) return 0;
-            return (parent.width - 4) * Math.min(1.0, pressHoldTimer.interval > 0 ?
-                (Date.now() - pressHoldStartTime) / pressHoldTimer.interval : 0);
-        }
-
+        property real progress: 0  // 0 to 1
         property real pressHoldStartTime: 0
 
         Behavior on opacity {
@@ -165,18 +180,177 @@ Rectangle {
             }
         }
 
+        onPaint: {
+            var ctx = getContext("2d");
+            ctx.clearRect(0, 0, width, height);
+
+            if (opacity <= 0 || progress <= 0) {
+                return;
+            }
+
+            var borderWidth = 2;
+            var radius = root.radius;
+            var offset = borderWidth / 2;
+
+            // Calculate rounded rect path
+            var w = width - borderWidth;
+            var h = height - borderWidth;
+
+            // Calculate perimeter including rounded corners
+            var straightW = w - 2 * radius;
+            var straightH = h - 2 * radius;
+            var cornerPerimeter = Math.PI * radius / 2; // Quarter circle
+            var perimeter = 2 * straightW + 2 * straightH + 4 * cornerPerimeter;
+
+            // Length to draw based on progress (0 to full perimeter)
+            var drawLength = progress * perimeter;
+
+            ctx.lineWidth = borderWidth;
+            ctx.lineCap = "round";
+            ctx.lineJoin = "round";
+
+            // Draw the border from start (0) to current progress position
+            var baseColor = Color.palette.base0C;
+            ctx.strokeStyle = Qt.rgba(baseColor.r, baseColor.g, baseColor.b, 0.9);
+
+            // Draw continuous path from 0 to drawLength
+            ctx.beginPath();
+            drawBorderPath(ctx, 0, drawLength, w, h, radius, offset);
+            ctx.stroke();
+        }
+
+        function drawBorderPath(ctx, startLength, endLength, w, h, radius, offset) {
+            var straightW = w - 2 * radius;
+            var straightH = h - 2 * radius;
+            var cornerPerimeter = Math.PI * radius / 2;
+
+            var currentLength = 0;
+            var started = false;
+
+            // Helper function to draw or move based on whether we've started
+            function processSegment(segmentStart, segmentEnd, drawFunc) {
+                if (endLength <= segmentStart) return false; // We're done
+                if (startLength >= segmentEnd) return true; // Skip this segment
+
+                var localStart = Math.max(0, startLength - segmentStart);
+                var localEnd = Math.min(segmentEnd - segmentStart, endLength - segmentStart);
+
+                if (!started) {
+                    started = true;
+                    drawFunc(localStart, localEnd, true); // true = move to start
+                } else {
+                    drawFunc(localStart, localEnd, false); // false = continue path
+                }
+                return endLength > segmentEnd;
+            }
+
+            // Top edge
+            var topEnd = currentLength + straightW;
+            if (!processSegment(currentLength, topEnd, function(start, end, moveToStart) {
+                if (moveToStart) {
+                    ctx.moveTo(offset + radius + start, offset);
+                }
+                ctx.lineTo(offset + radius + end, offset);
+            })) return;
+            currentLength = topEnd;
+
+            // Top-right corner
+            var trEnd = currentLength + cornerPerimeter;
+            if (!processSegment(currentLength, trEnd, function(start, end, moveToStart) {
+                var startAngle = -Math.PI / 2 + (start / cornerPerimeter) * (Math.PI / 2);
+                var endAngle = -Math.PI / 2 + (end / cornerPerimeter) * (Math.PI / 2);
+                if (moveToStart) {
+                    var startX = offset + radius + straightW + radius * Math.cos(startAngle);
+                    var startY = offset + radius + radius * Math.sin(startAngle);
+                    ctx.moveTo(startX, startY);
+                }
+                ctx.arc(offset + radius + straightW, offset + radius, radius, startAngle, endAngle, false);
+            })) return;
+            currentLength = trEnd;
+
+            // Right edge
+            var rightEnd = currentLength + straightH;
+            if (!processSegment(currentLength, rightEnd, function(start, end, moveToStart) {
+                if (moveToStart) {
+                    ctx.moveTo(offset + w, offset + radius + start);
+                }
+                ctx.lineTo(offset + w, offset + radius + end);
+            })) return;
+            currentLength = rightEnd;
+
+            // Bottom-right corner
+            var brEnd = currentLength + cornerPerimeter;
+            if (!processSegment(currentLength, brEnd, function(start, end, moveToStart) {
+                var startAngle = 0 + (start / cornerPerimeter) * (Math.PI / 2);
+                var endAngle = 0 + (end / cornerPerimeter) * (Math.PI / 2);
+                if (moveToStart) {
+                    var startX = offset + radius + straightW + radius * Math.cos(startAngle);
+                    var startY = offset + radius + straightH + radius * Math.sin(startAngle);
+                    ctx.moveTo(startX, startY);
+                }
+                ctx.arc(offset + radius + straightW, offset + radius + straightH, radius, startAngle, endAngle, false);
+            })) return;
+            currentLength = brEnd;
+
+            // Bottom edge
+            var bottomEnd = currentLength + straightW;
+            if (!processSegment(currentLength, bottomEnd, function(start, end, moveToStart) {
+                if (moveToStart) {
+                    ctx.moveTo(offset + radius + straightW - start, offset + h);
+                }
+                ctx.lineTo(offset + radius + straightW - end, offset + h);
+            })) return;
+            currentLength = bottomEnd;
+
+            // Bottom-left corner
+            var blEnd = currentLength + cornerPerimeter;
+            if (!processSegment(currentLength, blEnd, function(start, end, moveToStart) {
+                var startAngle = Math.PI / 2 + (start / cornerPerimeter) * (Math.PI / 2);
+                var endAngle = Math.PI / 2 + (end / cornerPerimeter) * (Math.PI / 2);
+                if (moveToStart) {
+                    var startX = offset + radius + radius * Math.cos(startAngle);
+                    var startY = offset + radius + straightH + radius * Math.sin(startAngle);
+                    ctx.moveTo(startX, startY);
+                }
+                ctx.arc(offset + radius, offset + radius + straightH, radius, startAngle, endAngle, false);
+            })) return;
+            currentLength = blEnd;
+
+            // Left edge
+            var leftEnd = currentLength + straightH;
+            if (!processSegment(currentLength, leftEnd, function(start, end, moveToStart) {
+                if (moveToStart) {
+                    ctx.moveTo(offset, offset + radius + straightH - start);
+                }
+                ctx.lineTo(offset, offset + radius + straightH - end);
+            })) return;
+            currentLength = leftEnd;
+
+            // Top-left corner
+            var tlEnd = currentLength + cornerPerimeter;
+            processSegment(currentLength, tlEnd, function(start, end, moveToStart) {
+                var startAngle = Math.PI + (start / cornerPerimeter) * (Math.PI / 2);
+                var endAngle = Math.PI + (end / cornerPerimeter) * (Math.PI / 2);
+                if (moveToStart) {
+                    var startX = offset + radius + radius * Math.cos(startAngle);
+                    var startY = offset + radius + radius * Math.sin(startAngle);
+                    ctx.moveTo(startX, startY);
+                }
+                ctx.arc(offset + radius, offset + radius, radius, startAngle, endAngle, false);
+            });
+        }
+
         Timer {
             id: progressUpdateTimer
             interval: 16 // ~60fps
             repeat: true
             running: root.isPressHolding
             onTriggered: {
-                // Force width recalculation
-                pressHoldProgress.width = Qt.binding(function() {
-                    if (!root.isPressHolding) return 0;
-                    return (root.width - 4) * Math.min(1.0, pressHoldTimer.interval > 0 ?
-                        (Date.now() - pressHoldProgress.pressHoldStartTime) / pressHoldTimer.interval : 0);
-                });
+                if (root.isPressHolding && pressHoldBorder.pressHoldStartTime > 0) {
+                    var elapsed = Date.now() - pressHoldBorder.pressHoldStartTime;
+                    pressHoldBorder.progress = Math.min(1.0, elapsed / root.pressHoldDuration);
+                    pressHoldBorder.requestPaint();
+                }
             }
         }
 
@@ -184,10 +358,16 @@ Rectangle {
             target: root
             function onIsPressHoldingChanged() {
                 if (root.isPressHolding) {
-                    pressHoldProgress.pressHoldStartTime = Date.now();
+                    pressHoldBorder.pressHoldStartTime = Date.now();
+                    pressHoldBorder.progress = 0;
+                } else {
+                    pressHoldBorder.progress = 0;
                 }
+                pressHoldBorder.requestPaint();
             }
         }
+
+        onProgressChanged: requestPaint()
     }
 
     layer.enabled: true
