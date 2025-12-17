@@ -138,31 +138,36 @@ QtObject {
                 Process {
                     id: proc
                     property var commandArray: []
-                    property var stdoutHandler: null
-                    property var stderrHandler: null
-                    property var exitedHandler: null
 
                     command: commandArray
                     running: false
 
-                    Component.onCompleted: {
-                        if (stdoutHandler && stdout) {
-                            stdout.read.connect(stdoutHandler);
-                        }
-                        if (stderrHandler && stderr) {
-                            stderr.read.connect(stderrHandler);
-                        }
-                        if (exitedHandler) {
-                            exited.connect(exitedHandler);
-                        }
+                    stdout: SplitParser {
+                        id: stdoutParser
+                        splitMarker: ""
+                    }
+
+                    stderr: SplitParser {
+                        id: stderrParser
+                        splitMarker: ""
                     }
                 }
             `, baseJob);
 
             processComponent.commandArray = command;
-            processComponent.stdoutHandler = onStdout;
-            processComponent.stderrHandler = onStderr;
-            processComponent.exitedHandler = onExited;
+
+            // Connect handlers immediately, before returning the process
+            if (onStdout && processComponent.stdout) {
+                processComponent.stdout.read.connect(onStdout);
+            }
+
+            if (onStderr && processComponent.stderr) {
+                processComponent.stderr.read.connect(onStderr);
+            }
+
+            if (onExited) {
+                processComponent.exited.connect(onExited);
+            }
 
             return processComponent;
         } catch (e) {

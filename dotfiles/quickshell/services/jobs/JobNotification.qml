@@ -12,8 +12,8 @@ Singleton {
     // Send notification when job starts
     function sendJobStarted(jobName, jobId, icon) {
         const iconArg = icon || "emblem-system";
-        const title = "Job Started";
-        const body = jobName || "Background job started";
+        const title = jobName;
+        const body = "Starting background task...";
 
         _sendNotification(title, body, iconArg, "", "low", 3000);
     }
@@ -30,8 +30,8 @@ Singleton {
     // Send notification when job completes successfully
     function sendJobCompleted(jobName, result, imagePath, icon) {
         const iconArg = icon || "emblem-default";
-        const title = "Job Complete";
-        const body = jobName || "Background job completed successfully";
+        const title = jobName;
+        const body = "Task completed successfully";
 
         _sendNotification(title, body, iconArg, imagePath || "", "normal", defaultExpireTime);
     }
@@ -39,8 +39,8 @@ Singleton {
     // Send notification when job fails
     function sendJobFailed(jobName, error, urgency) {
         const iconArg = "dialog-error";
-        const title = "Job Failed";
-        const body = `${jobName || "Background job"}\n${error}`;
+        const title = jobName + " - Failed";
+        const body = error || "Task encountered an error";
         const urgencyLevel = urgency || "critical";
 
         _sendNotification(title, body, iconArg, "", urgencyLevel, 0); // 0 = no auto-expire
