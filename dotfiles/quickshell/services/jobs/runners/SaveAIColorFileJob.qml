@@ -1,13 +1,20 @@
 import QtQuick
 import Quickshell.Io
 import ".." as Jobs
+import "../../../libs/nix/nix.js" as Nix
 
 Jobs.BaseJob {
     id: job
 
     // Expected args: [colorData, filePath]
-    property var colorData: args.length > 0 ? args[0] : null
-    property string filePath: args.length > 1 ? args[1] : ""
+    // If dependencyResult exists, use it instead of args[0]
+    property var colorData: {
+        if (dependencyResult && dependencyResult.colorData) {
+            return dependencyResult.colorData;
+        }
+        return args.length > 0 ? args[0] : null;
+    }
+    property string filePath: args.length > 1 ? args[1] : "/etc/nixos/nix/themes"
 
     // Job metadata
     jobName: "Save AI Colors"
@@ -26,64 +33,50 @@ Jobs.BaseJob {
 
         _updateProgress(10, "Preparing to save colors...");
 
-        // Convert color data to JSON string
-        let jsonContent = "";
-        try {
-            jsonContent = JSON.stringify(colorData, null, 2);
-        } catch (e) {
-            _setFailed("Failed to serialize color data: " + e.toString());
+        // Get the folder name from slug
+        const folderName = colorData["slug"];
+        if (!folderName) {
+            _setFailed("The slug was not found, so file name was not created");
             return;
         }
 
+        // Convert JSON to Nix format
+        const nixString = Nix.jsonToNix(colorData, 2);
+        const targetPath = `${filePath}/${folderName}/default.nix`;
+
         _updateProgress(30, "Writing to file...");
 
-        // Write to file using a process (echo to file)
-        // Note: In a real implementation, you might want to use a proper file writing mechanism
-        const writeProcess = Qt.createQmlObject(`
-            import QtQuick
-            import Quickshell.Io
+        const builtCommand = `mkdir -p ${filePath}/${folderName} && echo '${nixString}' > ${targetPath}`;
+        const writeProcess = _createProcess(
+            ["sh", "-c", builtCommand],
+            null, // no stdout handler
+            (data) => {
+                if (data && data.length > 0) {
+                    console.error("Write error:", data);
+                }
+            },
+            (exitCode, exitStatus) => {
+                if (exitCode === 0) {
+                    _updateProgress(100, "Colors saved successfully");
 
-            Process {
-                id: proc
-                property string content: ""
-                property string targetPath: ""
+                    const result = {
+                        success: true,
+                        filePath: targetPath,
+                        folderName: folderName,
+                        colorData: colorData
+                    };
 
-                command: ["sh", "-c", "echo '" + content.replace(/'/g, "'\\\\''") + "' > '" + targetPath + "'"]
-                running: false
+                    _setCompleted(result);
+                } else {
+                    _setFailed("Failed to write file (exit code: " + exitCode + ")");
+                }
             }
-        `, job);
+        );
 
         if (!writeProcess) {
             _setFailed("Failed to create write process");
             return;
         }
-
-        writeProcess.content = jsonContent;
-        writeProcess.targetPath = filePath;
-
-        writeProcess.finished.connect((exitCode) => {
-            if (exitCode === 0) {
-                _updateProgress(100, "Colors saved successfully");
-
-                const result = {
-                    success: true,
-                    filePath: filePath,
-                    colorCount: colorData ? (Array.isArray(colorData) ? colorData.length : Object.keys(colorData).length) : 0
-                };
-
-                _setCompleted(result);
-            } else {
-                _setFailed("Failed to write file (exit code: " + exitCode + ")");
-            }
-
-            writeProcess.destroy();
-        });
-
-        writeProcess.stderr.read.connect((data) => {
-            if (data && data.length > 0) {
-                console.error("Write error:", data);
-            }
-        });
 
         writeProcess.running = true;
     }

@@ -13,7 +13,8 @@ Singleton {
     property var jobComponents: ({
             "YoutubeConversion": "YoutubeConversionJob.qml",
             "SaveAIColorFile": "SaveAIColorFileJob.qml",
-            "ApplyAIColor": "ApplyAIColorJob.qml"
+            "ApplyAIColor": "ApplyAIColorJob.qml",
+            "GenerateAIColor": "GenerateAIColorJob.qml"
         })
 
     // Job ID counter
@@ -33,9 +34,10 @@ Singleton {
      * @param args - Array of arguments for the job
      * @param contextId - Optional context ID to link job to UI element
      * @param onComplete - Optional callback when job completes
+     * @param dependsOnJobId - Optional job ID this job depends on
      * @returns Job ID or -1 on error
      */
-    function enqueueJob(jobType, args, contextId, onComplete) {
+    function enqueueJob(jobType, args, contextId, onComplete, dependsOnJobId) {
         const componentPath = jobComponents[jobType];
 
         if (!componentPath) {
@@ -60,7 +62,8 @@ Singleton {
             jobId: jobId,
             args: args || [],
             jobType: jobType,
-            contextId: contextId || ""
+            contextId: contextId || "",
+            dependsOnJobId: dependsOnJobId || ""
         });
 
         if (!job) {

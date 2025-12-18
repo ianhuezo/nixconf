@@ -167,7 +167,55 @@ Singleton {
 
         // Start jobs until we hit the concurrent limit
         while (runningJobs.length < maxConcurrentJobs && queuedJobs.length > 0) {
-            const job = queuedJobs.shift();
+            // Find the first job whose dependencies are satisfied
+            let jobIndex = -1;
+
+            for (let i = 0; i < queuedJobs.length; i++) {
+                const job = queuedJobs[i];
+
+                // No dependency? Can start immediately
+                if (!job.dependsOnJobId || job.dependsOnJobId.length === 0) {
+                    jobIndex = i;
+                    break;
+                }
+
+                // Has dependency - check if it exists
+                const dependencyJob = _findJobById(job.dependsOnJobId);
+                if (!dependencyJob) {
+                    console.error("Dependency job not found:", job.dependsOnJobId);
+                    job.status = "waiting_for_dependency";
+                    continue;
+                }
+
+                // Dependency failed? Fail this job too
+                if (dependencyJob.status === "failed") {
+                    queuedJobs.splice(i, 1);
+                    queuedJobs = queuedJobs.slice();
+                    job.status = "failed";
+                    job.errorMessage = "Dependency job failed: " + job.dependsOnJobId;
+                    _onJobFailed(job, job.errorMessage);
+                    i--; // Adjust index after splice
+                    continue;
+                }
+
+                // Dependency completed? Pass result and start
+                if (dependencyJob.status === "completed") {
+                    job.dependencyResult = dependencyJob.result;
+                    jobIndex = i;
+                    break;
+                }
+
+                // Dependency still running - wait
+                job.status = "waiting_for_dependency";
+            }
+
+            // No jobs ready to start
+            if (jobIndex === -1) {
+                break;
+            }
+
+            const job = queuedJobs[jobIndex];
+            queuedJobs.splice(jobIndex, 1);
             queuedJobs = queuedJobs.slice();
 
             runningJobs.push(job);

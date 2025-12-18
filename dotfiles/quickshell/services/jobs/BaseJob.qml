@@ -10,7 +10,11 @@ QtObject {
     property string jobName: ""
     property string contextId: ""
 
-    // Job status: "pending", "running", "completed", "failed"
+    // Dependency support
+    property string dependsOnJobId: ""  // Job ID this job depends on
+    property var dependencyResult: null // Result from the dependency job
+
+    // Job status: "pending", "running", "completed", "failed", "waiting_for_dependency"
     property string status: "pending"
 
     // Progress tracking (0-100)
@@ -125,7 +129,7 @@ QtObject {
     }
 
     // Utility: Create a process safely
-    function _createProcess(command, onStdout, onStderr, onFinished) {
+    function _createProcess(command, onStdout, onStderr, onExited) {
         try {
             const processComponent = Qt.createQmlObject(`
                 import QtQuick
@@ -134,13 +138,25 @@ QtObject {
                 Process {
                     id: proc
                     property var commandArray: []
+
                     command: commandArray
                     running: false
+
+                    stdout: SplitParser {
+                        id: stdoutParser
+                        splitMarker: ""
+                    }
+
+                    stderr: SplitParser {
+                        id: stderrParser
+                        splitMarker: ""
+                    }
                 }
             `, baseJob);
 
             processComponent.commandArray = command;
 
+            // Connect handlers immediately, before returning the process
             if (onStdout && processComponent.stdout) {
                 processComponent.stdout.read.connect(onStdout);
             }
@@ -149,8 +165,8 @@ QtObject {
                 processComponent.stderr.read.connect(onStderr);
             }
 
-            if (onFinished) {
-                processComponent.finished.connect(onFinished);
+            if (onExited) {
+                processComponent.exited.connect(onExited);
             }
 
             return processComponent;
