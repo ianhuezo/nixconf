@@ -33,8 +33,8 @@ Item {
     // Fade in when audio starts, fade out when it stops
     Behavior on borderOpacity {
         NumberAnimation {
-            duration: hasAudio ? 300 : 800  // Faster fade in, slower fade out
-            easing.type: Easing.InOutQuad
+            duration: 800 // Faster fade in, slower fade out
+            easing.type: Easing.Linear
         }
     }
 
@@ -46,8 +46,7 @@ Item {
     Canvas {
         id: borderCanvas
         anchors.fill: parent
-        anchors.margins: -3
-        z: 0
+        z: 1
 
         property real phase: 0
         property color glowColor: Color.palette.base0C
@@ -62,13 +61,16 @@ Item {
             }
 
             var borderWidth = 3;
-            var radius = 8;
+            var imageRadius = 5; // The mask radius
+            var radius = imageRadius + 3; // Border radius = image radius + margin
             var glowLength = 60; // Length of the glowing section in pixels
-            var offset = borderWidth / 2;
 
-            // Calculate rounded rect path
+            // Draw border around the inset image (outset border)
+            // The image has 3px margins, border goes around the outside of those margins
             var w = width - borderWidth;
             var h = height - borderWidth;
+            var offset = borderWidth / 2;
+            var offsetY = borderWidth / 2;
 
             // Calculate perimeter including rounded corners
             var straightW = w - 2 * radius;
@@ -91,17 +93,12 @@ Item {
                 opacity = opacity * opacity; // Ease out
 
                 // Multiply by borderOpacity for fade in/out
-                ctx.strokeStyle = Qt.rgba(
-                    glowColor.r,
-                    glowColor.g,
-                    glowColor.b,
-                    opacity * 0.9 * root.borderOpacity
-                );
+                ctx.strokeStyle = Qt.rgba(glowColor.r, glowColor.g, glowColor.b, opacity * 0.9 * root.borderOpacity);
 
                 // Draw a small segment at this position
                 ctx.beginPath();
                 var segmentLength = 2;
-                drawRoundedRectSegment(ctx, pos, segmentLength, w, h, radius, offset);
+                drawRoundedRectSegment(ctx, pos, segmentLength, w, h, radius, offset, offsetY);
                 ctx.stroke();
             }
         }
@@ -115,7 +112,7 @@ Item {
             }
         }
 
-        function drawRoundedRectSegment(ctx, startPos, length, w, h, radius, offset) {
+        function drawRoundedRectSegment(ctx, startPos, length, w, h, radius, offsetX, offsetY) {
             var straightW = w - 2 * radius;
             var straightH = h - 2 * radius;
             var cornerPerimeter = Math.PI * radius / 2;
@@ -124,8 +121,8 @@ Item {
 
             // Top edge (excluding corners)
             if (pos < straightW) {
-                ctx.moveTo(offset + radius + pos, offset);
-                ctx.lineTo(offset + radius + Math.min(pos + length, straightW), offset);
+                ctx.moveTo(offsetX + radius + pos, offsetY);
+                ctx.lineTo(offsetX + radius + Math.min(pos + length, straightW), offsetY);
                 return;
             }
             pos -= straightW;
@@ -134,15 +131,15 @@ Item {
             if (pos < cornerPerimeter) {
                 var angle = -Math.PI / 2 + (pos / cornerPerimeter) * (Math.PI / 2);
                 var endAngle = -Math.PI / 2 + (Math.min(pos + length, cornerPerimeter) / cornerPerimeter) * (Math.PI / 2);
-                ctx.arc(offset + radius + straightW, offset + radius, radius, angle, endAngle, false);
+                ctx.arc(offsetX + radius + straightW, offsetY + radius, radius, angle, endAngle, false);
                 return;
             }
             pos -= cornerPerimeter;
 
             // Right edge
             if (pos < straightH) {
-                ctx.moveTo(offset + w, offset + radius + pos);
-                ctx.lineTo(offset + w, offset + radius + Math.min(pos + length, straightH));
+                ctx.moveTo(offsetX + w, offsetY + radius + pos);
+                ctx.lineTo(offsetX + w, offsetY + radius + Math.min(pos + length, straightH));
                 return;
             }
             pos -= straightH;
@@ -151,15 +148,15 @@ Item {
             if (pos < cornerPerimeter) {
                 var angle = 0 + (pos / cornerPerimeter) * (Math.PI / 2);
                 var endAngle = 0 + (Math.min(pos + length, cornerPerimeter) / cornerPerimeter) * (Math.PI / 2);
-                ctx.arc(offset + radius + straightW, offset + radius + straightH, radius, angle, endAngle, false);
+                ctx.arc(offsetX + radius + straightW, offsetY + radius + straightH, radius, angle, endAngle, false);
                 return;
             }
             pos -= cornerPerimeter;
 
             // Bottom edge
             if (pos < straightW) {
-                ctx.moveTo(offset + radius + straightW - pos, offset + h);
-                ctx.lineTo(offset + radius + straightW - Math.min(pos + length, straightW), offset + h);
+                ctx.moveTo(offsetX + radius + straightW - pos, offsetY + h);
+                ctx.lineTo(offsetX + radius + straightW - Math.min(pos + length, straightW), offsetY + h);
                 return;
             }
             pos -= straightW;
@@ -168,15 +165,15 @@ Item {
             if (pos < cornerPerimeter) {
                 var angle = Math.PI / 2 + (pos / cornerPerimeter) * (Math.PI / 2);
                 var endAngle = Math.PI / 2 + (Math.min(pos + length, cornerPerimeter) / cornerPerimeter) * (Math.PI / 2);
-                ctx.arc(offset + radius, offset + radius + straightH, radius, angle, endAngle, false);
+                ctx.arc(offsetX + radius, offsetY + radius + straightH, radius, angle, endAngle, false);
                 return;
             }
             pos -= cornerPerimeter;
 
             // Left edge
             if (pos < straightH) {
-                ctx.moveTo(offset, offset + radius + straightH - pos);
-                ctx.lineTo(offset, offset + radius + straightH - Math.min(pos + length, straightH));
+                ctx.moveTo(offsetX, offsetY + radius + straightH - pos);
+                ctx.lineTo(offsetX, offsetY + radius + straightH - Math.min(pos + length, straightH));
                 return;
             }
             pos -= straightH;
@@ -185,7 +182,7 @@ Item {
             if (pos < cornerPerimeter) {
                 var angle = Math.PI + (pos / cornerPerimeter) * (Math.PI / 2);
                 var endAngle = Math.PI + (Math.min(pos + length, cornerPerimeter) / cornerPerimeter) * (Math.PI / 2);
-                ctx.arc(offset + radius, offset + radius, radius, angle, endAngle, false);
+                ctx.arc(offsetX + radius, offsetY + radius, radius, angle, endAngle, false);
                 return;
             }
         }
@@ -195,8 +192,8 @@ Item {
             to: 360
             duration: 2500
             loops: Animation.Infinite
-            easing.type: Easing.InOutSine
-            running: root.borderOpacity > 0  // Keep running during fade out
+            easing.type: Easing.Linear
+            running: true  // Always running for smooth continuous loop
         }
 
         onPhaseChanged: requestPaint()
@@ -205,6 +202,7 @@ Item {
     Image {
         id: artImage
         anchors.fill: parent
+        anchors.margins: 3  // Inset by border width
         fillMode: Image.PreserveAspectFit
         sourceSize.width: height
         sourceSize.height: height
