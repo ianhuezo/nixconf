@@ -27,6 +27,7 @@ PanelWindow {
 
     // Computed properties
     property real animatedHeight: isActive ? 54 : 0
+    property real duration: isActive ? 300 : 0
 
     screen: modelData
     implicitHeight: animatedHeight
@@ -40,7 +41,7 @@ PanelWindow {
 
     Behavior on animatedHeight {
         NumberAnimation {
-            duration: 300
+            duration: panel.duration
             easing.type: Easing.OutCubic
         }
     }
