@@ -59,6 +59,9 @@ PanelWindow {
         // Animated scale transform
         property real targetScale: panel.isActive ? 1.0 : 0.0
 
+        // Use opacity to prevent artifacts while preserving the animation
+        opacity: panel.isActive ? 1.0 : 0.0
+
         transform: Scale {
             xScale: container.targetScale
             yScale: container.targetScale
@@ -67,6 +70,13 @@ PanelWindow {
         }
 
         Behavior on targetScale {
+            NumberAnimation {
+                duration: 300
+                easing.type: Easing.OutCubic
+            }
+        }
+
+        Behavior on opacity {
             NumberAnimation {
                 duration: 300
                 easing.type: Easing.OutCubic
