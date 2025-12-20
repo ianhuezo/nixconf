@@ -27,7 +27,7 @@ PanelWindow {
 
     // Computed properties
     property real animatedHeight: isActive ? 54 : 0
-    property real duration: isActive ? 300 : 0
+    property real duration: isActive ? 300 : 1
 
     screen: modelData
     implicitHeight: animatedHeight
