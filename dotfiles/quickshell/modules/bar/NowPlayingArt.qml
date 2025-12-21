@@ -278,6 +278,10 @@ Item {
             }
             root.updateSource(); // Update source after track change
         }
+        function onPlaybackStateChanged() {
+            // Requery image when playback state changes (e.g., play is triggered)
+            root.updateSource();
+        }
     }
     onLocalTrackFileChanged: {
         if (root.localTrackFile.length <= 0) {
