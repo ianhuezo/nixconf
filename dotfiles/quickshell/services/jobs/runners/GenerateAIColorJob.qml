@@ -80,7 +80,8 @@ Jobs.BaseJob {
         _updateProgress(10, "Extracting dominant colors...");
 
         // First extract kmeans colors, then generate AI colors
-        extractKmeansColors(wallpaperPath, 16, (colors) => {
+        // Extract more clusters (32) to capture minority colors better
+        extractKmeansColors(wallpaperPath, 32, (colors) => {
             if (colors && colors.length > 0) {
                 kmeansColors = colors;
                 console.log("Extracted", colors.length, "kmeans colors");
