@@ -17,6 +17,59 @@ Jobs.BaseJob {
 
     // Internal process holder
     property var generatorProcess: null
+    property var kmeansColors: null
+
+    // Function to extract dominant colors using kmeans
+    function extractKmeansColors(imagePath, k, callback) {
+        const kmeansProcess = _createProcess(
+            [FileConfig.scripts.kmeansColors, imagePath, k.toString()],
+            (data) => {
+                // Parse output: (#hex,pct),(#hex,pct),...
+                const colors = parseKmeansOutput(data.trim());
+                if (callback) callback(colors);
+            },
+            (data) => {
+                if (data && !data.includes("Error:")) {
+                    console.error("K-means stderr:", data);
+                }
+            },
+            (exitCode, exitStatus) => {
+                if (exitCode !== 0) {
+                    console.error("K-means extraction failed with exit code:", exitCode);
+                    if (callback) callback(null);
+                }
+            }
+        );
+
+        if (kmeansProcess) {
+            kmeansProcess.running = true;
+        } else {
+            console.error("Failed to create kmeans process");
+            if (callback) callback(null);
+        }
+    }
+
+    function parseKmeansOutput(output) {
+        // Parse: (#hex,pct),(#hex,pct),...
+        const tuples = output.match(/\(#[0-9a-fA-F]+,[0-9.]+\)/g);
+        if (!tuples) return [];
+
+        return tuples.map(tuple => {
+            const match = tuple.match(/\(#([0-9a-fA-F]+),([0-9.]+)\)/);
+            if (match) {
+                return {
+                    hex: "#" + match[1],
+                    percentage: parseFloat(match[2])
+                };
+            }
+            return null;
+        }).filter(c => c !== null);
+    }
+
+    function formatKmeansColors(colors) {
+        // Format as: color1%pct1,color2%pct2,...
+        return colors.map(c => `${c.hex}%${c.percentage.toFixed(2)}`).join(',');
+    }
 
     function execute() {
         if (!wallpaperPath || wallpaperPath.length === 0) {
@@ -24,8 +77,24 @@ Jobs.BaseJob {
             return;
         }
 
-        _updateProgress(10, "Preparing to generate colors...");
+        _updateProgress(10, "Extracting dominant colors...");
 
+        // First extract kmeans colors, then generate AI colors
+        extractKmeansColors(wallpaperPath, 16, (colors) => {
+            if (colors && colors.length > 0) {
+                kmeansColors = colors;
+                console.log("Extracted", colors.length, "kmeans colors");
+                _updateProgress(20, "Starting AI color generation...");
+                startAIGeneration();
+            } else {
+                console.warn("Failed to extract kmeans colors, proceeding without them");
+                _updateProgress(20, "Starting AI color generation...");
+                startAIGeneration();
+            }
+        });
+    }
+
+    function startAIGeneration() {
         const scriptPath = useClaude
             ? FileConfig.scripts.generateClaudeWallpaper
             : FileConfig.scripts.generateGeminiWallpaper;
@@ -35,14 +104,15 @@ Jobs.BaseJob {
             return;
         }
 
-        _updateProgress(20, "Starting AI color generation...");
-
         // Strip file:// prefix from script location for shell execution
         function getCleanPath(path) {
             return path.replace(/^file:\/\//, '');
         }
 
         const cleanScriptPath = getCleanPath(scriptPath);
+
+        // Format kmeans colors for passing to script
+        const kmeansColorString = kmeansColors ? formatKmeansColors(kmeansColors) : "";
 
         // Helper to process AI response through parsing stages
         function processAIResponse(data) {
@@ -88,9 +158,9 @@ Jobs.BaseJob {
             };
         }
 
-        // Create the process
+        // Create the process (pass wallpaperPath and kmeans colors)
         generatorProcess = _createProcess(
-            [cleanScriptPath, wallpaperPath],
+            [cleanScriptPath, wallpaperPath, kmeansColorString],
             (data) => {
                 // stdout handler
                 _updateProgress(60, "Processing AI response...");

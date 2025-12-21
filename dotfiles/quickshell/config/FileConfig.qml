@@ -56,6 +56,7 @@ Singleton {
         readonly property string generateWallpaper: root.getScriptPath('ai_color_creator/generate_wallpaper.sh')
         readonly property string generateClaudeWallpaper: root.getScriptPath('ai_color_creator/generate_claude_wallpaper.sh')
         readonly property string generateAIColorPrompt: root.getScriptPath('ai_color_creator/prompt.md')
+        readonly property string kmeansColors: root.getScriptPath('kmeans_colors/kmeans.sh')
     }
 
     readonly property QtObject environment: QtObject {
