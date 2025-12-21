@@ -20,6 +20,26 @@ Extract a **cohesive color scheme** from the wallpaper for terminal, editor, and
 - Dark wallpaper → `"variant": "dark"`, base00 = deep atmospheric tone
 - Light wallpaper → `"variant": "light"`, base00 = warm/cool white
 
+**3. K-Means Color Reference (Use as Inspiration, Not Prescription)**
+The following 32 colors were extracted from the wallpaper via k-means clustering, shown as HEX = HSL (percentage):
+
+(Note: We extract 32 clusters instead of 16 to better capture minority accent colors that might otherwise be absorbed into dominant tones. Look for interesting low-percentage colors!)
+
+**KMEANS_COLORS_PLACEHOLDER**
+
+**Understanding HSL values**:
+- **Hue (0-360°)**: The color angle - blues ~210-240°, purples ~270-300°, reds ~0°/360°, greens ~120°, yellows ~60°
+- **Saturation (0-100%)**: Color intensity - low saturation = grayish/muted, high = vivid
+- **Lightness (0-100%)**: Brightness - 0% = black, 50% = pure color, 100% = white
+
+**IMPORTANT**: These are *statistical samples*, not your final palette. Use them as:
+- **Mood validators**: High % colors confirm the dominant atmosphere (backgrounds should align with their hue/lightness)
+- **Saturation guidance**: Notice if the image is muted (low S%) or vibrant (high S%) and match that energy
+- **Accent inspiration**: Low % colors (<5%) reveal subtle details worth amplifying - boost their saturation if needed!
+- **Creative freedom**: If you see potential colors the image *could* support (warmer highlights, cooler shadows), add them! The kmeans data is mechanical - your job is artistic.
+
+**Example**: If kmeans shows mostly hsl(220, 15%, 12%) but you see moonlight could justify hsl(200, 30%, 85%) or shadows could be warmer hsl(260, 20%, 8%), use those!
+
 ---
 
 ## Color Extraction Rules
