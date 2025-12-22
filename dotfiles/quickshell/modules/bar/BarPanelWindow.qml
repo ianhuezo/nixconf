@@ -110,20 +110,23 @@ PanelWindow {
             }
         }
 
-        // Three-section layout
-        Row {
+        // Three-section layout using anchors for better positioning
+        Item {
             anchors.fill: parent
             anchors.margins: (isBarBordered && !isSectionedBar) ? 1 : 0
-            spacing: 0
             z: 2
 
             // LEFT SECTION
             Item {
                 id: leftSection
-                width: parent.width / 8
-                height: parent.height
+                anchors {
+                    left: parent.left
+                    leftMargin: 8
+                    top: parent.top
+                    bottom: parent.bottom
+                }
+                width: 200
 
-                // Outer rectangle acts as border (only for separate sections)
                 Rectangle {
                     anchors.fill: parent
                     color: barBorderColor
@@ -132,7 +135,6 @@ PanelWindow {
                     z: 0
                 }
 
-                // Inner rectangle (actual content)
                 Rectangle {
                     anchors.fill: parent
                     anchors.margins: (isBarBordered && isSectionedBar) ? 1 : 0
@@ -146,19 +148,16 @@ PanelWindow {
                 }
             }
 
-            // CENTER SPACER
-            Item {
-                width: (parent.width - leftSection.width - centerSection.width - rightSection.width) / 2
-                height: parent.height
-            }
-
             // CENTER SECTION
             Item {
                 id: centerSection
+                anchors {
+                    horizontalCenter: parent.horizontalCenter
+                    top: parent.top
+                    bottom: parent.bottom
+                }
                 width: parent.width / 7
-                height: parent.height
 
-                // Outer rectangle acts as border (only for separate sections)
                 Rectangle {
                     anchors.fill: parent
                     color: barBorderColor
@@ -167,39 +166,35 @@ PanelWindow {
                     z: 0
                 }
 
-                // Inner rectangle (actual content)
-                ClippingRectangle {
+                Rectangle {
                     anchors.fill: parent
                     anchors.margins: (isBarBordered && isSectionedBar) ? 1 : 0
                     color: Color.palette.base01
                     radius: (isBarBordered && isSectionedBar) ? panelRadius - 1 : panelRadius
                     z: 1
 
-                    VisualizerContainer {
-                        anchors.centerIn: parent
-                        height: isSectionedBar ? parent.height : parent.height - 4
+                    Center {
+                        anchors.fill: parent
                         cavaValues: panel.cavaValues
                         useCanvas: panel.useCanvasVisualization
                         waveColor: panel.widgetMainColor
-                        barColor: "transparent"
+                        isSectionedBar: panel.isSectionedBar
                         onToggleVisualization: panel.useCanvasVisualization = !panel.useCanvasVisualization
                     }
                 }
             }
 
-            // RIGHT SPACER
-            Item {
-                width: (parent.width - leftSection.width - centerSection.width - rightSection.width) / 2
-                height: parent.height
-            }
-
             // RIGHT SECTION
             Item {
                 id: rightSection
-                width: parent.width / 8
-                height: parent.height
+                anchors {
+                    right: parent.right
+                    rightMargin: 8
+                    top: parent.top
+                    bottom: parent.bottom
+                }
+                width: 320
 
-                // Outer rectangle acts as border (only for separate sections)
                 Rectangle {
                     anchors.fill: parent
                     color: barBorderColor
@@ -208,53 +203,18 @@ PanelWindow {
                     z: 0
                 }
 
-                // Inner rectangle (actual content)
                 Rectangle {
                     anchors.fill: parent
                     anchors.margins: (isBarBordered && isSectionedBar) ? 1 : 0
                     color: Color.palette.base01
                     radius: (isBarBordered && isSectionedBar) ? panelRadius - 1 : panelRadius
                     z: 1
+                    clip: false
 
-                    Row {
-                        id: statsRow
-                        anchors {
-                            verticalCenter: parent.verticalCenter
-                            horizontalCenter: parent.horizontalCenter
-                        }
-                        height: parent.height
-                        layoutDirection: Qt.RightToLeft
-                        spacing: 4  // Reduced for sectioned mode
-
-                        property var statsData: [
-                            {
-                                percentage: GetGPU.gpu,
-                                statText: GetGPU.gpu + "%",
-                                iconSource: FileConfig.icons.gpu
-                            },
-                            {
-                                percentage: GetCPU.cpu,
-                                statText: GetCPU.cpu + "%",
-                                iconSource: FileConfig.icons.cpu
-                            },
-                            {
-                                percentage: GetRam.ram,
-                                statText: GetRam.ram + "%",
-                                iconSource: FileConfig.icons.ram
-                            }
-                        ]
-                        Repeater {
-                            model: statsRow.statsData
-                            delegate: CircleProgress {
-                                percentage: modelData.percentage
-                                statText: modelData.statText
-                                iconSource: modelData.iconSource
-                                textColor: panel.widgetMainColor
-                                backgroundColor: Color.palette.base01
-                                progressColor: panel.widgetMainColor
-                                color: panel.color
-                            }
-                        }
+                    Right {
+                        anchors.fill: parent
+                        widgetColor: panel.widgetMainColor
+                        clockColor: Color.palette.base0F
                     }
                 }
             }

@@ -46,6 +46,7 @@ Singleton {
         readonly property string media: root.getIconPath("media.svg")
         readonly property string workspace: root.getIconPath("lamp_on.png")
         readonly property string spark: root.getIconPath("spark.svg")
+        readonly property string clock: root.getIconPath("clock.svg")
     }
 
     readonly property QtObject scripts: QtObject {
