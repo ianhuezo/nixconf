@@ -123,11 +123,55 @@ vim.api.nvim_set_hl(0, "BufferLineBufferSelected", { fg = "${getOffsetColor(Colo
 vim.api.nvim_set_hl(0, "BufferLineBufferVisible", { fg = "${getOffsetColor(Color.palette.base04)}", bg = "${getOffsetColor(Color.palette.base01)}" })
 vim.api.nvim_set_hl(0, "BufferLineTab", { fg = "${getOffsetColor(Color.palette.base04)}", bg = "${getOffsetColor(Color.palette.base01)}" })
 vim.api.nvim_set_hl(0, "BufferLineTabSelected", { fg = "${getOffsetColor(Color.palette.base0D)}", bg = "${getOffsetColor(Color.palette.base00)}", bold = true })
+vim.api.nvim_set_hl(0, "BufferLineTabSeparator", { fg = "${getOffsetColor(Color.palette.base00)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineTabSeparatorSelected", { fg = "${getOffsetColor(Color.palette.base00)}", bg = "${getOffsetColor(Color.palette.base00)}" })
 vim.api.nvim_set_hl(0, "BufferLineSeparator", { fg = "${getOffsetColor(Color.palette.base00)}", bg = "${getOffsetColor(Color.palette.base01)}" })
 vim.api.nvim_set_hl(0, "BufferLineSeparatorSelected", { fg = "${getOffsetColor(Color.palette.base00)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "BufferLineSeparatorVisible", { fg = "${getOffsetColor(Color.palette.base00)}", bg = "${getOffsetColor(Color.palette.base01)}" })
 vim.api.nvim_set_hl(0, "BufferLineIndicatorSelected", { fg = "${getOffsetColor(Color.palette.base0D)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "BufferLineIndicatorVisible", { fg = "${getOffsetColor(Color.palette.base03)}", bg = "${getOffsetColor(Color.palette.base01)}" })
 vim.api.nvim_set_hl(0, "BufferLineModified", { fg = "${getOffsetColor(Color.palette.base09)}", bg = "${getOffsetColor(Color.palette.base01)}" })
 vim.api.nvim_set_hl(0, "BufferLineModifiedSelected", { fg = "${getOffsetColor(Color.palette.base09)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "BufferLineModifiedVisible", { fg = "${getOffsetColor(Color.palette.base09)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineCloseButton", { fg = "${getOffsetColor(Color.palette.base03)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineCloseButtonSelected", { fg = "${getOffsetColor(Color.palette.base08)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "BufferLineCloseButtonVisible", { fg = "${getOffsetColor(Color.palette.base03)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineNumbers", { fg = "${getOffsetColor(Color.palette.base04)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineNumbersSelected", { fg = "${getOffsetColor(Color.palette.base0D)}", bg = "${getOffsetColor(Color.palette.base00)}", bold = true })
+vim.api.nvim_set_hl(0, "BufferLineNumbersVisible", { fg = "${getOffsetColor(Color.palette.base04)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineDiagnostic", { fg = "${getOffsetColor(Color.palette.base03)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineDiagnosticSelected", { fg = "${getOffsetColor(Color.palette.base04)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "BufferLineDiagnosticVisible", { fg = "${getOffsetColor(Color.palette.base03)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineError", { fg = "${getOffsetColor(Color.palette.base08)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineErrorSelected", { fg = "${getOffsetColor(Color.palette.base08)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "BufferLineErrorVisible", { fg = "${getOffsetColor(Color.palette.base08)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineErrorDiagnostic", { fg = "${getOffsetColor(Color.palette.base08)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineErrorDiagnosticSelected", { fg = "${getOffsetColor(Color.palette.base08)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "BufferLineErrorDiagnosticVisible", { fg = "${getOffsetColor(Color.palette.base08)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineWarning", { fg = "${getOffsetColor(Color.palette.base0A)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineWarningSelected", { fg = "${getOffsetColor(Color.palette.base0A)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "BufferLineWarningVisible", { fg = "${getOffsetColor(Color.palette.base0A)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineWarningDiagnostic", { fg = "${getOffsetColor(Color.palette.base0A)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineWarningDiagnosticSelected", { fg = "${getOffsetColor(Color.palette.base0A)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "BufferLineWarningDiagnosticVisible", { fg = "${getOffsetColor(Color.palette.base0A)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineInfo", { fg = "${getOffsetColor(Color.palette.base0C)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineInfoSelected", { fg = "${getOffsetColor(Color.palette.base0C)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "BufferLineInfoVisible", { fg = "${getOffsetColor(Color.palette.base0C)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineInfoDiagnostic", { fg = "${getOffsetColor(Color.palette.base0C)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineInfoDiagnosticSelected", { fg = "${getOffsetColor(Color.palette.base0C)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "BufferLineInfoDiagnosticVisible", { fg = "${getOffsetColor(Color.palette.base0C)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineHint", { fg = "${getOffsetColor(Color.palette.base0B)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineHintSelected", { fg = "${getOffsetColor(Color.palette.base0B)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "BufferLineHintVisible", { fg = "${getOffsetColor(Color.palette.base0B)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineHintDiagnostic", { fg = "${getOffsetColor(Color.palette.base0B)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineHintDiagnosticSelected", { fg = "${getOffsetColor(Color.palette.base0B)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "BufferLineHintDiagnosticVisible", { fg = "${getOffsetColor(Color.palette.base0B)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineDuplicate", { fg = "${getOffsetColor(Color.palette.base03)}", bg = "${getOffsetColor(Color.palette.base01)}", italic = true })
+vim.api.nvim_set_hl(0, "BufferLineDuplicateSelected", { fg = "${getOffsetColor(Color.palette.base04)}", bg = "${getOffsetColor(Color.palette.base00)}", italic = true })
+vim.api.nvim_set_hl(0, "BufferLineDuplicateVisible", { fg = "${getOffsetColor(Color.palette.base03)}", bg = "${getOffsetColor(Color.palette.base01)}", italic = true })
+vim.api.nvim_set_hl(0, "BufferLinePick", { fg = "${getOffsetColor(Color.palette.base08)}", bg = "${getOffsetColor(Color.palette.base01)}", bold = true })
+vim.api.nvim_set_hl(0, "BufferLinePickSelected", { fg = "${getOffsetColor(Color.palette.base08)}", bg = "${getOffsetColor(Color.palette.base00)}", bold = true })
+vim.api.nvim_set_hl(0, "BufferLinePickVisible", { fg = "${getOffsetColor(Color.palette.base08)}", bg = "${getOffsetColor(Color.palette.base01)}", bold = true })
 if pcall(require, 'lualine') then require('lualine').setup() end
 EOF
 `;
@@ -190,13 +234,83 @@ vim.api.nvim_set_hl(0, "BufferLineBackground", { fg = "${getOffsetColor(Color.pa
 vim.api.nvim_set_hl(0, "BufferLineBuffer", { fg = "${getOffsetColor(Color.palette.base04)}", bg = "${getOffsetColor(Color.palette.base01)}" })
 vim.api.nvim_set_hl(0, "BufferLineBufferSelected", { fg = "${getOffsetColor(Color.palette.base05)}", bg = "${getOffsetColor(Color.palette.base00)}", bold = true, italic = false })
 vim.api.nvim_set_hl(0, "BufferLineBufferVisible", { fg = "${getOffsetColor(Color.palette.base04)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+
+-- Tab highlights
 vim.api.nvim_set_hl(0, "BufferLineTab", { fg = "${getOffsetColor(Color.palette.base04)}", bg = "${getOffsetColor(Color.palette.base01)}" })
 vim.api.nvim_set_hl(0, "BufferLineTabSelected", { fg = "${getOffsetColor(Color.palette.base0D)}", bg = "${getOffsetColor(Color.palette.base00)}", bold = true })
+vim.api.nvim_set_hl(0, "BufferLineTabSeparator", { fg = "${getOffsetColor(Color.palette.base00)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineTabSeparatorSelected", { fg = "${getOffsetColor(Color.palette.base00)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+
+-- Separator highlights
 vim.api.nvim_set_hl(0, "BufferLineSeparator", { fg = "${getOffsetColor(Color.palette.base00)}", bg = "${getOffsetColor(Color.palette.base01)}" })
 vim.api.nvim_set_hl(0, "BufferLineSeparatorSelected", { fg = "${getOffsetColor(Color.palette.base00)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "BufferLineSeparatorVisible", { fg = "${getOffsetColor(Color.palette.base00)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+
+-- Indicator highlights
 vim.api.nvim_set_hl(0, "BufferLineIndicatorSelected", { fg = "${getOffsetColor(Color.palette.base0D)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "BufferLineIndicatorVisible", { fg = "${getOffsetColor(Color.palette.base03)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+
+-- Modified buffer highlights
 vim.api.nvim_set_hl(0, "BufferLineModified", { fg = "${getOffsetColor(Color.palette.base09)}", bg = "${getOffsetColor(Color.palette.base01)}" })
 vim.api.nvim_set_hl(0, "BufferLineModifiedSelected", { fg = "${getOffsetColor(Color.palette.base09)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "BufferLineModifiedVisible", { fg = "${getOffsetColor(Color.palette.base09)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+
+-- Close button highlights (fixes gray bars on close icons)
+vim.api.nvim_set_hl(0, "BufferLineCloseButton", { fg = "${getOffsetColor(Color.palette.base03)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineCloseButtonSelected", { fg = "${getOffsetColor(Color.palette.base08)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "BufferLineCloseButtonVisible", { fg = "${getOffsetColor(Color.palette.base03)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+
+-- Numbers highlights
+vim.api.nvim_set_hl(0, "BufferLineNumbers", { fg = "${getOffsetColor(Color.palette.base04)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineNumbersSelected", { fg = "${getOffsetColor(Color.palette.base0D)}", bg = "${getOffsetColor(Color.palette.base00)}", bold = true })
+vim.api.nvim_set_hl(0, "BufferLineNumbersVisible", { fg = "${getOffsetColor(Color.palette.base04)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+
+-- Diagnostic highlights (fixes gray bars on diagnostic icons)
+vim.api.nvim_set_hl(0, "BufferLineDiagnostic", { fg = "${getOffsetColor(Color.palette.base03)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineDiagnosticSelected", { fg = "${getOffsetColor(Color.palette.base04)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "BufferLineDiagnosticVisible", { fg = "${getOffsetColor(Color.palette.base03)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+
+-- Error diagnostic highlights
+vim.api.nvim_set_hl(0, "BufferLineError", { fg = "${getOffsetColor(Color.palette.base08)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineErrorSelected", { fg = "${getOffsetColor(Color.palette.base08)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "BufferLineErrorVisible", { fg = "${getOffsetColor(Color.palette.base08)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineErrorDiagnostic", { fg = "${getOffsetColor(Color.palette.base08)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineErrorDiagnosticSelected", { fg = "${getOffsetColor(Color.palette.base08)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "BufferLineErrorDiagnosticVisible", { fg = "${getOffsetColor(Color.palette.base08)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+
+-- Warning diagnostic highlights
+vim.api.nvim_set_hl(0, "BufferLineWarning", { fg = "${getOffsetColor(Color.palette.base0A)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineWarningSelected", { fg = "${getOffsetColor(Color.palette.base0A)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "BufferLineWarningVisible", { fg = "${getOffsetColor(Color.palette.base0A)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineWarningDiagnostic", { fg = "${getOffsetColor(Color.palette.base0A)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineWarningDiagnosticSelected", { fg = "${getOffsetColor(Color.palette.base0A)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "BufferLineWarningDiagnosticVisible", { fg = "${getOffsetColor(Color.palette.base0A)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+
+-- Info diagnostic highlights
+vim.api.nvim_set_hl(0, "BufferLineInfo", { fg = "${getOffsetColor(Color.palette.base0C)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineInfoSelected", { fg = "${getOffsetColor(Color.palette.base0C)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "BufferLineInfoVisible", { fg = "${getOffsetColor(Color.palette.base0C)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineInfoDiagnostic", { fg = "${getOffsetColor(Color.palette.base0C)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineInfoDiagnosticSelected", { fg = "${getOffsetColor(Color.palette.base0C)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "BufferLineInfoDiagnosticVisible", { fg = "${getOffsetColor(Color.palette.base0C)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+
+-- Hint diagnostic highlights
+vim.api.nvim_set_hl(0, "BufferLineHint", { fg = "${getOffsetColor(Color.palette.base0B)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineHintSelected", { fg = "${getOffsetColor(Color.palette.base0B)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "BufferLineHintVisible", { fg = "${getOffsetColor(Color.palette.base0B)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineHintDiagnostic", { fg = "${getOffsetColor(Color.palette.base0B)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+vim.api.nvim_set_hl(0, "BufferLineHintDiagnosticSelected", { fg = "${getOffsetColor(Color.palette.base0B)}", bg = "${getOffsetColor(Color.palette.base00)}" })
+vim.api.nvim_set_hl(0, "BufferLineHintDiagnosticVisible", { fg = "${getOffsetColor(Color.palette.base0B)}", bg = "${getOffsetColor(Color.palette.base01)}" })
+
+-- Duplicate buffer highlights
+vim.api.nvim_set_hl(0, "BufferLineDuplicate", { fg = "${getOffsetColor(Color.palette.base03)}", bg = "${getOffsetColor(Color.palette.base01)}", italic = true })
+vim.api.nvim_set_hl(0, "BufferLineDuplicateSelected", { fg = "${getOffsetColor(Color.palette.base04)}", bg = "${getOffsetColor(Color.palette.base00)}", italic = true })
+vim.api.nvim_set_hl(0, "BufferLineDuplicateVisible", { fg = "${getOffsetColor(Color.palette.base03)}", bg = "${getOffsetColor(Color.palette.base01)}", italic = true })
+
+-- Pick mode highlights
+vim.api.nvim_set_hl(0, "BufferLinePick", { fg = "${getOffsetColor(Color.palette.base08)}", bg = "${getOffsetColor(Color.palette.base01)}", bold = true })
+vim.api.nvim_set_hl(0, "BufferLinePickSelected", { fg = "${getOffsetColor(Color.palette.base08)}", bg = "${getOffsetColor(Color.palette.base00)}", bold = true })
+vim.api.nvim_set_hl(0, "BufferLinePickVisible", { fg = "${getOffsetColor(Color.palette.base08)}", bg = "${getOffsetColor(Color.palette.base01)}", bold = true })
 
 -- Lualine will automatically use base16 colors, but we can ensure it refreshes
 if pcall(require, 'lualine') then
