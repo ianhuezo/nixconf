@@ -1,5 +1,5 @@
 final: prev: {
-  thunar = prev.xfce.thunar.overrideAttrs (oldAttrs: rec {
+  thunar = prev.thunar.overrideAttrs (oldAttrs: {
     patches = (oldAttrs.patches or [ ]) ++ [
       ./pipe.patch
     ];

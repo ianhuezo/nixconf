@@ -92,7 +92,7 @@ in
     typescript-language-server
     syncplay
     claude-code
-    inputs.hyprland-qtutils.packages.${pkgs.system}.default
+    inputs.hyprland-qtutils.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 
   home.file.".config/ags".source = config.lib.file.mkOutOfStoreSymlink agsPath;

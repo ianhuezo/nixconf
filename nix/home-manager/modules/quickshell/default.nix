@@ -10,7 +10,7 @@ let
   cfg = config.modules.quickshell;
   isLinux = pkgs.stdenv.isLinux;
   quickshellPath = /etc/nixos/dotfiles/quickshell;
-  hasQuickshell = inputs ? quickshell && inputs.quickshell ? packages.${pkgs.system};
+  hasQuickshell = inputs ? quickshell && inputs.quickshell ? packages.${pkgs.stdenv.hostPlatform.system};
 in
 {
   options.modules.quickshell = {
@@ -19,7 +19,7 @@ in
 
   config = mkIf (cfg.enable && isLinux && hasQuickshell) {
     home.packages = [
-      inputs.quickshell.packages.${pkgs.system}.default
+      inputs.quickshell.packages.${pkgs.stdenv.hostPlatform.system}.default
       pkgs.qt6.qtbase
       pkgs.qt6.qtdeclarative
       pkgs.qt6.qtsvg
@@ -34,7 +34,7 @@ in
       QS_CONFIG_PATH = "${config.home.homeDirectory}/.config/quickshell";
       QS_BASE_PATH = "${config.home.homeDirectory}/.config/quickshell";
       QML2_IMPORT_PATH = "${pkgs.qt6.qtdeclarative}/${pkgs.qt6.qtbase.qtQmlPrefix}:${
-        inputs.quickshell.packages.${pkgs.system}.default
+        inputs.quickshell.packages.${pkgs.stdenv.hostPlatform.system}.default
       }/lib/qt-6/qml:${config.home.homeDirectory}/.config/quickshell";
       QML_IMPORT_PATH = "${config.home.homeDirectory}/.config/quickshell";
       QT_QML_ROOT_PATH = "${config.home.homeDirectory}/.config/quickshell";

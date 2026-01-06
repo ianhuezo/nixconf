@@ -66,7 +66,7 @@ in
 
   config = mkIf cfg.enable {
     home.packages = [
-      inputs.nixd.packages.${pkgs.system}.default
+      inputs.nixd.packages.${pkgs.stdenv.hostPlatform.system}.default
     ];
     programs.nixvim = {
       enable = true;
@@ -251,7 +251,7 @@ in
         cmd = [
           "${pkgs.qt6.qtdeclarative}/bin/qmlls"
           "-I"
-          "${inputs.quickshell.packages.${pkgs.system}.default}/lib/qt-6/qml"
+          "${inputs.quickshell.packages.${pkgs.stdenv.hostPlatform.system}.default}/lib/qt-6/qml"
           "-I"
           "${pkgs.qt6.qtdeclarative}/${pkgs.qt6.qtbase.qtQmlPrefix}"
         ];

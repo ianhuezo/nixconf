@@ -45,9 +45,9 @@ in
   };
   config = mkIf cfg.enable {
     home.packages = [
-      inputs.hyprland-qtutils.packages.${pkgs.system}.default
-      inputs.swww.packages.${pkgs.system}.swww
-      inputs.hexecute.packages.${pkgs.system}.default
+      inputs.hyprland-qtutils.packages.${pkgs.stdenv.hostPlatform.system}.default
+      inputs.swww.packages.${pkgs.stdenv.hostPlatform.system}.swww
+      inputs.hexecute.packages.${pkgs.stdenv.hostPlatform.system}.default
       pkgs.slurp
       pkgs.grim
     ];
@@ -72,32 +72,34 @@ in
           "${rightMonitor}, 1920x1080@119.98, auto-right, 1"
           "${leftMonitor}, preferred, auto-left, 1"
         ];
-        windowrulev2 = [
-          "idleinhibit fullscreen, class:^(vlc)$"
-          "float,class:^(thunar|Thunar)$"
-          "center,class:^(thunar|Thunar)$"
+        windowrule = [
+          # VLC rules
+          "match:class ^(vlc)$, idle_inhibit fullscreen"
+
+          # Thunar rules
+          "match:class ^(thunar)$, float on"
+          "match:class ^(thunar)$, center on"
+          "match:class ^(thunar)$, pin on"
 
           # Path of Exile 2 - fullscreen game
-          "tag +poe, class:(steam_app_2694490)"
-          "tile, class:(steam_app_2694490)"
-          "fullscreen, class:(steam_app_2694490)"
+          "match:class (steam_app_2694490), tag +poe"
+          "match:class (steam_app_2694490), tile on"
+          "match:class (steam_app_2694490), fullscreen on"
+          "match:class (steam_app_2694490), stay_focused on"
 
           # Exiled Exchange 2 - overlay tool
-          "tag +apt, title:(exiled-exchange-2|Exiled Exchange 2)"
-          "float, tag:apt"
-          "noblur, tag:apt"
-          "nofocus, tag:apt"
-          "noshadow, tag:apt"
-          "noborder, tag:apt"
-          "pin, tag:apt"
-          "renderunfocused, tag:apt"
-          "size 100% 100%, tag:apt"
-          "move 0 0, tag:apt"
-          "stayfocused, class:(steam_app_2694490)"
+          "match:title (exiled-exchange-2|Exiled Exchange 2), tag +apt"
+          "match:tag apt, float on"
+          "match:tag apt, no_blur on"
+          "match:tag apt, no_focus on"
+          "match:tag apt, no_shadow on"
+          "match:tag apt, decorate off"
+          "match:tag apt, pin on"
+          "match:tag apt, render_unfocused on"
+          "match:tag apt, size 100% 100%"
+          "match:tag apt, move 0 0"
         ];
         layerrule = [
-          "blur, notifications"
-          "ignorezero, notifications"
         ];
         workspace = [
           "1,monitor:${rightMonitor},default:true"

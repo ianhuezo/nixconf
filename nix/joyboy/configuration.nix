@@ -95,7 +95,7 @@
     enable = false;
     # Optional: load models on startup
     loadModels = [ "deepseek-r1:32b-qwen-distill-q8_0" ];
-    acceleration = "cuda";
+    package = pkgs.ollama-cuda;
   };
 
   # Set your time zone.
@@ -175,7 +175,7 @@
     inter
     noto-fonts
     noto-fonts-cjk-sans
-    noto-fonts-emoji
+    noto-fonts-color-emoji
     maple-mono.NF-CN
     nerd-fonts.jetbrains-mono
   ];
@@ -319,12 +319,12 @@
     zsh
     nixfmt-rfc-style
     home-manager
-    webcord
+    # webcord  # Temporarily disabled - build failing
     gnumake
     gcc
     vesktop
     noisetorch
-    protonup
+    protonup-ng
     kitty
     pavucontrol
     dunst
@@ -335,7 +335,7 @@
     dracula-theme
     dracula-icon-theme
     tela-icon-theme
-    inputs.swww.packages.${pkgs.system}.swww
+    inputs.swww.packages.${pkgs.stdenv.hostPlatform.system}.swww
     treefmt
     shfmt
     black
@@ -385,7 +385,7 @@
   };
   programs.thunar = {
     enable = true;
-    plugins = with pkgs.xfce; [
+    plugins = with pkgs; [
       thunar-archive-plugin
       thunar-volman
     ];
