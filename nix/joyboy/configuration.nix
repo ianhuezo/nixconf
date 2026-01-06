@@ -322,7 +322,6 @@
     # webcord  # Temporarily disabled - build failing
     gnumake
     gcc
-    vesktop
     noisetorch
     protonup-ng
     kitty

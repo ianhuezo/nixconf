@@ -10,6 +10,7 @@ let
   cavaPath = /etc/nixos/dotfiles/cava;
   scriptsPath = /etc/nixos/dotfiles/scripts;
   vesktopThemePath = /etc/nixos/dotfiles/vesktop/themes;
+  assetsPath = /etc/nixos/dotfiles/assets;
   fullScheme = import ../themes/dark-ethereal;
 in
 {
@@ -62,6 +63,18 @@ in
   modules.hyprland = {
     enable = true;
     colorScheme = config.colorScheme;
+  };
+
+  programs.vesktop = {
+    enable = true;
+    settings = {
+      splashTheming = true;
+      splashColor = "#${config.colorScheme.palette.base05}";
+      splashBackground = "#${config.colorScheme.palette.base00}";
+      customTitleBar = true;
+      tray = false;
+      minimizeToTray = false;
+    };
   };
 
   home.file.".syncplay/syncplay.ini".text = ''
