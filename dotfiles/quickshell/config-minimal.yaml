@@ -1,27 +1,31 @@
+# Minimal Quickshell Configuration
+# Load with: qs ipc call config load "/etc/nixos/dotfiles/quickshell/config-minimal.yaml"
+
 appearance:
   radius:
-    sm: 10
-    md: 16
-    lg: 24
+    sm: 2
+    md: 4
+    lg: 8
   font:
     mono: JetBrains Mono Nerd Font
     ui: Inter
     display: Inter
     size:
-      xs: 11
-      sm: 14
-      md: 16
-      lg: 20
-      xl: 24
-      xxl: 32
+      xs: 10
+      sm: 12
+      md: 14
+      lg: 16
+      xl: 20
+      xxl: 24
     weight:
       light: 300
       regular: 400
       medium: 500
       semibold: 600
       bold: 700
+
 assets:
-  splashArt: frieren/camp-crop.jpg
+  splashArt: frieren/bliss.jpg
   dashboardAppLauncher: frieren/mimic.png
   youtubeConverter: global/youtube.png
   downloadingVideoMP3: frieren/fern-pout.gif

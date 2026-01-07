@@ -6,8 +6,9 @@ import QtQuick
 Singleton {
     id: root
 
-    // Configuration file path
-    readonly property string configPath: "/etc/nixos/dotfiles/quickshell/config.yaml"
+    // Configuration file path (can be changed to load different configs)
+    property string configPath: "/etc/nixos/dotfiles/quickshell/config.yaml"
+    readonly property string defaultConfigPath: "/etc/nixos/dotfiles/quickshell/config.yaml"
 
     // Signals emitted when config changes
     signal configUpdated()
@@ -289,9 +290,16 @@ Singleton {
     // File watcher using FileView with watchChanges
     FileView {
         id: configFileWatcher
-        path: Qt.resolvedUrl(configPath)
+        path: Qt.resolvedUrl(root.configPath)
         watchChanges: true
         preload: false
+
+        onPathChanged: {
+            // When path changes, reload the new file
+            Qt.callLater(() => {
+                root.loadConfig();
+            });
+        }
 
         onFileChanged: {
             Qt.callLater(() => {
@@ -348,6 +356,26 @@ Singleton {
         // Usage: qs ipc call config show
         function show() {
             return JSON.stringify(root.config, null, 2);
+        }
+
+        // Load a different config file
+        // Usage: qs ipc call config load "/path/to/config.yaml"
+        function load(path: string) {
+            root.configPath = path;
+            return "Loading config from: " + path;
+        }
+
+        // Load the default config file
+        // Usage: qs ipc call config loadDefault
+        function loadDefault() {
+            root.configPath = root.defaultConfigPath;
+            return "Loading default config from: " + root.defaultConfigPath;
+        }
+
+        // Show current config file path
+        // Usage: qs ipc call config path
+        function path() {
+            return "Current config: " + root.configPath;
         }
     }
 }
