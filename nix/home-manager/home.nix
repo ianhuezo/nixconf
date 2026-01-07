@@ -68,6 +68,10 @@ in
   programs.vesktop = {
     enable = true;
     settings = {
+      enabledThemes = [
+        "${toString vesktopThemePath}/system24.theme.css"
+      ];
+
       splashTheming = true;
       splashColor = "#${config.colorScheme.palette.base05}";
       splashBackground = "#${config.colorScheme.palette.base00}";
