@@ -1,0 +1,28 @@
+appearance:
+  radius:
+    sm: 10
+    md: 16
+    lg: 24
+  font:
+    mono: JetBrains Mono Nerd Font
+    ui: Inter
+    display: Inter
+    size:
+      xs: 11
+      sm: 14
+      md: 16
+      lg: 20
+      xl: 24
+      xxl: 32
+    weight:
+      light: 300
+      regular: 400
+      medium: 500
+      semibold: 600
+      bold: 700
+assets:
+  splashArt: frieren/camp-crop.jpg
+  dashboardAppLauncher: frieren/mimic.png
+  youtubeConverter: global/youtube.png
+  downloadingVideoMP3: frieren/fern-pout.gif
+  themeChooser: frieren/lookup.png

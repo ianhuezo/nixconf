@@ -69,7 +69,7 @@
     67
     68
     57621 # Spotify Connect
-    5353  # mDNS for Spotify device discovery
+    5353 # mDNS for Spotify device discovery
   ];
 
   #This specifically allows Spotify to find local files from phone sync
@@ -360,6 +360,7 @@
     (callPackage ../gaming/beyond-all-reason { })
     (callPackage ../packages/kmeans-colors { })
     rclone
+    yq-go
   ];
   programs.fuse.userAllowOther = true; # for rclone to function correctly
 

@@ -1,6 +1,7 @@
 pragma Singleton
 import Quickshell
 import QtQuick
+import qs.services
 
 Singleton {
     id: root
@@ -13,16 +14,33 @@ Singleton {
     readonly property string environmentRootPath: configPath
     readonly property string homePath: 'Music'
 
-    //art for app selector
-    readonly property string splashArtPath: Qt.resolvedUrl(`${assetsRootPath}/frieren/camp-crop.jpg`)
-    readonly property string dashboardAppLauncher: Qt.resolvedUrl(`${assetsRootPath}/frieren/mimic.png`)
+    // Art paths - defaults as fallback, updated by ConfigManager
+    property string splashArtPath: Qt.resolvedUrl(`${assetsRootPath}/frieren/camp-crop.jpg`)
+    property string dashboardAppLauncher: Qt.resolvedUrl(`${assetsRootPath}/frieren/mimic.png`)
+    property string youtubeConverter: Qt.resolvedUrl(`${assetsRootPath}/global/youtube.png`)
+    property string downloadingVideoMP3: Qt.resolvedUrl(`${assetsRootPath}/frieren/fern-pout.gif`)
+    property string themeChooser: Qt.resolvedUrl(`${assetsRootPath}/frieren/lookup.png`)
 
-    //art for youtube converter
-    readonly property string youtubeConverter: Qt.resolvedUrl(`${assetsRootPath}/global/youtube.png`)
-    readonly property string downloadingVideoMP3: Qt.resolvedUrl(`${assetsRootPath}/frieren/fern-pout.gif`)
+    // Update from ConfigManager on initialization
+    Component.onCompleted: {
+        updateFromConfig();
+    }
 
-    //art for theme selector
-    readonly property string themeChooser: Qt.resolvedUrl(`${assetsRootPath}/frieren/lookup.png`)
+    // Update paths when ConfigManager assets change
+    Connections {
+        target: ConfigManager
+        function onAssetsUpdated() {
+            root.updateFromConfig();
+        }
+    }
+
+    function updateFromConfig() {
+        root.splashArtPath = Qt.resolvedUrl(`${root.assetsRootPath}/${ConfigManager.assets.splashArt}`);
+        root.dashboardAppLauncher = Qt.resolvedUrl(`${root.assetsRootPath}/${ConfigManager.assets.dashboardAppLauncher}`);
+        root.youtubeConverter = Qt.resolvedUrl(`${root.assetsRootPath}/${ConfigManager.assets.youtubeConverter}`);
+        root.downloadingVideoMP3 = Qt.resolvedUrl(`${root.assetsRootPath}/${ConfigManager.assets.downloadingVideoMP3}`);
+        root.themeChooser = Qt.resolvedUrl(`${root.assetsRootPath}/${ConfigManager.assets.themeChooser}`);
+    }
 
     function getIconPath(iconName) {
         //for icons that are not from font packages
