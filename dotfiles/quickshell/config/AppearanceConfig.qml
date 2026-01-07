@@ -1,13 +1,16 @@
 pragma Singleton
 import Quickshell
 import QtQuick
+import qs.services
 
 Singleton {
-    readonly property QtObject radius: QtObject {
+    id: root
+
+    property QtObject radius: QtObject {
         readonly property real none: 0
-        readonly property real sm: 4
-        readonly property real md: 12
-        readonly property real lg: 20
+        property real sm: 4  // Default fallback
+        property real md: 12  // Default fallback
+        property real lg: 20  // Default fallback
     }
 
     property var calculateRadius: function (width, height, radiusType) {
@@ -31,33 +34,72 @@ Singleton {
         }
     }
 
-    readonly property QtObject font: QtObject {
-        // Font families
-        readonly property string mono: "JetBrains Mono Nerd Font"
-        readonly property string ui: "Inter" // Fallback: system default sans-serif
-        readonly property string display: "Inter" // For headings, can be different
-        
+    property QtObject font: QtObject {
+        // Font families - defaults as fallback
+        property string mono: "JetBrains Mono Nerd Font"
+        property string ui: "Inter"
+        property string display: "Inter"
+
         // Legacy support
         readonly property string family: mono
-        
-        // Font sizes
-        readonly property QtObject size: QtObject {
-            readonly property real xs: 11
-            readonly property real sm: 14
-            readonly property real md: 16
-            readonly property real lg: 20
-            readonly property real xl: 24
-            readonly property real xxl: 32
+
+        // Font sizes - defaults as fallback
+        property QtObject size: QtObject {
+            property real xs: 11
+            property real sm: 14
+            property real md: 16
+            property real lg: 20
+            property real xl: 24
+            property real xxl: 32
         }
-        
-        // Font weights
-        readonly property QtObject weight: QtObject {
-            readonly property int light: 300
-            readonly property int regular: 400
-            readonly property int medium: 500
-            readonly property int semibold: 600
-            readonly property int bold: 700
+
+        // Font weights - defaults as fallback
+        property QtObject weight: QtObject {
+            property int light: 300
+            property int regular: 400
+            property int medium: 500
+            property int semibold: 600
+            property int bold: 700
         }
+    }
+
+    // Update from ConfigManager when config changes
+    Component.onCompleted: {
+        updateFromConfig();
+    }
+
+    Connections {
+        target: ConfigManager
+        function onAppearanceUpdated() {
+            root.updateFromConfig();
+        }
+    }
+
+    function updateFromConfig() {
+        // Update radius
+        radius.sm = ConfigManager.appearance.radius.sm;
+        radius.md = ConfigManager.appearance.radius.md;
+        radius.lg = ConfigManager.appearance.radius.lg;
+
+        // Update fonts
+        font.mono = ConfigManager.appearance.font.mono;
+        font.ui = ConfigManager.appearance.font.ui;
+        font.display = ConfigManager.appearance.font.display;
+
+        // Update font sizes
+        font.size.xs = ConfigManager.appearance.font.size.xs;
+        font.size.sm = ConfigManager.appearance.font.size.sm;
+        font.size.md = ConfigManager.appearance.font.size.md;
+        font.size.lg = ConfigManager.appearance.font.size.lg;
+        font.size.xl = ConfigManager.appearance.font.size.xl;
+        font.size.xxl = ConfigManager.appearance.font.size.xxl;
+
+        // Update font weights
+        font.weight.light = ConfigManager.appearance.font.weight.light;
+        font.weight.regular = ConfigManager.appearance.font.weight.regular;
+        font.weight.medium = ConfigManager.appearance.font.weight.medium;
+        font.weight.semibold = ConfigManager.appearance.font.weight.semibold;
+        font.weight.bold = ConfigManager.appearance.font.weight.bold;
     }
     readonly property QtObject transitions: QtObject {
         //from soramame ;)
