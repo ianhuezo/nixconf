@@ -15,6 +15,14 @@ Jobs.BaseJob {
         return args.length > 0 ? args[0] : null;
     }
     property string filePath: args.length > 1 ? args[1] : "/etc/nixos/nix/themes"
+    property string wallpaperPath: {
+        // Get from dependency result (from GenerateAIColorJob)
+        if (dependencyResult && dependencyResult.wallpaperPath) {
+            return dependencyResult.wallpaperPath;
+        }
+        // Or from args[2] if provided directly
+        return args.length > 2 ? args[2] : "";
+    }
 
     // Job metadata
     jobName: "Save AI Colors"
@@ -40,8 +48,15 @@ Jobs.BaseJob {
             return;
         }
 
+        // Add wallpaper path to colorData if provided
+        let finalColorData = colorData;
+        if (wallpaperPath && wallpaperPath.length > 0) {
+            finalColorData = Object.assign({}, colorData);
+            finalColorData.wallpaper = wallpaperPath;
+        }
+
         // Convert JSON to Nix format
-        const nixString = Nix.jsonToNix(colorData, 2);
+        const nixString = Nix.jsonToNix(finalColorData, 2);
         const targetPath = `${filePath}/${folderName}/default.nix`;
 
         _updateProgress(30, "Writing to file...");
@@ -63,7 +78,8 @@ Jobs.BaseJob {
                         success: true,
                         filePath: targetPath,
                         folderName: folderName,
-                        colorData: colorData
+                        colorData: colorData,
+                        wallpaperPath: wallpaperPath
                     };
 
                     _setCompleted(result);
