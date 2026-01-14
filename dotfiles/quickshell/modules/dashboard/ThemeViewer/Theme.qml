@@ -95,8 +95,13 @@ Item {
                                 if (!jsonData) {
                                     return;
                                 }
-                                // Immediate execution (old behavior)
-                                saveJsonToLocation.json = root.aiGeneratedTheme;
+                                // Immediate execution - add wallpaper to JSON before saving
+                                let jsonToSave = root.aiGeneratedTheme;
+                                if (root.imagePath && root.imagePath.length > 0) {
+                                    jsonToSave = Object.assign({}, root.aiGeneratedTheme);
+                                    jsonToSave.wallpaper = root.imagePath;
+                                }
+                                saveJsonToLocation.json = jsonToSave;
                                 saveJsonToLocation.running = true;
                             }
 
@@ -107,7 +112,7 @@ Item {
 
                                 const jobId = Jobs.JobManager.enqueueJob(
                                     "SaveAIColorFile",
-                                    [null, "/etc/nixos/nix/themes"], // colorData will come from dependency
+                                    [null, "/etc/nixos/nix/themes", root.imagePath], // colorData will come from dependency, pass wallpaper as 3rd arg
                                     "ai-color-save",
                                     (result) => {
                                         if (result && result.success) {

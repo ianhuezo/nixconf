@@ -19,10 +19,10 @@ Jobs.BaseJob {
     property var generatorProcess: null
     property var kmeansColors: null
 
-    // Function to extract dominant colors using kmeans
+    // Function to extract colors using quantette (Wu's algorithm for optimal color quantization)
     function extractKmeansColors(imagePath, k, callback) {
-        const kmeansProcess = _createProcess(
-            [FileConfig.scripts.kmeansColors, imagePath, k.toString()],
+        const colorProcess = _createProcess(
+            [FileConfig.scripts.hybridColors, imagePath, k.toString()],
             (data) => {
                 // Parse output: (#hex,pct),(#hex,pct),...
                 const colors = parseKmeansOutput(data.trim());
@@ -30,21 +30,21 @@ Jobs.BaseJob {
             },
             (data) => {
                 if (data && !data.includes("Error:")) {
-                    console.error("K-means stderr:", data);
+                    console.error("Quantette color extraction stderr:", data);
                 }
             },
             (exitCode, exitStatus) => {
                 if (exitCode !== 0) {
-                    console.error("K-means extraction failed with exit code:", exitCode);
+                    console.error("Quantette color extraction failed with exit code:", exitCode);
                     if (callback) callback(null);
                 }
             }
         );
 
-        if (kmeansProcess) {
-            kmeansProcess.running = true;
+        if (colorProcess) {
+            colorProcess.running = true;
         } else {
-            console.error("Failed to create kmeans process");
+            console.error("Failed to create quantette color extraction process");
             if (callback) callback(null);
         }
     }
@@ -77,18 +77,18 @@ Jobs.BaseJob {
             return;
         }
 
-        _updateProgress(10, "Extracting dominant colors...");
+        _updateProgress(10, "Extracting colors with quantette...");
 
-        // First extract kmeans colors, then generate AI colors
-        // Extract more clusters (32) to capture minority colors better
+        // First extract colors using quantette (Wu's algorithm), then generate AI colors
+        // Extract 32 colors for optimal color diversity
         extractKmeansColors(wallpaperPath, 32, (colors) => {
             if (colors && colors.length > 0) {
                 kmeansColors = colors;
-                console.log("Extracted", colors.length, "kmeans colors");
+                console.log("Extracted", colors.length, "colors using quantette");
                 _updateProgress(20, "Starting AI color generation...");
                 startAIGeneration();
             } else {
-                console.warn("Failed to extract kmeans colors, proceeding without them");
+                console.warn("Failed to extract colors, proceeding without them");
                 _updateProgress(20, "Starting AI color generation...");
                 startAIGeneration();
             }

@@ -11,25 +11,25 @@ Process {
         return path.replace(/^file:\/\//, '');
     }
 
-    command: [getCleanPath(FileConfig.scripts.kmeansColors), imagePath, k.toString()]
+    command: [getCleanPath(FileConfig.scripts.hybridColors), imagePath, k.toString()]
     signal closed(var colors)
     signal error(string message)
     running: false
 
     stdout: SplitParser {
         onRead: data => {
-            console.debug("Raw kmeans output:", data);
+            console.debug("Raw quantette color output:", data);
 
             try {
                 const colors = parseKmeansOutput(data.trim());
                 if (colors && colors.length > 0) {
-                    console.debug("Extracted", colors.length, "colors");
+                    console.debug("Extracted", colors.length, "colors using quantette");
                     root.closed(colors);
                 } else {
                     root.error("No colors extracted");
                 }
             } catch (e) {
-                console.error("Failed to parse kmeans output:", e);
+                console.error("Failed to parse color output:", e);
                 root.error("Parse error: " + e.toString());
             }
         }
@@ -37,7 +37,7 @@ Process {
 
     stderr: SplitParser {
         onRead: data => {
-            console.error("Kmeans error:", data.trim());
+            console.error("Quantette color extraction error:", data.trim());
             root.error(data.trim());
         }
     }
@@ -45,7 +45,7 @@ Process {
     onExited: (exitCode, exitStatus) => {
         running = false;
         if (exitCode !== 0) {
-            console.error("Kmeans process failed with exit code:", exitCode);
+            console.error("Quantette color extraction failed with exit code:", exitCode);
         }
     }
 

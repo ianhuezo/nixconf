@@ -16,9 +16,10 @@ if [ ! -f "$IMAGE_PATH" ]; then
     exit 1
 fi
 
-# Run kmeans_colors with RGB color space to get hex output
+# Run kmeans_colors with LAB color space (perceptually uniform) to get hex output
+# LAB provides better color diversity and more accurate perceptual differences than RGB
 # Output format: line 1 = colors (comma-separated), line 2 = percentages (comma-separated)
-kmeans_colors -i "$IMAGE_PATH" -k "$K" --print --no-file --pct --sort --rgb 2>/dev/null | \
+kmeans_colors -i "$IMAGE_PATH" -k "$K" --print --no-file --pct --sort 2>/dev/null | \
 awk 'BEGIN {FS=","}
 NR==1 {for (i=1; i<=NF; i++) colors[i]=$i}
 NR==2 {for (i=1; i<=NF; i++) pcts[i]=$i}

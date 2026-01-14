@@ -359,6 +359,7 @@
     (callPackage ../gaming/poe2/exiled-exchange.nix { }) # for poe2
     (callPackage ../gaming/beyond-all-reason { })
     (callPackage ../packages/kmeans-colors { })
+    (callPackage ../packages/quantette-cli { })
     rclone
     yq-go
   ];
