@@ -24,6 +24,7 @@ in
     ./modules/xdg
     ./modules/quickshell
     ./modules/window-managers/hyprland
+    ./modules/programs/rust
   ];
 
   # Home Manager needs a bit of information about you and the paths it should
@@ -63,6 +64,10 @@ in
   modules.hyprland = {
     enable = true;
     colorScheme = config.colorScheme;
+  };
+
+  modules.rust = {
+    enable = true;
   };
 
   programs.vesktop = {

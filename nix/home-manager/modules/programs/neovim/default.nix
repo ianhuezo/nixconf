@@ -278,6 +278,17 @@ in
         };
       };
 
+      lsp.servers.rust_analyzer = {
+        enable = true;
+        installCargo = false;
+        installRustc = false;
+        settings = {
+          check = {
+            command = "clippy";
+          };
+        };
+      };
+
       treesitter = {
         enable = true;
         settings = {
