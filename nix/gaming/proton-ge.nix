@@ -12,12 +12,12 @@ let
     # download tarball
     tarball_url=$(curl -s https://api.github.com/repos/GloriousEggroll/proton-ge-custom/releases/latest | grep browser_download_url | cut -d\" -f4 | grep .tar.gz)
     tarball_name=$(basename $tarball_url)
-    curl -# -L $tarball_url -o $tarball_name --no-progress-meter
+    curl -# -L $tarball_url -o $tarball_name
 
     # download checksum
     checksum_url=$(curl -s https://api.github.com/repos/GloriousEggroll/proton-ge-custom/releases/latest | grep browser_download_url | cut -d\" -f4 | grep .sha512sum)
     checksum_name=$(basename $checksum_url)
-    curl -# -L $checksum_url -o $checksum_name --no-progress-meter
+    curl -# -L $checksum_url -o $checksum_name
 
     # check tarball with checksum
     sha512sum -c $checksum_name
