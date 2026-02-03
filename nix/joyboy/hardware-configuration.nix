@@ -21,10 +21,8 @@
     "usbhid"
   ];
   boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-amd" ];
-  boot.extraModulePackages = with config.boot.kernelPackages; [
-    rtl8814au
-  ];
+  boot.kernelModules = [ "kvm-amd" "rtw88" ];
+  boot.extraModulePackages = [ ];
 
   fileSystems."/" = {
     device = "/dev/disk/by-uuid/4cf880c8-a3f2-412a-bb01-bc7b4858bdca";

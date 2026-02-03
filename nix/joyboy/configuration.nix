@@ -20,6 +20,8 @@
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
+  boot.kernelPackages = pkgs.linuxPackages_6_18;
+  boot.kernelModules = [ "ntsync" ];
   boot.kernelParams = [
     # "video=DP-1:d"
     # "video=DP-2:d"
@@ -31,6 +33,9 @@
     MaxRetentionSec=1week
     MaxFileSec=1day
     Compress=yes
+  '';
+  services.udev.extraRules = ''
+    SUBSYSTEM=="character", KERNEL=="ntsync", MODE="0666"
   '';
   boot.loader.efi.canTouchEfiVariables = true;
   boot.tmp.cleanOnBoot = true;
