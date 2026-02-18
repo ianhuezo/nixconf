@@ -13,6 +13,7 @@
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
+    ./stocks-trading.nix
     ../gaming/proton-ge.nix
     ../gaming/dwproton.nix
     ../hardware/dualsense-edge.nix
