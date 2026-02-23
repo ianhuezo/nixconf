@@ -30,8 +30,8 @@
       StandardOutput = "journal";
       StandardError = "journal";
 
-      # Timeout after 40 minutes (allows time for nix to fetch/build if needed)
-      TimeoutStartSec = "1hr";
+      # Timeout after 2 hours
+      TimeoutStartSec = "2hr";
 
       # Nice level - slightly lower priority than interactive processes
       Nice = 5;
