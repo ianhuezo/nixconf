@@ -278,6 +278,10 @@
   };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
+  trusted-users = [
+    "root"
+    "ianh"
+  ];
   users.users.ianh = {
     isNormalUser = true;
     description = "Ian Huezo";
