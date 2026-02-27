@@ -278,7 +278,7 @@
   };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  trusted-users = [
+  nix.settings.trusted-users = [
     "root"
     "ianh"
   ];
