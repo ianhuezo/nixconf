@@ -216,6 +216,7 @@
   };
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = true;
+  hardware.i2c.enable = true;
   services.blueman.enable = true;
 
   # Enable CUPS to print documents.
@@ -291,6 +292,7 @@
       "wheel"
       "input"
       "fuse"
+      "i2c"
     ];
     packages = with pkgs; [
       #  thunderbird
@@ -373,6 +375,7 @@
     (callPackage ../packages/quantette-cli { })
     rclone
     yq-go
+    ddcutil
   ];
   programs.fuse.userAllowOther = true; # for rclone to function correctly
 

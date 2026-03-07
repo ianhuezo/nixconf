@@ -9,8 +9,8 @@
 with lib;
 let
   cfg = config.modules.hyprland;
-  leftMonitor = "HDMI-A-1";
-  rightMonitor = "DP-2";
+  leftMonitor = "DP-1";
+  rightMonitor = "HDMI-A-1";
   quickshellPath = "/etc/nixos/dotfiles/quickshell/shell.qml";
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
     xrandr --output DP-2 --primary & disown
@@ -69,7 +69,7 @@ in
           ''${startupScript}/bin/start''
         ];
         monitor = [
-          "${rightMonitor}, 1920x1080@119.98, auto-right, 1"
+          "${rightMonitor}, 2560x1440@240.08, auto-right, 1, bitdepth, 10"
           "${leftMonitor}, preferred, auto-left, 1"
         ];
         windowrule = [
@@ -80,6 +80,9 @@ in
           "match:class ^(thunar)$, float on"
           "match:class ^(thunar)$, center on"
           "match:class ^(thunar)$, pin on"
+
+          # Vesktop rules
+          "match:class ^(vesktop)$, center on"
 
           # Path of Exile 2 - fullscreen game
           "match:class (steam_app_2694490), tag +poe"
