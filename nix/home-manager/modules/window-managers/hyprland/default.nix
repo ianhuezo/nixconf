@@ -246,7 +246,7 @@ in
         name = "Tela-dark";
         package = pkgs.tela-icon-theme;
       };
-
+      gtk4.theme = config.gtk.theme;
     };
     home.sessionVariables = {
       QS_ICON_THEME = "Tela-dark";

@@ -49,7 +49,15 @@
     let
       lib = nixpkgs.lib;
       system = "x86_64-linux";
-      pkgs = import nixpkgs { inherit system; };
+      pkgs = import nixpkgs {
+        inherit system;
+        overlays = [
+          (final: prev: {
+            sass = final.dart-sass;
+            nodePackages = prev.nodePackages // { sass = final.dart-sass; };
+          })
+        ];
+      };
     in
     {
       nixosConfigurations = {
