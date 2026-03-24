@@ -73,9 +73,6 @@ in
           "${leftMonitor}, preferred, auto-left, 1"
         ];
         windowrule = [
-          # VLC rules
-          "match:class ^(vlc)$, idle_inhibit fullscreen"
-
           # Thunar rules
           "match:class ^(thunar)$, float on"
           "match:class ^(thunar)$, center on"

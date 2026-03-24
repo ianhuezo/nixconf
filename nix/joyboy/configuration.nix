@@ -97,6 +97,9 @@
   #enable caching of art urls
   services.gvfs.enable = true;
 
+  # Enable usbmuxd for iPhone connectivity
+  services.usbmuxd.enable = true;
+
   #ollama support
   services.ollama = {
     enable = false;
