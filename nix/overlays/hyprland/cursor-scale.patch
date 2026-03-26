@@ -1,0 +1,24 @@
+--- a/src/managers/PointerManager.cpp
++++ b/src/managers/PointerManager.cpp
+@@ -2,5 +2,21 @@
+     const auto oldPos = m_pointerPos;
+     auto       newPos = oldPos + Vector2D{std::isnan(deltaLogical.x) ? 0.0 : deltaLogical.x, std::isnan(deltaLogical.y) ? 0.0 : deltaLogical.y};
+
++    // Proportionally remap y when crossing horizontally into a monitor of a
++    // different height, so the cursor lands at the same relative row rather
++    // than being hard-clamped to the shorter monitor's bottom edge.
++    const auto currentMon = g_pCompositor->getMonitorFromCursor();
++    if (currentMon && !CBox{currentMon->m_position, currentMon->m_size}.containsPoint(newPos)) {
++        PHLMONITOR targetMon = nullptr;
++        if (newPos.x < currentMon->m_position.x)
++            targetMon = g_pCompositor->getMonitorInDirection(currentMon, Math::DIRECTION_LEFT);
++        else if (newPos.x >= currentMon->m_position.x + currentMon->m_size.x)
++            targetMon = g_pCompositor->getMonitorInDirection(currentMon, Math::DIRECTION_RIGHT);
++        if (targetMon && currentMon->m_size.y > 0 && targetMon->m_size.y != currentMon->m_size.y) {
++            const double relY = (oldPos.y - currentMon->m_position.y) / currentMon->m_size.y;
++            newPos.y          = targetMon->m_position.y + relY * targetMon->m_size.y;
++        }
++    }
++
+     warpTo(newPos);
+ }

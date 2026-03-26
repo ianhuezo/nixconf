@@ -1,3 +1,5 @@
-[
-  (import ./caches)
-]
+{
+  imports = [
+    ./caches
+  ];
+}

@@ -1,6 +1,7 @@
 # overlays/default.nix
 [
   # Import individual overlay files
+  (import ./hyprland)
   (import ./thunar)
   (import ./vesktop)
   # (import ./yt-dlp)  # Temporarily disabled - build failing
