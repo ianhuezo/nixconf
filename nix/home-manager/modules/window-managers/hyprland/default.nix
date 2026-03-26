@@ -44,6 +44,9 @@ in
     };
   };
   config = mkIf cfg.enable {
+    systemd.user.tmpfiles.rules = [
+      "d /tmp/screenshots 0755 - - -"
+    ];
     home.packages = [
       inputs.hyprland-qtutils.packages.${pkgs.stdenv.hostPlatform.system}.default
       inputs.swww.packages.${pkgs.stdenv.hostPlatform.system}.swww
@@ -131,16 +134,17 @@ in
           "$mod, S, exec, spotify --enable-features=UseOzonePlatform --ozone-platform=x11 --uri=%U"
           "$mod, D, exec, vesktop --enable-features=UseOzonePlatform --ozone-platform=x11 --uri=%U"
           "$mod SHIFT, L, exec, hyprlock"
-          "$mod SHIFT, S, exec, hyprshot -m region --clipboard-only"
+          "$mod SHIFT, S, exec, hyprshot -m region --output-folder /tmp/screenshots --filename \"screenshot_$(date +%Y%m%d_%H%M%S).png\""
           # "CTRL, TAB, overview:toggle"
           "$mod, Q, killactive"
           "$mod, B, exec, qs ipc -p ${quickshellPath} call bar toggleBar"
+          "$mod, M, exec, qs ipc -p ${quickshellPath} call screenshots toggleScreenshots"
           "$mod SHIFT, Q, exec,loginctl terminate-user $USER"
           "$mod SHIFT, F, fullscreen"
           "$mod, N, exec, hyprctl dispatch togglefloating"
           ", mouse:276, exec, hexecute"
           #mod with left mouse moves windows
-          ", Print, exec, grim -g \"$(slurp -d)\" - | tee ~/Pictures/screenshot.png | wl-copy" # Kitty specific open another kitty terminal instead of splitting the kitty terminal
+          ", Print, exec, f=\"/tmp/screenshots/screenshot_$(date +%Y%m%d_%H%M%S).png\"; grim -g \"$(slurp -d)\" - | tee \"$f\" | wl-copy" # Kitty specific open another kitty terminal instead of splitting the kitty terminal
           "CTRL_SHIFT, Return, exec, kitty --directory=$HOME"
           "CTRL_SHIFT, bracketleft, cyclenext, prev"
           "CTRL_SHIFT, bracketright, cyclenext"
