@@ -101,6 +101,16 @@ PanelWindow {
         }
     }
 
+    Timer {
+        id: autoCloseTimer
+        interval: 10000
+        onTriggered: root.closeRequested()
+    }
+
+    function resetAutoClose() {
+        if (isActive) autoCloseTimer.restart();
+    }
+
     onIsActiveChanged: {
         if (isActive) {
             slideX = 0;
@@ -108,9 +118,11 @@ PanelWindow {
             fileLister.collectedPaths = [];
             fileLister.running = true;
             contentWrapper.forceActiveFocus();
+            autoCloseTimer.restart();
         } else {
             slideX = panelWidth + panelRightMargin;
             showAll = false;
+            autoCloseTimer.stop();
         }
     }
 
@@ -123,6 +135,16 @@ PanelWindow {
         focus: true
 
         Keys.onEscapePressed: root.closeRequested()
+
+        // Reset auto-close timer on any mouse activity over the panel
+        MouseArea {
+            anchors.fill: parent
+            hoverEnabled: true
+            propagateComposedEvents: true
+            acceptedButtons: Qt.NoButton
+            onPositionChanged: root.resetAutoClose()
+            onEntered: root.resetAutoClose()
+        }
 
         Rectangle {
             id: panel
@@ -196,6 +218,7 @@ PanelWindow {
                         implicitWidth: 30
                         backgroundColor: "transparent"
                         onClicked: {
+                            root.resetAutoClose();
                             fileLister.collectedPaths = [];
                             fileLister.running = true;
                         }
@@ -247,10 +270,12 @@ PanelWindow {
                         width: collapsedList.width
                         filePath: screenshotModel.get(index).filePath
                         onCopyRequested: path => {
+                            root.resetAutoClose();
                             clipboardCopier.targetPath = path;
                             clipboardCopier.running = true;
                         }
                         onDeleteRequested: path => {
+                            root.resetAutoClose();
                             fileDeleter.targetPath = path;
                             fileDeleter.running = true;
                         }
@@ -287,14 +312,15 @@ PanelWindow {
                     Repeater {
                         model: screenshotModel
                         delegate: ScreenshotItem {
-                            required property var modelData
                             width: expandedColumn.width
-                            filePath: modelData.filePath
+                            filePath: model.filePath
                             onCopyRequested: path => {
+                                root.resetAutoClose();
                                 clipboardCopier.targetPath = path;
                                 clipboardCopier.running = true;
                             }
                             onDeleteRequested: path => {
+                                root.resetAutoClose();
                                 fileDeleter.targetPath = path;
                                 fileDeleter.running = true;
                             }
@@ -354,7 +380,10 @@ PanelWindow {
                     anchors.fill: parent
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: root.showAll = !root.showAll
+                    onClicked: {
+                        root.resetAutoClose();
+                        root.showAll = !root.showAll;
+                    }
                 }
             }
         }
