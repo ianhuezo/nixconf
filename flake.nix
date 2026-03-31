@@ -12,7 +12,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     hyprland = {
-      #?rev=12f9a0d0b93f691d4d9923716557154d74777b0a
+      # v0.54.3
       url = "git+https://github.com/hyprwm/Hyprland";
       inputs.nixpkgs.follows = "nixpkgs";
     };
@@ -54,7 +54,9 @@
         overlays = [
           (final: prev: {
             sass = final.dart-sass;
-            nodePackages = prev.nodePackages // { sass = final.dart-sass; };
+            nodePackages = prev.nodePackages // {
+              sass = final.dart-sass;
+            };
           })
         ];
       };
