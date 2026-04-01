@@ -17,6 +17,7 @@ PanelWindow {
     readonly property int panelRightMargin: 8
     readonly property int topOffset: 70
 
+    visible: isActive || slideX < (panelWidth + panelRightMargin)
     color: "transparent"
     implicitWidth: panelWidth + panelRightMargin
     implicitHeight: 620
