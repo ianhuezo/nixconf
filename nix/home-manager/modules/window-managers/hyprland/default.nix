@@ -182,7 +182,7 @@ in
           rounding = 10;
         };
         cursor = {
-          no_hardware_cursors = true;
+          no_hardware_cursors = 2;
         };
         misc = {
           disable_hyprland_logo = true;
