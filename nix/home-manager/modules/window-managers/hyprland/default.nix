@@ -149,7 +149,7 @@ in
           "CTRL_SHIFT, bracketleft, cyclenext, prev"
           "CTRL_SHIFT, bracketright, cyclenext"
           "SHIFT,Space,pass,title:^(exiled-exchange-2)$"
-          "CTRL,D,pass,class:^(exiled-exchange-2)$"
+          #"CTRL,D,pass,class:^(exiled-exchange-2)$"
           "CTRL ALT,D,pass,class:^(exiled-exchange-2)$"
         ]
         ++ (
