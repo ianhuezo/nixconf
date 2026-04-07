@@ -65,8 +65,7 @@ PanelWindow {
         to: 0
         duration: 700
         easing.type: Easing.Bezier
-        // OutExpo: snaps to position fast, long silky deceleration tail
-        easing.bezierCurve: [0.16, 1.0, 0.3, 1.0, 1.0, 1.0]
+        easing.bezierCurve: AppearanceConfig.transitions.panelEnter
     }
 
     SequentialAnimation {
@@ -77,8 +76,7 @@ PanelWindow {
             to: root.height
             duration: 420
             easing.type: Easing.Bezier
-            // InExpo: holds briefly then exits decisively
-            easing.bezierCurve: [0.7, 0.0, 0.84, 0.0, 1.0, 1.0]
+            easing.bezierCurve: AppearanceConfig.transitions.panelExit
         }
         ScriptAction {
             script: root.closeRequested()

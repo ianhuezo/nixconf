@@ -112,5 +112,8 @@ Singleton {
         readonly property list<real> expressiveFastSpatial: [0.42, 1.67, 0.21, 0.9, 1, 1]
         readonly property list<real> expressiveDefaultSpatial: [0.38, 1.21, 0.22, 1, 1, 1]
         readonly property list<real> expressiveEffects: [0.34, 0.8, 0.34, 1, 1, 1]
+        // Panel slide animations
+        readonly property list<real> panelEnter: [0.16, 1.0, 0.3, 1.0, 1.0, 1.0]
+        readonly property list<real> panelExit: [0.7, 0.0, 0.84, 0.0, 1.0, 1.0]
     }
 }

@@ -17,7 +17,7 @@ PanelWindow {
     readonly property int panelRightMargin: 8
     readonly property int topOffset: 70
 
-    visible: isActive || slideX < (panelWidth + panelRightMargin)
+    visible: isActive || slideX <= (panelWidth + panelRightMargin)
     color: "transparent"
     implicitWidth: panelWidth + panelRightMargin
     implicitHeight: 620
@@ -95,11 +95,23 @@ PanelWindow {
     // slideX = panelWidth + panelRightMargin: content pushed outside surface (invisible)
     property real slideX: panelWidth + panelRightMargin
 
-    Behavior on slideX {
-        NumberAnimation {
-            duration: 300
-            easing.type: Easing.InOutCubic
-        }
+    NumberAnimation {
+        id: enterAnim
+        target: root
+        property: "slideX"
+        to: 0
+        duration: 500
+        easing.type: Easing.Bezier
+        easing.bezierCurve: AppearanceConfig.transitions.panelEnter
+    }
+
+    NumberAnimation {
+        id: exitAnim
+        target: root
+        property: "slideX"
+        to: root.panelWidth + root.panelRightMargin + 2
+        duration: 300
+        easing.type: Easing.OutCubic
     }
 
     Timer {
@@ -114,14 +126,14 @@ PanelWindow {
 
     onIsActiveChanged: {
         if (isActive) {
-            slideX = 0;
+            enterAnim.start();
             showAll = false;
             fileLister.collectedPaths = [];
             fileLister.running = true;
             contentWrapper.forceActiveFocus();
             autoCloseTimer.restart();
         } else {
-            slideX = panelWidth + panelRightMargin;
+            exitAnim.start();
             showAll = false;
             autoCloseTimer.stop();
         }
