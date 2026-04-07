@@ -7,13 +7,18 @@ import Quickshell.Wayland
 Item {
     id: dashboard
     property bool active: false
+    property bool closing: false
     // Eagerly cache DesktopEntries on startup to avoid lag when dashboard opens
     property var _desktopEntriesCache: DesktopEntries.applications
     IpcHandler {
         target: "dashboard"
 
         function toggleDashboard() {
-            dashboard.active = !dashboard.active;
+            if (dashboard.active) {
+                dashboard.closing = true;
+            } else {
+                dashboard.active = true;
+            }
         }
     }
 
@@ -31,6 +36,7 @@ Item {
             parentId: dashboard
 
             onCloseRequested: {
+                dashboard.closing = false;
                 dashboard.active = false;
             }
         }

@@ -12,9 +12,19 @@ PanelWindow {
     required property var parentId
     property var windowProperty
     property var currentWlrLayer: WlrLayer.Top
+    property real panelWidth: parentId.implicitWidth
+    property real panelHeight: parentId.implicitHeight
+    property real slideY: 99999
     color: 'transparent'
-    implicitWidth: parentId.implicitWidth
-    implicitHeight: parentId.implicitHeight
+
+    screen: modelData
+
+    anchors {
+        top: true
+        bottom: true
+        left: true
+        right: true
+    }
 
     WlrLayershell.layer: currentWlrLayer
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
@@ -28,12 +38,59 @@ PanelWindow {
 
     signal closeRequested
 
+    function requestClose() {
+        closeAnimation.start();
+    }
+
+    Connections {
+        target: root.parentId
+        function onClosingChanged() {
+            if (root.parentId.closing) {
+                root.requestClose();
+            }
+        }
+    }
+
+    onHeightChanged: {
+        if (root.height > 0 && !openAnimation.running && slideY >= root.height) {
+            slideY = root.height;
+            openAnimation.start();
+        }
+    }
+
+    NumberAnimation {
+        id: openAnimation
+        target: root
+        property: "slideY"
+        to: 0
+        duration: 700
+        easing.type: Easing.Bezier
+        // OutExpo: snaps to position fast, long silky deceleration tail
+        easing.bezierCurve: [0.16, 1.0, 0.3, 1.0, 1.0, 1.0]
+    }
+
+    SequentialAnimation {
+        id: closeAnimation
+        NumberAnimation {
+            target: root
+            property: "slideY"
+            to: root.height
+            duration: 420
+            easing.type: Easing.Bezier
+            // InExpo: holds briefly then exits decisively
+            easing.bezierCurve: [0.7, 0.0, 0.84, 0.0, 1.0, 1.0]
+        }
+        ScriptAction {
+            script: root.closeRequested()
+        }
+    }
+
     Component {
         id: appViewerComponent
         AppViewer {
             id: mainAppViewer
             onAppSelected: {
-                root.closeRequested();
+                root.requestClose();
             }
         }
     }
@@ -93,9 +150,12 @@ PanelWindow {
 
     Item {
         id: contentItem
-        anchors.fill: parent
+        width: root.panelWidth
+        height: root.panelHeight
+        anchors.centerIn: parent
+        transform: Translate { y: root.slideY }
         focus: true
-        Keys.onEscapePressed: root.closeRequested()
+        Keys.onEscapePressed: root.requestClose()
         function isSearchBarActiveForComponent() {
             let activeComponent = appLoader.item;
             return activeComponent && activeComponent.userText && activeComponent.userText.length > 0;
