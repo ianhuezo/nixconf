@@ -93,7 +93,7 @@ PanelWindow {
     // ---- Slide animation ----
     // slideX = 0: panel fully visible at right edge of screen
     // slideX = panelWidth + panelRightMargin: content pushed outside surface (invisible)
-    property real slideX: panelWidth + panelRightMargin
+    property real slideX: panelWidth + panelRightMargin + 1
 
     NumberAnimation {
         id: enterAnim
