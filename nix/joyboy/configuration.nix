@@ -380,6 +380,7 @@
     rclone
     yq-go
     ddcutil
+    awscli2
   ];
   programs.fuse.userAllowOther = true; # for rclone to function correctly
 
