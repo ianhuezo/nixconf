@@ -10,7 +10,7 @@ ClippingRectangle {
 
     // Properties
     required property var cavaValues
-    required property bool useCanvas
+    required property string visualizerMode
     required property color waveColor
     property bool isSectionedBar: false
 
@@ -20,7 +20,7 @@ ClippingRectangle {
         anchors.centerIn: parent
         height: centerSection.isSectionedBar ? parent.height : parent.height - 4
         cavaValues: centerSection.cavaValues
-        useCanvas: centerSection.useCanvas
+        mode: centerSection.visualizerMode
         waveColor: centerSection.waveColor
         barColor: "transparent"
         onToggleVisualization: centerSection.toggleVisualization()

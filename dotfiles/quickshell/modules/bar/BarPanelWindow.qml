@@ -11,7 +11,7 @@ PanelWindow {
     // Required properties
     required property var modelData
     required property var cavaValues
-    required property bool useCanvasVisualization
+    required property string visualizerMode
     required property var barOffsetY
     required property var barOffsetX
     required property var verticalPadding
@@ -176,10 +176,14 @@ PanelWindow {
                     Center {
                         anchors.fill: parent
                         cavaValues: panel.cavaValues
-                        useCanvas: panel.useCanvasVisualization
+                        visualizerMode: panel.visualizerMode
                         waveColor: panel.widgetMainColor
                         isSectionedBar: panel.isSectionedBar
-                        onToggleVisualization: panel.useCanvasVisualization = !panel.useCanvasVisualization
+                        onToggleVisualization: {
+                            const modes = ["wave", "bars", "title"];
+                            const idx = modes.indexOf(panel.visualizerMode);
+                            panel.visualizerMode = modes[(idx + 1) % modes.length];
+                        }
                     }
                 }
             }

@@ -1,4 +1,7 @@
 import QtQuick
+import Quickshell.Io
+import qs.services
+import qs.config
 
 Item {
     id: root
@@ -9,8 +12,9 @@ Item {
     property bool mirrored: true
     property real sensitivity: 1.0
 
-    // Mode selection: "wave" or "bars"
+    // Mode selection: "wave", "bars", or "title"
     property string mode: "wave"
+    property var modes: ["wave", "bars", "title"]
 
     // Wave-specific properties
     property int lineWidth: 1
@@ -20,10 +24,99 @@ Item {
     property int barSpacing: 2
     property int barRadius: 2
 
+    // Title-specific properties
+    property string title: ""
+    property int titlePauseDuration: 1500
+    property real titleScrollPixelsPerSecond: 18
+    property int titleScrollMinDuration: 4500
+    // Symmetric ease with cp1y/cp2y pulled inward from {0,1}. Pure {0,1} on the
+    // y-axis pins the velocity to 0 at the endpoints, which produces a long
+    // crawl into the stop and forces the middle to peak high (1.82x avg) to
+    // make up the area. Pulling to {0.1, 0.9} drops the middle peak to ~1.5x
+    // and roughly doubles the velocity near t=1, so the text stops decisively.
+    readonly property var titleScrollCurve: [0.4, 0.1, 0.6, 0.9, 1, 1]
+
     Loader {
         id: visualizerLoader
         anchors.fill: parent
-        sourceComponent: root.mode === "wave" ? waveComponent : barsComponent
+        sourceComponent: {
+            switch (root.mode) {
+            case "wave":
+                return waveComponent;
+            case "bars":
+                return barsComponent;
+            case "title":
+                return titleComponent;
+            }
+        }
+    }
+
+    Component {
+        id: titleComponent
+        Item {
+            id: scrollingTitle
+            anchors.fill: parent
+            clip: true
+
+            // text x = start - delta; increasing delta scrolls left, revealing
+            // the right side of the text. Capped at maxDelta so the right side
+            // never retracts past `end`.
+            property real start: 0
+            property real end: width
+            property real delta: 0
+            property real maxDelta: Math.max(0, titleText.implicitWidth - (end - start))
+            property bool needsScroll: titleText.implicitWidth > (end - start) && root.title.length > 0
+            // Constant px/sec keeps long titles from feeling rushed; min duration
+            // prevents flashes for tiny overflows.
+            property int scrollDuration: Math.max(root.titleScrollMinDuration, Math.round(maxDelta / root.titleScrollPixelsPerSecond * 1000))
+
+            Text {
+                id: titleText
+                text: root.title
+                color: root.visualizerColor
+                font.family: AppearanceConfig.font.mono
+                font.pixelSize: AppearanceConfig.font.size.sm
+                font.weight: AppearanceConfig.font.weight.medium
+                x: scrollingTitle.start - scrollingTitle.delta
+                anchors.verticalCenter: parent.verticalCenter
+            }
+
+            Connections {
+                target: root
+                function onTitleChanged() {
+                    scrollingTitle.delta = 0;
+                }
+            }
+
+            onNeedsScrollChanged: if (!needsScroll) delta = 0
+
+            SequentialAnimation on delta {
+                running: scrollingTitle.needsScroll
+                loops: Animation.Infinite
+                alwaysRunToEnd: false
+
+                PauseAnimation {
+                    duration: root.titlePauseDuration
+                }
+                NumberAnimation {
+                    from: 0
+                    to: scrollingTitle.maxDelta
+                    duration: scrollingTitle.scrollDuration
+                    easing.type: Easing.BezierSpline
+                    easing.bezierCurve: root.titleScrollCurve
+                }
+                PauseAnimation {
+                    duration: root.titlePauseDuration
+                }
+                NumberAnimation {
+                    from: scrollingTitle.maxDelta
+                    to: 0
+                    duration: scrollingTitle.scrollDuration
+                    easing.type: Easing.BezierSpline
+                    easing.bezierCurve: root.titleScrollCurve
+                }
+            }
+        }
     }
 
     Component {
