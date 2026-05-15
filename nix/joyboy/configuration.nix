@@ -101,6 +101,12 @@
   # Enable usbmuxd for iPhone connectivity
   services.usbmuxd.enable = true;
 
+  virtualisation.docker = {
+    enable = true;
+    enableOnBoot = true;
+    autoPrune.enable = true;
+  };
+
   #ollama support
   services.ollama = {
     enable = false;
@@ -261,6 +267,43 @@
           };
         }
       ];
+    };
+    extraConfig.pipewire."99-noise-suppression" = {
+      "context.modules" = [
+        {
+          name = "libpipewire-module-filter-chain";
+          args = {
+            "node.description" = "Noise Suppressed Microphone";
+            "media.name" = "Noise Suppressed Microphone";
+            "filter.graph" = {
+              nodes = [
+                {
+                  type = "ladspa";
+                  name = "rnnoise";
+                  plugin = "${pkgs.rnnoise-plugin}/lib/ladspa/librnnoise_ladspa.so";
+                  label = "noise_suppressor_mono";
+                  control = {
+                    "VAD Threshold (%)" = 50.0;
+                    "VAD Grace Period (ms)" = 200;
+                    "Retroactive VAD Grace (ms)" = 0;
+                  };
+                }
+              ];
+            };
+            "capture.props" = {
+              "node.name" = "capture.rnnoise_source";
+              "node.passive" = true;
+              "audio.rate" = 48000;
+            };
+            "playback.props" = {
+              "node.name" = "NoiseSuppressedMic";
+              "node.description" = "Noise Suppressed Microphone";
+              "media.class" = "Audio/Source";
+              "audio.rate" = 48000;
+            };
+          };
+        }
+      ];
     }; # If you want to use JACK applications, uncomment this
     #jack.enable = true;
 
@@ -297,6 +340,7 @@
       "input"
       "fuse"
       "i2c"
+      "docker"
     ];
     packages = with pkgs; [
       #  thunderbird
@@ -377,6 +421,7 @@
     (callPackage ../gaming/beyond-all-reason { })
     (callPackage ../packages/kmeans-colors { })
     (callPackage ../packages/quantette-cli { })
+    (callPackage ../packages/graphify { })
     rclone
     yq-go
     ddcutil

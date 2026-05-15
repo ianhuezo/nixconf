@@ -90,6 +90,16 @@ in
         ripgrep # for live_grep
         fd # for find_files
       ];
+      extraPython3Packages = ps: with ps; [
+        pynvim
+        jupyter-client
+        cairosvg
+        pnglatex
+        plotly
+        ipykernel
+        nbformat
+        pyperclip
+      ];
     };
     programs.nixvim.keymaps = [
       {
@@ -405,6 +415,22 @@ in
             persist_buffer_sort = true;
             show_tab_indicators = true;
           };
+        };
+      };
+      molten = {
+        enable = true;
+        settings = {
+          image_provider = "image.nvim";
+          output_win_max_height = 20;
+          auto_open_output = true;
+          virt_text_output = true;
+          wrap_output = true;
+        };
+      };
+      image = {
+        enable = true;
+        settings = {
+          backend = "kitty";
         };
       };
       avante = {

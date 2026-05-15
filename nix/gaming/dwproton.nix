@@ -36,12 +36,13 @@ let
     sha512sum -c "$checksum_name"
     # if result is ok, continue
 
-    # make steam directory if it does not exist
-    mkdir -p ~/.steam/root/compatibilitytools.d
+    # respect XDG_DATA_HOME so faugus-launcher / umu-launcher can find the runner
+    compat_dir="''${XDG_DATA_HOME:-$HOME/.local/share}/Steam/compatibilitytools.d"
+    mkdir -p "$compat_dir"
 
     # extract dwproton tarball to steam directory
-    echo "Extracting to Steam compatibility tools directory..."
-    tar -xf "$tarball_name" -C ~/.steam/root/compatibilitytools.d/
+    echo "Extracting to $compat_dir..."
+    tar -xf "$tarball_name" -C "$compat_dir/"
 
     echo "DWProton $latest_version has been installed successfully!"
     echo "Restart Steam to see the new compatibility tool."
