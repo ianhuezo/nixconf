@@ -262,6 +262,44 @@ in
       vim.api.nvim_set_hl(0, "@method", { fg = "${base16Colors.base0D}", italic = true })
       vim.api.nvim_set_hl(0, "@variable", { fg = "${base16Colors.base0C}" })
       vim.api.nvim_set_hl(0, "@property", { fg = "${base16Colors.base0E}" })
+
+      local clippy_group = vim.api.nvim_create_augroup("ClippyAutoFix", { clear = true })
+      vim.api.nvim_create_autocmd("BufWritePost", {
+        group = clippy_group,
+        pattern = "*.rs",
+        callback = function(args)
+          local cargo_root = vim.fs.root(args.buf, { "Cargo.toml" })
+          if not cargo_root then
+            return
+          end
+          local stderr_chunks = {}
+          vim.fn.jobstart(
+            { "cargo", "clippy", "--fix", "--allow-dirty", "--allow-staged", "--all-targets" },
+            {
+              cwd = cargo_root,
+              env = { __CARGO_FIX_YOLO = "1" },
+              stderr_buffered = true,
+              on_stderr = function(_, data)
+                if data then
+                  for _, line in ipairs(data) do
+                    if line ~= "" then table.insert(stderr_chunks, line) end
+                  end
+                end
+              end,
+              on_exit = vim.schedule_wrap(function(_, code)
+                if code == 0 then
+                  vim.cmd("checktime")
+                else
+                  vim.notify(
+                    "clippy failed (exit " .. code .. ")\n" .. table.concat(stderr_chunks, "\n"),
+                    vim.log.levels.WARN
+                  )
+                end
+              end),
+            }
+          )
+        end,
+      })
     '';
 
     programs.nixvim.plugins = {
