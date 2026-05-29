@@ -93,13 +93,21 @@ in
       extraPython3Packages = ps: with ps; [
         pynvim
         jupyter-client
-        cairosvg
-        pnglatex
-        plotly
-        ipykernel
         nbformat
         pyperclip
+        ipykernel
       ];
+      # nixvim's extraPython3Packages does not auto-set python3_host_prog
+      # in this wrapper, so point it at a python with the same packages.
+      globals.python3_host_prog = "${
+        pkgs.python3.withPackages (ps: with ps; [
+          pynvim
+          jupyter-client
+          nbformat
+          pyperclip
+          ipykernel
+        ])
+      }/bin/python3";
     };
     programs.nixvim.keymaps = [
       {
@@ -129,6 +137,51 @@ in
         action = "<cmd>lua vim.diagnostic.open_float()<cr>";
         options = {
           desc = "Open diagnostic window";
+          silent = true;
+        };
+      }
+      {
+        mode = "n";
+        key = "<localleader>mi";
+        action = ":MoltenInit<CR>";
+        options = {
+          desc = "Initialize the plugin";
+          silent = true;
+        };
+      }
+      {
+        mode = "n";
+        key = "<localleader>e";
+        action = ":MoltenEvaluateOperator<CR>";
+        options = {
+          desc = "run operator selection";
+          silent = true;
+        };
+      }
+      {
+        mode = "n";
+        key = "<localleader>rl";
+        action = ":MoltenEvaluateLine<CR>";
+        options = {
+          desc = "evaluate line";
+          silent = true;
+        };
+      }
+      {
+        mode = "n";
+        key = "<localleader>rr";
+        action = ":MoltenReevaluateCell<CR>";
+        options = {
+          desc = "re-evaluate cell";
+          silent = true;
+        };
+      }
+      {
+        mode = "v";
+        key = "<localleader>r";
+        action = ":<C-u>MoltenEvaluateVisual<CR>gv";
+        options = {
+          desc = "evaluate visual selection";
           silent = true;
         };
       }
@@ -243,6 +296,8 @@ in
         RRGGBBAA = true;
       };
       lsp.servers.typos_lsp.enable = true;
+      lsp.servers.pyright.enable = true;
+      lsp.servers.ruff.enable = true;
       typescript-tools = {
         enable = false;
       };
@@ -420,17 +475,30 @@ in
       molten = {
         enable = true;
         settings = {
-          image_provider = "image.nvim";
-          output_win_max_height = 20;
+          auto_image_popup = false;
+          auto_init_behavior = "init";
+          auto_open_html_in_browser = false;
           auto_open_output = true;
-          virt_text_output = true;
-          wrap_output = true;
-        };
-      };
-      image = {
-        enable = true;
-        settings = {
-          backend = "kitty";
+          cover_empty_lines = false;
+          copy_output = false;
+          enter_output_behavior = "open_then_enter";
+          image_provider = "none";
+          output_crop_border = true;
+          output_virt_lines = false;
+          output_win_border = [
+            ""
+            "━"
+            ""
+            ""
+          ];
+          output_win_hide_on_leave = true;
+          output_win_max_height = 15;
+          output_win_max_width = 80;
+          save_path.__raw = "vim.fn.stdpath('data')..'/molten'";
+          tick_rate = 500;
+          use_border_highlights = false;
+          limit_output_chars = 10000;
+          wrap_output = false;
         };
       };
       avante = {
