@@ -263,6 +263,11 @@ in
       vim.api.nvim_set_hl(0, "@variable", { fg = "${base16Colors.base0C}" })
       vim.api.nvim_set_hl(0, "@property", { fg = "${base16Colors.base0E}" })
 
+      vim.filetype.add({
+        filename = { [".env"] = "dotenv" },
+        pattern = { ["%.env%..*"] = "dotenv" },
+      })
+
       local clippy_group = vim.api.nvim_create_augroup("ClippyAutoFix", { clear = true })
       vim.api.nvim_create_autocmd("BufWritePost", {
         group = clippy_group,
@@ -537,6 +542,28 @@ in
           use_border_highlights = false;
           limit_output_chars = 10000;
           wrap_output = false;
+        };
+      };
+      copilot-lua = {
+        enable = true;
+        settings = {
+          suggestion = {
+            enabled = true;
+            auto_trigger = true;
+            keymap = {
+              accept = "<M-l>";
+              accept_word = false;
+              accept_line = false;
+              next = "<M-]>";
+              prev = "<M-[>";
+              dismiss = "<C-]>";
+            };
+          };
+          panel.enabled = false;
+          filetypes = {
+            "*" = true;
+            dotenv = false;
+          };
         };
       };
       avante = {

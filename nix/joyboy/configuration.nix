@@ -410,6 +410,7 @@
         pkgs.python3Packages.yt-dlp
         eyed3
         pillow
+        reportlab
       ]
     ))
     nodejs

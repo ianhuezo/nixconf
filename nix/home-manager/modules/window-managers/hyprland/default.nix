@@ -69,7 +69,7 @@ in
       xwayland.enable = true;
       settings = {
         exec-once = [
-          ''${startupScript}/bin/start''
+          "${startupScript}/bin/start"
         ];
         monitor = [
           "${rightMonitor}, 2560x1440@240.08, auto-right, 1, bitdepth, 10"
@@ -149,7 +149,7 @@ in
           "CTRL_SHIFT, bracketleft, cyclenext, prev"
           "CTRL_SHIFT, bracketright, cyclenext"
           "SHIFT,Space,pass,title:^(exiled-exchange-2)$"
-          #"CTRL,D,pass,class:^(exiled-exchange-2)$"
+          "CTRL ALT, E,pass,class:^(exiled-exchange-2)$"
           "CTRL ALT,D,pass,class:^(exiled-exchange-2)$"
         ]
         ++ (

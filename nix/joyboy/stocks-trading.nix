@@ -1,20 +1,21 @@
-# Stock Trading Bot Service
-# Runs the portfolio orchestrator once daily between 9:50 AM and 10:15 AM
-# on weekdays only, with a randomized start time within that window.
+# Stock Trading Bot Services
+# Two daily runs on weekdays, env-scoped:
+#   - staging: 09:50 ET ± 25min (window 09:50–10:15)
+#   - live:    10:30 ET ± 25min (window 10:30–10:55)
+# Non-overlapping jitter windows (15-min gap) plus `After=` on the live unit
+# so it queues behind staging even if staging runs long.
 #
-# The service uses `nix develop` to get the correct Python environment.
+# Both use `nix develop` for the correct Python environment.
 { config, pkgs, ... }:
 
-{
-  # Systemd service for the trading bot
-  systemd.services.stocks-trading = {
-    description = "Alpaca Stock Trading Bot - Portfolio Orchestrator";
+let
+  mkTradingService = { env, extraAfter ? [ ] }: {
+    description = "Alpaca Stock Trading Bot - Portfolio Orchestrator (${env})";
 
-    # Don't start automatically on boot - use timer instead
+    # Don't start on boot - timer drives it.
     wantedBy = [ ];
 
-    # Ensure network is available
-    after = [ "network-online.target" ];
+    after = [ "network-online.target" ] ++ extraAfter;
     requires = [ "network-online.target" ];
 
     serviceConfig = {
@@ -23,36 +24,41 @@
       Group = "users";
       WorkingDirectory = "/home/ianh/Repositories/stocks";
 
-      # Run the portfolio master via nix develop
-      ExecStart = "${pkgs.nix}/bin/nix develop --command python main.py --portfolio-master configs/portfolio_master.yaml";
+      ExecStart = "${pkgs.nix}/bin/nix develop --command python main.py --env ${env} --portfolio-master configs/portfolio_master.yaml";
 
-      # Logging
       StandardOutput = "journal";
       StandardError = "journal";
 
-      # Timeout after 2 hours
       TimeoutStartSec = "2hr";
-
-      # Nice level - slightly lower priority than interactive processes
       Nice = 5;
     };
   };
 
-  # Timer to trigger the service daily on weekdays
-  systemd.timers.stocks-trading = {
-    description = "Daily Stock Trading Bot Timer (Weekdays)";
+  mkTradingTimer = { description, onCalendar }: {
+    inherit description;
     wantedBy = [ "timers.target" ];
 
     timerConfig = {
-      # Run at 9:50 AM Eastern on weekdays only (Mon-Fri)
-      # System timezone is already America/New_York
-      OnCalendar = "Mon..Fri *-*-* 09:50:00";
-
-      # Randomize the start by up to 25 minutes (so between 9:50 AM and 10:15 AM)
+      OnCalendar = onCalendar;
       RandomizedDelaySec = "25min";
-
-      # Persist timer state across reboots
       Persistent = true;
     };
+  };
+in
+{
+  systemd.services.stocks-trading-staging = mkTradingService { env = "staging"; };
+  systemd.services.stocks-trading-live = mkTradingService {
+    env = "live";
+    extraAfter = [ "stocks-trading-staging.service" ];
+  };
+
+  systemd.timers.stocks-trading-staging = mkTradingTimer {
+    description = "Daily Stock Trading Bot Timer - Staging (Weekdays, 09:50 ± 25min ET)";
+    onCalendar = "Mon..Fri *-*-* 09:50:00";
+  };
+
+  systemd.timers.stocks-trading-live = mkTradingTimer {
+    description = "Daily Stock Trading Bot Timer - Live (Weekdays, 10:30 ± 25min ET)";
+    onCalendar = "Mon..Fri *-*-* 10:30:00";
   };
 }
