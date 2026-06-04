@@ -1,28 +1,28 @@
 self: super: {
-  claude-code = super.buildNpmPackage rec {
+  claude-code = super.stdenv.mkDerivation rec {
     pname = "claude-code";
-    version = "2.1.112";
+    version = "2.1.162";
 
     src = super.fetchzip {
-      url = "https://registry.npmjs.org/@anthropic-ai/claude-code/-/claude-code-${version}.tgz";
-      hash = "sha256-SJJqU7XHbu9IRGPMJNUg6oaMZiQUKqJhI2wm7BnR1gs=";
+      url = "https://registry.npmjs.org/@anthropic-ai/claude-code-linux-x64/-/claude-code-linux-x64-${version}.tgz";
+      hash = "sha256-7GQR+4jzoF042T62HXTGwLys2h2/lCzYZvCk6FuNXBE=";
     };
 
-    npmDepsHash = "sha256-bdkej9Z41GLew9wi1zdNX+Asauki3nT1+SHmBmaUIBU=";
+    nativeBuildInputs = with super; [ autoPatchelfHook makeWrapper ];
 
-    strictDeps = true;
+    buildInputs = with super; [ stdenv.cc.cc.lib ];
 
-    postPatch = ''
-      cp ${./package-lock.json} package-lock.json
-      substituteInPlace cli.js \
-        --replace-fail '#!/bin/sh' '#!/usr/bin/env sh'
+    dontBuild = true;
+    dontConfigure = true;
+    dontStrip = true;
+
+    installPhase = ''
+      runHook preInstall
+      install -Dm755 claude $out/bin/claude
+      runHook postInstall
     '';
 
-    dontNpmBuild = true;
-
-    env.AUTHORIZED = "1";
-
-    postInstall = ''
+    postFixup = ''
       wrapProgram $out/bin/claude \
         --set DISABLE_AUTOUPDATER 1 \
         --set DISABLE_INSTALLATION_CHECKS 1 \
@@ -36,6 +36,7 @@ self: super: {
       license = licenses.unfree;
       maintainers = [ ];
       mainProgram = "claude";
+      platforms = [ "x86_64-linux" ];
     };
   };
 }
