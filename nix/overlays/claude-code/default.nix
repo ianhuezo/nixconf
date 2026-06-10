@@ -1,11 +1,11 @@
 self: super: {
   claude-code = super.stdenv.mkDerivation rec {
     pname = "claude-code";
-    version = "2.1.162";
+    version = "2.1.170";
 
     src = super.fetchzip {
       url = "https://registry.npmjs.org/@anthropic-ai/claude-code-linux-x64/-/claude-code-linux-x64-${version}.tgz";
-      hash = "sha256-7GQR+4jzoF042T62HXTGwLys2h2/lCzYZvCk6FuNXBE=";
+      hash = "sha256-boRtO4oV/PP30bB0wWKYyuR2woZV3joAvqyxpiL6txs=";
     };
 
     nativeBuildInputs = with super; [ autoPatchelfHook makeWrapper ];

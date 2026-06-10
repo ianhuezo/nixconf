@@ -90,23 +90,26 @@ in
         ripgrep # for live_grep
         fd # for find_files
       ];
-      extraPython3Packages = ps: with ps; [
-        pynvim
-        jupyter-client
-        nbformat
-        pyperclip
-        ipykernel
-      ];
-      # nixvim's extraPython3Packages does not auto-set python3_host_prog
-      # in this wrapper, so point it at a python with the same packages.
-      globals.python3_host_prog = "${
-        pkgs.python3.withPackages (ps: with ps; [
+      extraPython3Packages =
+        ps: with ps; [
           pynvim
           jupyter-client
           nbformat
           pyperclip
           ipykernel
-        ])
+        ];
+      # nixvim's extraPython3Packages does not auto-set python3_host_prog
+      # in this wrapper, so point it at a python with the same packages.
+      globals.python3_host_prog = "${
+        pkgs.python3.withPackages (
+          ps: with ps; [
+            pynvim
+            jupyter-client
+            nbformat
+            pyperclip
+            ipykernel
+          ]
+        )
       }/bin/python3";
     };
     programs.nixvim.keymaps = [
@@ -183,6 +186,15 @@ in
         options = {
           desc = "evaluate visual selection";
           silent = true;
+        };
+      }
+      {
+        mode = "n";
+        key = "<leader>nf"; # New File
+        action = ":e %:h/";
+        options = {
+          desc = "New file in current buffer's directory";
+          # Do NOT use silent = true here, otherwise you won't see the command line waiting for you!
         };
       }
     ]
