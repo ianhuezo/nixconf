@@ -36,10 +36,10 @@ in
               }
 
               # GENERAL
+              # NOTE: no_fade_in / grace / disable_loading_bar were removed from the
+              # config in hyprlock >=0.9; they are now CLI flags (--no-fade-in, --grace).
               general {
-                  no_fade_in = false
-                  grace = 0
-                  disable_loading_bar = true
+                  hide_cursor = true
               }
 
               # INPUT FIELD
@@ -68,19 +68,19 @@ in
                   color = rgba(255, 255, 255, 0.6)
                   font_size = 100
                   font_family = JetBrains Mono Nerd Font
-                  position = 0, 16
+                  position = 0, 90
                   halign = center
                   valign = center
               }
               # DATE
               label {
                 monitor =
-                text = cmd[update:18000000] echo "<b> $(date + "%A, %-d %B %Y") </b>"
+                text = cmd[update:18000000] echo "<b> $(date +"%A, %-d %B %Y") </b>"
                 color = rgba(255,255,255,0.6)
                 font_size = 36
                 font_family = JetBrains Mono Nerd Font
 
-                position = 0, -46
+                position = 0, -40
                 halign = center
                 valign = center
               }
@@ -96,7 +96,7 @@ in
         	        shadow_passes = 1
         	        shadow_boost = 1.2
         	        shadow_size = 3
-        	        shadow_color = rgb(#${config.colorScheme.palette.base00})
+        	        shadow_color = rgb(${config.colorScheme.palette.base00})
                   halign = center
                   valign = bottom
               }

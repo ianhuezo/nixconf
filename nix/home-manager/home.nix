@@ -10,7 +10,6 @@ let
   cavaPath = /etc/nixos/dotfiles/cava;
   scriptsPath = /etc/nixos/dotfiles/scripts;
   vesktopThemePath = /etc/nixos/dotfiles/vesktop/themes;
-  assetsPath = /etc/nixos/dotfiles/assets;
   fullScheme = import ../themes/dark-ethereal;
 in
 {
