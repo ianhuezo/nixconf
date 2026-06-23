@@ -91,7 +91,7 @@ in
           "match:class (steam_app_2694490), stay_focused on"
 
           # Exiled Exchange 2 - overlay tool
-          "match:title (exiled-exchange-2|Exiled Exchange 2), tag +apt"
+          "match:class ^(exiled-exchange-2)$, tag +apt"
           "match:tag apt, float on"
           "match:tag apt, no_blur on"
           "match:tag apt, no_focus on"
@@ -148,7 +148,7 @@ in
           "CTRL_SHIFT, Return, exec, kitty --directory=$HOME"
           "CTRL_SHIFT, bracketleft, cyclenext, prev"
           "CTRL_SHIFT, bracketright, cyclenext"
-          "SHIFT,Space,pass,title:^(exiled-exchange-2)$"
+          "SHIFT,Space,pass,class:^(exiled-exchange-2)$"
           "CTRL ALT, E,pass,class:^(exiled-exchange-2)$"
           "CTRL ALT,D,pass,class:^(exiled-exchange-2)$"
         ]

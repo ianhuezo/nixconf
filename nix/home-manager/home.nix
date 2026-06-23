@@ -25,6 +25,7 @@ in
     ./modules/quickshell
     ./modules/window-managers/hyprland
     ./modules/programs/rust
+    ./modules/voice-clone
   ];
 
   # Home Manager needs a bit of information about you and the paths it should
@@ -67,6 +68,10 @@ in
   };
 
   modules.rust = {
+    enable = true;
+  };
+
+  modules.voice-clone = {
     enable = true;
   };
 

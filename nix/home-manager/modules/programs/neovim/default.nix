@@ -208,7 +208,7 @@ in
           {
             mode = "n";
             key = "<leader>${toString ws}";
-            action = ":BufferLineGoToBuffer ${toString ws}<CR>";
+            action = ":lua require('bufferline').go_to(${toString ws}, true)<CR>";
             options.silent = true;
           }
         ]

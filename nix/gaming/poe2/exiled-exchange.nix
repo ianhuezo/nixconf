@@ -35,6 +35,7 @@ stdenv.mkDerivation rec {
   postFixup = ''
         makeWrapper ${lib.getExe electron} $out/bin/exiled-exchange-2 \
     --add-flags $out/share/exiled-exchange-2/resources/app.asar \
+    --add-flags "--enable-features=UseOzonePlatform --ozone-platform=x11" \
     --prefix LD_LIBRARY_PATH : "${
       lib.makeLibraryPath [
         xorg.libXtst
