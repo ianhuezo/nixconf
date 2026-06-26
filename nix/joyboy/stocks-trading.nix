@@ -9,7 +9,10 @@
 { config, pkgs, ... }:
 
 let
-  mkTradingService = { env, extraAfter ? [ ] }: {
+  liveMaster = "configs/portfolio_master.yaml";
+  stagingMaster = "configs/portfolio_master_staging.yaml";
+
+  mkTradingService = { env, master, extraAfter ? [ ] }: {
     description = "Alpaca Stock Trading Bot - Portfolio Orchestrator (${env})";
 
     # Don't start on boot - timer drives it.
@@ -24,7 +27,7 @@ let
       Group = "users";
       WorkingDirectory = "/home/ianh/Repositories/stocks";
 
-      ExecStart = "${pkgs.nix}/bin/nix develop --command python main.py --env ${env} --portfolio-master configs/portfolio_master.yaml";
+      ExecStart = "${pkgs.nix}/bin/nix develop --command python main.py --env ${env} --portfolio-master ${master}";
 
       StandardOutput = "journal";
       StandardError = "journal";
@@ -46,9 +49,13 @@ let
   };
 in
 {
-  systemd.services.stocks-trading-staging = mkTradingService { env = "staging"; };
+  systemd.services.stocks-trading-staging = mkTradingService {
+    env = "staging";
+    master = stagingMaster;
+  };
   systemd.services.stocks-trading-live = mkTradingService {
     env = "live";
+    master = liveMaster;
     extraAfter = [ "stocks-trading-staging.service" ];
   };
 

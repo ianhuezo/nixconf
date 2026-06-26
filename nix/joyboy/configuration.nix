@@ -423,6 +423,7 @@
     (callPackage ../packages/kmeans-colors { })
     (callPackage ../packages/quantette-cli { })
     (callPackage ../packages/graphify { })
+    (callPackage ../packages/pi-coding-agent { })
     rclone
     yq-go
     ddcutil
