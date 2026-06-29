@@ -385,6 +385,14 @@ in
 
       lsp.servers.nixd = {
         enable = true;
+        # Send SIGTERM to nixd when its parent (this nvim) dies, so abruptly
+        # closed editors don't leak orphaned nixd-attrset-eval workers (~800MB each).
+        cmd = [
+          "${pkgs.util-linux}/bin/setpriv"
+          "--pdeathsig"
+          "TERM"
+          "${inputs.nixd.packages.${pkgs.stdenv.hostPlatform.system}.default}/bin/nixd"
+        ];
         settings = {
           nixpkgs.expr = "import (builtins.getFlake \"${inputs.self}\").inputs.nixpkgs {}";
           options = {
