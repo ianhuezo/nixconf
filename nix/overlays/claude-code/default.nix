@@ -1,14 +1,17 @@
 self: super: {
   claude-code = super.stdenv.mkDerivation rec {
     pname = "claude-code";
-    version = "2.1.170";
+    version = "2.1.215";
 
     src = super.fetchzip {
       url = "https://registry.npmjs.org/@anthropic-ai/claude-code-linux-x64/-/claude-code-linux-x64-${version}.tgz";
-      hash = "sha256-boRtO4oV/PP30bB0wWKYyuR2woZV3joAvqyxpiL6txs=";
+      hash = "sha256-I6/H3srYHFIwRx6SC/8v2eFrUoZjCdrWybxNIqcyoeU=";
     };
 
-    nativeBuildInputs = with super; [ autoPatchelfHook makeWrapper ];
+    nativeBuildInputs = with super; [
+      autoPatchelfHook
+      makeWrapper
+    ];
 
     buildInputs = with super; [ stdenv.cc.cc.lib ];
 
@@ -27,7 +30,16 @@ self: super: {
         --set DISABLE_AUTOUPDATER 1 \
         --set DISABLE_INSTALLATION_CHECKS 1 \
         --unset DEV \
-        --prefix PATH : ${super.lib.makeBinPath (with super; [ procps bubblewrap socat ])}
+        --prefix PATH : ${
+          super.lib.makeBinPath (
+            with super;
+            [
+              procps
+              bubblewrap
+              socat
+            ]
+          )
+        }
     '';
 
     meta = with super.lib; {
