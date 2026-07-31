@@ -5,9 +5,8 @@
 # Non-overlapping jitter windows (15-min gap) plus `After=` on the live unit
 # so it queues behind staging even if staging runs long.
 #
-# End-of-day blend_sleeve runs (TQQQ 3-down MR + SMH IBS MOC sleeve,
-# main.py --blend-sleeve; 2026-07-22 supersedes the mr_sleeve units — the
-# blend contains the same TQQQ leg plus the SMH IBS leg):
+# End-of-day blend_sleeve runs (4-ETF down-streak MR plus monthly defensive
+# trend over IEF/GLD/DBC, sharing one 40% sleeve budget; main.py --blend-sleeve):
 #   - staging: 15:33 ET ± 2min
 #   - live:    15:36 ET ± 2min (queues behind staging)
 # Timing is tight on purpose: the sleeve's clock gate refuses to run more than
@@ -60,7 +59,7 @@ let
   };
 
   mkSleeveService = { env, extraAfter ? [ ] }: {
-    description = "Alpaca blend_sleeve - EOD TQQQ-MR + SMH-IBS MOC run (${env})";
+    description = "Alpaca blend_sleeve - EOD MR + defensive trend MOC run (${env})";
 
     wantedBy = [ ];
     after = [ "network-online.target" ] ++ extraAfter;
