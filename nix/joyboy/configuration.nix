@@ -25,7 +25,10 @@
   boot.loader.systemd-boot.enable = true;
   boot.kernelPackages = pkgs.linuxPackages_6_18;
   # nvidia_uvm: videoDrivers loads nvidia/modeset/drm but not UVM, so cuInit fails.
-  boot.kernelModules = [ "ntsync" "nvidia_uvm" ];
+  boot.kernelModules = [
+    "ntsync"
+    "nvidia_uvm"
+  ];
   boot.kernelParams = [
     # "video=DP-1:d"
     # "video=DP-2:d"
@@ -421,6 +424,7 @@
     hostapd
     dnsmasq
     thunar
+    wl-clipboard
     (callPackage ../gaming/poe2/exiled-exchange.nix { }) # for poe2
     (callPackage ../gaming/beyond-all-reason { })
     (callPackage ../packages/kmeans-colors { })

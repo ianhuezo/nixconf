@@ -31,6 +31,11 @@ in
     #   fastfetch
     # ];
     home.file.".config/fastfetch/config.jsonc".source = fastfetchConfigPath;
+    home.file.".config/mosh-start.sh" = {
+      executable = true;
+      #use nix directory ugly but works
+      source = ../../../../../dotfiles/scripts/mosh-start.sh;
+    };
 
     programs.starship = {
       enable = true;
@@ -49,6 +54,7 @@ in
         ls = "eza";
         update = "sudo nixos-rebuild switch --flake .#joyboy";
         nixfmt = "sudo nixfmt";
+        mosh-connect = "bash ${config.home.homeDirectory}/.config/mosh-start.sh";
         cd = "z";
       };
 
