@@ -14,6 +14,7 @@
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
     ./stocks-trading.nix
+    ./stocks-devshell.nix
     ./modules
     ../gaming/proton-ge.nix
     ../gaming/dwproton.nix
@@ -23,7 +24,8 @@
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.kernelPackages = pkgs.linuxPackages_6_18;
-  boot.kernelModules = [ "ntsync" ];
+  # nvidia_uvm: videoDrivers loads nvidia/modeset/drm but not UVM, so cuInit fails.
+  boot.kernelModules = [ "ntsync" "nvidia_uvm" ];
   boot.kernelParams = [
     # "video=DP-1:d"
     # "video=DP-2:d"

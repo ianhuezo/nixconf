@@ -25,6 +25,7 @@ in
       starship
       krabby
       fastfetch
+      mosh # for remote shell access that actually works rather than ssh
     ];
     # ++ optionals isLinux [
     #   fastfetch
