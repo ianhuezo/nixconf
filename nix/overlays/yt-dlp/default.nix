@@ -1,15 +1,16 @@
 final: prev: {
   python3Packages = prev.python3Packages // {
+    # nixpkgs lags yt-dlp badly; a stale yt-dlp gets HTTP 403 on YouTube audio
+    # downloads once SABR forces the android_vr fallback. Keep patches/postPatch
+    # from the base package -- postPatch is what wires deno in for JS challenges.
     yt-dlp = prev.python3Packages.yt-dlp.overrideAttrs (oldAttrs: rec {
-      version = "2025.10.22";
+      version = "2026.07.04";
       src = prev.fetchFromGitHub {
         owner = "yt-dlp";
         repo = "yt-dlp";
         rev = version;
-        hash = "sha256-jQaENEflaF9HzY/EiMXIHgUehAJ3nnDT9IbaN6bDcac";
+        hash = "sha256-+oHcVylLXFJTRR6jXF6IXvgntXJz0tRdtnwTruRPkoc=";
       };
-      patches = [ ]; # Clear patches from the base package that don't apply to this version
-      postPatch = ""; # Clear postPatch phase that references files that don't exist in this version
     });
   };
 }
