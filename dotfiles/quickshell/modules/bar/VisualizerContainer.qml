@@ -47,7 +47,11 @@ Rectangle {
         }
     }
 
+    // Lets the bar size its pane to the content instead of a fixed width
+    implicitWidth: contentRow.implicitWidth
+
     Row {
+        id: contentRow
         height: parent.height
         spacing: 5
         anchors.horizontalCenter: parent.horizontalCenter

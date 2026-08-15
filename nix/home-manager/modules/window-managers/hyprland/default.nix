@@ -103,6 +103,12 @@ in
           "match:tag apt, move 0 0"
         ];
         layerrule = [
+          # Glassy quickshell bar. Re-enable these together with `isGlassBar` in
+          # modules/bar/BarPanelWindow.qml — the QML alone only makes the bar
+          # translucent, these are what blur what's behind it. ignore_alpha keeps
+          # the blur off the fully transparent gaps and rounded corners.
+          # "match:namespace ^(quickshell-bar)$, blur on"
+          # "match:namespace ^(quickshell-bar)$, ignore_alpha 0.1"
         ];
         workspace = [
           "1,monitor:${rightMonitor},default:true"

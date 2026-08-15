@@ -12,14 +12,14 @@ Rectangle {
     property color widgetColor: Color.palette.base0C
     property color clockColor: Color.palette.base08
 
+    // Lets the bar size its pane to the content instead of a fixed width
+    implicitWidth: statsRow.implicitWidth
+
     Row {
         id: statsRow
         anchors {
             verticalCenter: parent.verticalCenter
-            left: parent.left
             right: parent.right
-            leftMargin: 8
-            rightMargin: 8
         }
         height: parent.height
         layoutDirection: Qt.RightToLeft

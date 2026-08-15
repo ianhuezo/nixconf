@@ -8,6 +8,9 @@ Rectangle {
     id: leftSection
     color: "transparent"
 
+    // Lets the bar size its pane to the content instead of a fixed width
+    implicitWidth: leftContent.implicitWidth
+
     Row {
         id: leftContent
         anchors.verticalCenter: parent.verticalCenter

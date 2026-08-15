@@ -16,7 +16,11 @@ ClippingRectangle {
 
     signal toggleVisualization()
 
+    // Lets the bar size its pane to the content instead of a fixed width
+    implicitWidth: visualizer.implicitWidth
+
     VisualizerContainer {
+        id: visualizer
         anchors.centerIn: parent
         height: centerSection.isSectionedBar ? parent.height : parent.height - 4
         cavaValues: centerSection.cavaValues
