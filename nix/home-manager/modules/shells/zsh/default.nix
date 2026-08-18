@@ -56,6 +56,8 @@ in
         nixfmt = "sudo nixfmt";
         mosh-connect = "bash ${config.home.homeDirectory}/.config/mosh-start.sh";
         cd = "z";
+        node1 = "ssh ian@192.168.50.157";
+        node2 = "ssh ian@192.168.50.179";
       };
 
       history = {

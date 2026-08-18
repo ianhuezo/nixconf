@@ -431,6 +431,7 @@
     (callPackage ../packages/quantette-cli { })
     (callPackage ../packages/graphify { })
     (callPackage ../packages/pi-coding-agent { })
+    (callPackage ../packages/oh-my-pi { })
     rclone
     yq-go
     ddcutil
