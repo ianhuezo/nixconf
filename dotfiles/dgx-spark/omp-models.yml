@@ -8,6 +8,7 @@ providers:
   dgx-spark:
     baseUrl: http://192.168.50.157:8888/v1
     api: openai-completions
+    auth: none
 
     models:
       - id: deepseek-v4-flash-dspark
