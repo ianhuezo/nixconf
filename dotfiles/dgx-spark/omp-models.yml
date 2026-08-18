@@ -1,0 +1,29 @@
+# omp model registry -> ~/.omp/agent/models.yml
+#
+# DeepSeek-V4-Flash-0731 served by vLLM TP=2 across the two GX10 nodes.
+# Endpoint is the head node's LAN address; the CX7 link carries only
+# inter-node tensor-parallel traffic, not client requests.
+
+providers:
+  dgx-spark:
+    baseUrl: http://192.168.50.157:8888/v1
+    api: openai-completions
+
+    models:
+      - id: deepseek-v4-flash-dspark
+        name: DeepSeek V4 Flash 0731 (local, 2x GX10)
+        api: openai-completions
+        # vLLM runs with --reasoning-parser deepseek_v4, so thinking blocks
+        # come back structured rather than inline in the content.
+        reasoning: true
+        input: [text]
+        # Local hardware: no per-token cost, so usage stats stay at zero
+        # instead of inventing numbers.
+        cost:
+          input: 0
+          output: 0
+          cacheRead: 0
+          cacheWrite: 0
+        # Matches MAX_MODEL_LEN in env.dspark (the model's true YaRN ceiling).
+        contextWindow: 1048576
+        maxTokens: 32768
