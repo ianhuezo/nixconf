@@ -16,10 +16,11 @@ for host in "$NODE1" "$NODE2"; do
     if ssh "$host" '[ -d ~/dspark-recipe ]'; then
         scp -q "$DIR/env.dspark" "$host:~/dspark-recipe/.env.dspark"
         scp -q "$DIR/patch-runtime.sh" "$DIR/lock-gpu-clock.sh" \
-            "$host:~/dspark-recipe/"
+            "$DIR/install-gpu-clock-service.sh" \
+            "$DIR/dgx-spark-gpu-clock.service" "$host:~/dspark-recipe/"
         scp -q "$DIR/patches/0006-reasoning-effort-three-levels.patch" \
             "$host:~/dspark-recipe/patches/"
-        ssh "$host" 'chmod +x ~/dspark-recipe/patch-runtime.sh ~/dspark-recipe/lock-gpu-clock.sh'
+        ssh "$host" 'chmod +x ~/dspark-recipe/patch-runtime.sh ~/dspark-recipe/lock-gpu-clock.sh ~/dspark-recipe/install-gpu-clock-service.sh'
     else
         echo "    (no ~/dspark-recipe yet, skipping .env.dspark)"
     fi

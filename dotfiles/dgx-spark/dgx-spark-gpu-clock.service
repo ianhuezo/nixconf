@@ -1,0 +1,19 @@
+[Unit]
+Description=Lock DGX Spark GPU clock for DSpark inference
+Documentation=man:nvidia-smi(1)
+Wants=nvidia-persistenced.service nvidia-cdi-refresh.service
+After=nvidia-persistenced.service nvidia-cdi-refresh.service
+Before=docker.service
+
+[Service]
+Type=oneshot
+# Driver initialization can lag slightly during boot. Retry for up to one minute
+# so the lock is normally in place before Docker starts the model containers.
+ExecStart=/bin/bash -c 'for attempt in {1..30}; do /usr/bin/nvidia-smi --lock-gpu-clocks=3003,3003 && exit 0; sleep 2; done; exit 1'
+ExecStart=/usr/bin/nvidia-smi --query-gpu=clocks.max.gr,clocks.gr,pstate,power.draw --format=csv,noheader
+ExecStop=-/usr/bin/nvidia-smi --reset-gpu-clocks
+RemainAfterExit=yes
+TimeoutStartSec=75
+
+[Install]
+WantedBy=multi-user.target
