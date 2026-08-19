@@ -28,3 +28,25 @@ providers:
         # Matches MAX_MODEL_LEN in env.dspark (the model's true YaRN ceiling).
         contextWindow: 1048576
         maxTokens: 32768
+
+  # The worker identity reaches the same vLLM model. Its smaller metadata is an
+  # OMP-side context/output budget so task subagents compact before they grow
+  # large; it does not load another model or reserve 128K tokens per worker.
+  dgx-spark-worker:
+    baseUrl: http://192.168.50.157:8888/v1
+    api: openai-completions
+    auth: none
+
+    models:
+      - id: deepseek-v4-flash-dspark
+        name: DeepSeek V4 Flash 0731 (128K worker budget)
+        api: openai-completions
+        reasoning: true
+        input: [text]
+        cost:
+          input: 0
+          output: 0
+          cacheRead: 0
+          cacheWrite: 0
+        contextWindow: 131072
+        maxTokens: 16384

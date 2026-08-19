@@ -1,0 +1,49 @@
+# omp settings -> ~/.omp/agent/config.yml
+#
+# The main role keeps DeepSeek's full 1M context. Lightweight task agents use
+# the 128K worker identity from omp-models.yml, default to max reasoning, and
+# may select low/high/max per spawn through task.enableEffort.
+
+providers:
+  webSearchOrder: []
+
+modelRoles:
+  default: dgx-spark/deepseek-v4-flash-dspark
+  worker: "dgx-spark-worker/deepseek-v4-flash-dspark:max"
+
+symbolPreset: nerd
+
+# Force the dark theme even if the terminal reports a light color scheme.
+theme:
+  dark: titanium
+  light: titanium
+
+setupVersion: 1
+
+task:
+  agentAdvisor:
+    designer: "off"
+  disabledAgents: []
+
+  # Keep routine workers bounded while leaving reviewer/security specialists on
+  # their own model policies. task.agentModelOverrides wins over frontmatter.
+  agentModelOverrides:
+    task: "@worker"
+    scout: "@worker"
+    sonic: "@worker"
+    librarian: "@worker"
+
+  # The server has MAX_NUM_SEQS=12. Six max-effort workers leave slots for the
+  # parent and background requests rather than letting OMP's default 32 oversubscribe it.
+  maxConcurrency: 6
+  maxRecursionDepth: 1
+
+  # Workers default to exact `max`. Enabling effort adds lo/med/hi to each task
+  # item; on this three-level model those select low/high/max respectively.
+  enableEffort: true
+  maxEffort: max
+
+  # Encourage one-shot workers to yield before repeated tool loops grow their
+  # context. At 1.5x this value OMP forces a partial-result yield.
+  softRequestBudget: 16
+  softRequestBudgetNotice: true

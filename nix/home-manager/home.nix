@@ -10,6 +10,7 @@ let
   cavaPath = /etc/nixos/dotfiles/cava;
   scriptsPath = /etc/nixos/dotfiles/scripts;
   vesktopThemePath = /etc/nixos/dotfiles/vesktop/themes;
+  ompConfigPath = /etc/nixos/dotfiles/dgx-spark/omp-config.yml;
   ompModelsPath = /etc/nixos/dotfiles/dgx-spark/omp-models.yml;
   fullScheme = import ../themes/dark-ethereal;
 in
@@ -126,6 +127,10 @@ in
   home.file.".config/custom_scripts".source = config.lib.file.mkOutOfStoreSymlink scriptsPath;
   home.file.".config/cava_conf".source = config.lib.file.mkOutOfStoreSymlink cavaPath;
   home.file.".config/vesktop/themes".source = config.lib.file.mkOutOfStoreSymlink vesktopThemePath;
+  home.file.".omp/agent/config.yml" = {
+    source = config.lib.file.mkOutOfStoreSymlink ompConfigPath;
+    force = true;
+  };
   home.file.".omp/agent/models.yml".source = config.lib.file.mkOutOfStoreSymlink ompModelsPath;
   home.file."${config.home.homeDirectory}/Pictures" = {
     source = ../../wallpapers;
