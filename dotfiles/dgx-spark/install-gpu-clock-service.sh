@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# Install the boot-time 3003 MHz GPU clock lock on one DGX Spark node.
-# Run once per node with sudo. Safe to re-run.
 set -euo pipefail
 
 UNIT=dgx-spark-gpu-clock.service
@@ -20,8 +18,6 @@ case "$ACTION" in
         install -o root -g root -m 0644 "$SOURCE" "$DEST"
         systemctl daemon-reload
         systemctl enable "$UNIT"
-        # Starting/restarting this unit only changes the clock setting. It does
-        # not restart Docker or the running vLLM containers.
         systemctl restart "$UNIT"
         systemctl is-enabled --quiet "$UNIT"
         systemctl is-active --quiet "$UNIT"

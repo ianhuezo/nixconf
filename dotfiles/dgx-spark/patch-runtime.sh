@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
-# Bake runtime-only fixes into the already-built Stage-C image.
-# Patch 4 is already part of the recipe overlay; this adds Patch 5 and the
-# three-level reasoning-effort fix from upstream PR #24 (commit 8bceae3).
 set -euo pipefail
 
 RECIPE_DIR="${RECIPE_DIR:-$(cd "$(dirname "$0")" && pwd)}"
@@ -9,7 +6,6 @@ ENV_FILE="${ENV_FILE:-$RECIPE_DIR/.env.dspark}"
 
 if [[ -f $ENV_FILE ]]; then
     set -a
-    # shellcheck disable=SC1090
     source "$ENV_FILE"
     set +a
 fi
@@ -99,8 +95,6 @@ EOF
 docker build --build-arg "BASE_IMAGE=$IMAGE" -t "$TMP_IMAGE" -f "$TMP_DIR/Dockerfile" "$TMP_DIR"
 verify_image "$TMP_IMAGE"
 
-# Keep the canonical tag expected by the recipe, but move it to the derived
-# image so start-deepseek-v4-flash-dspark.sh needs no local compose fork.
 docker tag "$TMP_IMAGE" "$IMAGE"
 docker image rm "$TMP_IMAGE" >/dev/null
 

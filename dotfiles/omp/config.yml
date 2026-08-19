@@ -1,0 +1,35 @@
+providers:
+  webSearchOrder: []
+
+modelRoles:
+  default: dgx-spark/deepseek-v4-flash-dspark
+  worker: "dgx-spark-worker/deepseek-v4-flash-dspark:max"
+  vision: "macbook-vision/mlx-community/Qwen3.8-27B-8bit"
+
+symbolPreset: nerd
+
+theme:
+  dark: titanium
+  light: titanium
+
+setupVersion: 1
+
+task:
+  agentAdvisor:
+    designer: "off"
+  disabledAgents: []
+
+  agentModelOverrides:
+    task: "@worker"
+    scout: "@worker"
+    sonic: "@worker"
+    librarian: "@worker"
+
+  maxConcurrency: 6
+  maxRecursionDepth: 1
+
+  enableEffort: true
+  maxEffort: max
+
+  softRequestBudget: 16
+  softRequestBudgetNotice: true

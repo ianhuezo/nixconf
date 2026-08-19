@@ -1,22 +1,6 @@
 #!/usr/bin/env bash
-#
-# Install the HuggingFace CLI (`hf`) on an Ubuntu 24.04 DGX Spark / GX10 node.
-#
-# Ubuntu 24.04 enforces PEP 668, so `pip install` into the system Python is
-# blocked. pipx gives the CLI its own venv without touching apt-managed
-# site-packages.
-#
-# Safe to run with or without sudo, and safe to re-run.
-
 set -euo pipefail
 
-# ---------------------------------------------------------------------------
-# Work out which unprivileged user the CLI belongs to.
-#
-# This matters: pipx installs into ~/.local, and `hf auth login` writes the
-# token to ~/.cache/huggingface/token. If those land in /root, the token is
-# invisible to your normal user and to any container started as you.
-# ---------------------------------------------------------------------------
 if [[ ${EUID} -eq 0 ]]; then
     TARGET_USER="${SUDO_USER:-}"
     if [[ -z ${TARGET_USER} || ${TARGET_USER} == "root" ]]; then
@@ -35,9 +19,6 @@ fi
 
 echo "==> Installing HuggingFace CLI for user: ${TARGET_USER}"
 
-# ---------------------------------------------------------------------------
-# 1. pipx from apt
-# ---------------------------------------------------------------------------
 if command -v pipx >/dev/null 2>&1; then
     echo "==> pipx already present, skipping apt"
 else
@@ -46,9 +27,6 @@ else
     "${SUDO[@]}" apt-get install -y pipx
 fi
 
-# ---------------------------------------------------------------------------
-# 2. huggingface_hub[cli] into its own venv, owned by the real user
-# ---------------------------------------------------------------------------
 echo "==> Installing huggingface_hub[cli]"
 if "${AS_USER[@]}" pipx list 2>/dev/null | grep -q huggingface-hub; then
     "${AS_USER[@]}" pipx upgrade huggingface_hub
@@ -58,9 +36,6 @@ fi
 
 "${AS_USER[@]}" pipx ensurepath >/dev/null 2>&1 || true
 
-# ---------------------------------------------------------------------------
-# 3. Verify
-# ---------------------------------------------------------------------------
 TARGET_HOME="$(getent passwd "${TARGET_USER}" | cut -d: -f6)"
 HF_BIN="${TARGET_HOME}/.local/bin/hf"
 
@@ -70,8 +45,8 @@ if [[ -x ${HF_BIN} ]]; then
     echo
     echo "Next, as ${TARGET_USER} (NOT with sudo):"
     echo
-    echo "    exec \$SHELL -l      # picks up ~/.local/bin on PATH"
-    echo "    hf auth login        # paste your token at the prompt"
+    echo "    exec \$SHELL -l"
+    echo "    hf auth login"
     echo
     echo "The token is written to ~/.cache/huggingface/token with 600 perms."
     echo "Bind-mounting ~/.cache/huggingface into the vLLM container carries"

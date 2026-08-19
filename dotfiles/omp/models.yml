@@ -1,9 +1,3 @@
-# omp model registry -> ~/.omp/agent/models.yml
-#
-# DeepSeek-V4-Flash-0731 served by vLLM TP=2 across the two GX10 nodes.
-# Endpoint is the head node's LAN address; the CX7 link carries only
-# inter-node tensor-parallel traffic, not client requests.
-
 providers:
   dgx-spark:
     baseUrl: http://192.168.50.157:8888/v1
@@ -14,24 +8,16 @@ providers:
       - id: deepseek-v4-flash-dspark
         name: DeepSeek V4 Flash 0731 (local, 2x GX10)
         api: openai-completions
-        # vLLM runs with --reasoning-parser deepseek_v4, so thinking blocks
-        # come back structured rather than inline in the content.
         reasoning: true
         input: [text]
-        # Local hardware: no per-token cost, so usage stats stay at zero
-        # instead of inventing numbers.
         cost:
           input: 0
           output: 0
           cacheRead: 0
           cacheWrite: 0
-        # Matches MAX_MODEL_LEN in env.dspark (the model's true YaRN ceiling).
-        contextWindow: 1048576
+        contextWindow: 491520
         maxTokens: 32768
 
-  # The worker identity reaches the same vLLM model. Its smaller metadata is an
-  # OMP-side context/output budget so task subagents compact before they grow
-  # large; it does not load another model or reserve 128K tokens per worker.
   dgx-spark-worker:
     baseUrl: http://192.168.50.157:8888/v1
     api: openai-completions
@@ -50,3 +36,21 @@ providers:
           cacheWrite: 0
         contextWindow: 131072
         maxTokens: 16384
+
+  macbook-vision:
+    baseUrl: http://192.168.50.134:8080/v1
+    api: openai-completions
+    auth: none
+
+    models:
+      - id: mlx-community/Qwen3.8-27B-8bit
+        name: Qwen3.8-27B vision (MacBook M3 Max)
+        api: openai-completions
+        input: [text, image]
+        cost:
+          input: 0
+          output: 0
+          cacheRead: 0
+          cacheWrite: 0
+        contextWindow: 32768
+        maxTokens: 4096
