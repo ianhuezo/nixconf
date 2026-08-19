@@ -15,7 +15,22 @@ Item {
     signal appSelected
     //these dont have 32x32 icons... strange
     property var blacklistedApps: []
-    property list<DesktopEntry> list: DesktopEntries.applications.values.filter(a => !a.noDisplay).sort((a, b) => a.name.localeCompare(b.name))
+    // Snapshot is rebuilt whenever the desktop entry index changes (new installs,
+    // uninstalls, edits) instead of only at component creation, so apps added after
+    // quickshell started appear without a restart or dashboard reopen.
+    property list<DesktopEntry> list: []
+    function refreshApplications() {
+        appViewer.list = DesktopEntries.applications.values
+            .filter(a => !a.noDisplay)
+            .sort((a, b) => a.name.localeCompare(b.name));
+    }
+    Connections {
+        target: DesktopEntries
+        function onApplicationsChanged() {
+            appViewer.refreshApplications();
+        }
+    }
+    Component.onCompleted: appViewer.refreshApplications()
     property list<var> preppedApps: list.filter(a => !blacklistedApps.includes(a.name))  // Filter blacklist here
     .map(a => ({
                 name: Fuzzy.prepare(a.name),
