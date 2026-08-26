@@ -15,8 +15,8 @@ providers:
           output: 0
           cacheRead: 0
           cacheWrite: 0
-        contextWindow: 491520
-        maxTokens: 32768
+        contextWindow: 262144
+        maxTokens: 65536
 
   dgx-spark-worker:
     baseUrl: http://192.168.50.157:8888/v1

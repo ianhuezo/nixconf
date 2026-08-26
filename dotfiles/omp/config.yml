@@ -1,35 +1,28 @@
-providers:
-  webSearchOrder: []
-
-modelRoles:
-  default: dgx-spark/deepseek-v4-flash-dspark
-  worker: "dgx-spark-worker/deepseek-v4-flash-dspark:max"
-  vision: "macbook-vision/mlx-community/Qwen3.8-27B-8bit"
-
+providers: 
+  webSearchOrder: 
+    []
+modelRoles: 
+  task: dgx-spark-worker/deepseek-v4-flash-dspark
+  smol: dgx-spark-worker/deepseek-v4-flash-dspark:low
+  slow: dgx-spark/deepseek-v4-flash-dspark:max
+  vision: macbook-vision/mlx-community/Qwen3.8-27B-8bit
+  default: openai-codex/gpt-5.6-sol
+temperature: 1
+topP: 0.95
 symbolPreset: nerd
-
-theme:
+theme: 
   dark: titanium
   light: titanium
-
 setupVersion: 1
-
-task:
-  agentAdvisor:
+task: 
+  agentAdvisor: 
     designer: "off"
-  disabledAgents: []
-
-  agentModelOverrides:
-    task: "@worker"
-    scout: "@worker"
-    sonic: "@worker"
-    librarian: "@worker"
-
-  maxConcurrency: 6
+  disabledAgents: 
+    []
+  maxConcurrency: 3
   maxRecursionDepth: 1
-
   enableEffort: true
   maxEffort: max
-
-  softRequestBudget: 16
+  softRequestBudget: 24
   softRequestBudgetNotice: true
+defaultThinkingLevel: auto
