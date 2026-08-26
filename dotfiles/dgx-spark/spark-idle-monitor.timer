@@ -1,0 +1,14 @@
+[Unit]
+Description=Hourly idle check for the DSpark cluster
+
+[Timer]
+OnCalendar=hourly
+# Persistent=false is load-bearing: a missed timer must NOT fire at boot, or a
+# machine powered on manually would immediately re-run the check and shut down.
+Persistent=false
+# No RandomizedDelaySec -- both nodes fire together at the top of the hour so
+# the head's 60s delay reliably lets the worker go first.
+AccuracySec=1min
+
+[Install]
+WantedBy=timers.target

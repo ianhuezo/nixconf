@@ -18,7 +18,12 @@ for host in "$NODE1" "$NODE2"; do
             "$DIR/dgx-spark-gpu-clock.service" "$host:~/dspark-recipe/"
         scp -q "$DIR/patches/0006-reasoning-effort-three-levels.patch" \
             "$host:~/dspark-recipe/patches/"
-        ssh "$host" 'chmod +x ~/dspark-recipe/patch-runtime.sh ~/dspark-recipe/lock-gpu-clock.sh ~/dspark-recipe/install-gpu-clock-service.sh'
+        # Hourly idle-shutdown. Install once per node with
+        # sudo ~/dspark-recipe/install-idle-monitor.sh
+        scp -q "$DIR/spark-idle-monitor.sh" "$DIR/spark-idle-monitor.service" \
+            "$DIR/spark-idle-monitor.timer" "$DIR/install-idle-monitor.sh" \
+            "$host:~/dspark-recipe/"
+        ssh "$host" 'chmod +x ~/dspark-recipe/patch-runtime.sh ~/dspark-recipe/lock-gpu-clock.sh ~/dspark-recipe/install-gpu-clock-service.sh ~/dspark-recipe/install-idle-monitor.sh ~/dspark-recipe/spark-idle-monitor.sh'
     else
         echo "    (no ~/dspark-recipe yet, skipping .env.dspark)"
     fi

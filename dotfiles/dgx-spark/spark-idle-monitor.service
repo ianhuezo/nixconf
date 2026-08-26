@@ -1,0 +1,12 @@
+[Unit]
+Description=Power off the DSpark cluster when inference has been idle
+Documentation=file:/usr/local/bin/spark-idle-monitor.sh
+# Only meaningful once the network is up; the worker scrapes the head over LAN.
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/spark-idle-monitor.sh
+# The script sleeps up to HEAD_DELAY before poweroff; keep the ceiling above it.
+TimeoutStartSec=180
