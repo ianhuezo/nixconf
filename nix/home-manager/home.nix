@@ -12,6 +12,7 @@ let
   vesktopThemePath = /etc/nixos/dotfiles/vesktop/themes;
   ompConfigPath = /etc/nixos/dotfiles/omp/config.yml;
   ompModelsPath = /etc/nixos/dotfiles/omp/models.yml;
+  ompRulesPath = /etc/nixos/dotfiles/omp/rules;
   fullScheme = import ../themes/dark-ethereal;
 in
 {
@@ -133,6 +134,10 @@ in
   };
   home.file.".omp/agent/models.yml" = {
     source = config.lib.file.mkOutOfStoreSymlink ompModelsPath;
+    force = true;
+  };
+  home.file.".omp/agent/rules" = {
+    source = config.lib.file.mkOutOfStoreSymlink ompRulesPath;
     force = true;
   };
   home.file."${config.home.homeDirectory}/Pictures" = {
