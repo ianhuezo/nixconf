@@ -13,7 +13,7 @@ let
   ompConfigPath = /etc/nixos/dotfiles/omp/config.yml;
   ompModelsPath = /etc/nixos/dotfiles/omp/models.yml;
   ompRulesPath = /etc/nixos/dotfiles/omp/rules;
-  fullScheme = import ../themes/dark-ethereal;
+  fullScheme = import ../themes/active.nix;
 in
 {
 
