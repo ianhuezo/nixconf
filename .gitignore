@@ -1,5 +1,3 @@
 nix/devShells/preview/build/*
-
-# Python bytecode from scripts run in place on the Spark nodes
 __pycache__/
-*.pyc
+graphify-out/
