@@ -7,8 +7,8 @@ modelRoles:
   slow: dgx-spark-glm/glm-5.3-flash:max
   vision: dgx-spark-glm/glm-5.3-flash
   default: openai-codex/gpt-5.6-sol
-temperature: 1
-topP: 0.95
+temperature: 0
+topP: 1
 symbolPreset: nerd
 theme: 
   dark: titanium

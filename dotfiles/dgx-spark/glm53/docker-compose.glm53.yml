@@ -108,6 +108,7 @@ services:
         SPEC='${SPEC_METHOD:-none}';
         MTP='${MTP_NUM_TOKENS:-0}';
         KVM='${KV_CACHE_MEMORY:-}';
+        EAGER='${ENFORCE_EAGER:-1}';
         SPEC_ARGS=;
         if [ "$${SPEC}" = mtp ] && [ -n "$${MTP}" ] && [ "$${MTP}" != 0 ]; then
         SPEC_ARGS="--speculative-config {\"method\":\"mtp\",\"num_speculative_tokens\":$${MTP}}";
@@ -126,6 +127,8 @@ services:
         fi;
         KV_ARGS=;
         if [ -n "$${KVM}" ]; then KV_ARGS="--kv-cache-memory $${KVM}"; fi;
+        EAGER_ARGS=;
+        if [ "$${EAGER}" = 1 ]; then EAGER_ARGS=--enforce-eager; fi;
         MM_ARGS="--limit-mm-per-prompt {\"image\":${MM_LIMIT_IMAGE:-8},\"video\":${MM_LIMIT_VIDEO:-1}}";
         MMC='${MM_PROCESSOR_CACHE_TYPE:-}';
         if [ -n "$${MMC}" ]; then MM_ARGS="$${MM_ARGS} --mm-processor-cache-type $${MMC}"; fi;
@@ -155,7 +158,7 @@ services:
         $${SPEC_ARGS}
         $${KV_ARGS}
         $${MM_ARGS}
-        --enforce-eager
+        $${EAGER_ARGS}
         --tool-call-parser glm47
         --enable-auto-tool-choice
         --reasoning-parser glm45
