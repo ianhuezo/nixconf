@@ -66,7 +66,10 @@ Item {
 
             temperature = String(current.temp_F ?? "--");
             feelsLike = String(current.FeelsLikeF ?? "--");
-            windSpeed = String(current.windspeedKmph ?? "--");
+            const windKmph = Number(current.windspeedKmph);
+            windSpeed = current.windspeedMiles !== undefined && current.windspeedMiles !== ""
+                ? String(current.windspeedMiles).trim()
+                : (Number.isFinite(windKmph) ? String(Math.round(windKmph * 0.621371)) : "--");
             windDirection = String(current.winddir16Point ?? "");
             humidity = String(current.humidity ?? "--");
             description = firstValue(current.weatherDesc, "Current conditions");
@@ -130,7 +133,7 @@ Item {
     Variants {
         model: root.targetScreens
 
-        delegate: WeatherPanel {
+        delegate: WeatherOverlay {
             required property var modelData
             screen: modelData
             weather: root
