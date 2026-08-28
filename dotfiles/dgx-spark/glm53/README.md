@@ -101,17 +101,28 @@ refines it, rather than re-running a single nextn layer autoregressively, so it
 sustains far longer accepted runs. Measured on this pair, thinking on except
 where noted, against a 14.62 tok/s no-drafter baseline:
 
-| output regime | tok/s | acceptance | accepted per step |
-|---|---|---|---|
-| structured list (count 1–200) | **52.85** | 90.1% | 7.55 |
-| JSON tool arguments | 27.33 | 29.9% | 3.08 |
-| Python source | 26.94 | 33.3% | 3.33 |
-| prose, thinking off | 25.50 | 29.8% | 3.10 |
-| prose, thinking on | 22.09 | 25.3% | 2.80 |
+| output regime | tok/s | acceptance |
+|---|---|---|
+| structured list (count 1–200) | 37.41 | 98.7% |
+| Python source | 27.42 | 60.8% |
+| JSON tool arguments | 27.27 | 54.6% |
+| prose, thinking off | 25.26 | 47.4% |
+| prose, thinking on | 23.65 | 45.5% |
 
-and at concurrency: **c1 23.38 tok/s** (was 14.62, +60%), **c5 aggregate
-56.37 tok/s** (was 52.43, +7.5%). The c5 figure matches upstream's own DFlash2
-peak of 56.2 almost exactly.
+and at concurrency, at the shipped `DFLASH2_NUM_TOKENS=3`:
+
+| | no drafter | DFlash2 N=7 | **DFlash2 N=3** |
+|---|---|---|---|
+| c1 per-stream | 14.62 | 23.38 | **30.33** |
+| c5 aggregate | 52.43 | 56.37 | **72.61** |
+| c5 TTFT | — | 1.347 s | **0.774 s** |
+| KV pool | 1,547,169 | 832,941 | **1,026,086** |
+
+**2.07× the no-drafter baseline at c1**, and the c5 aggregate sits 29% above
+upstream's own DFlash2 peak of 56.2. See `DFLASH2_NUM_TOKENS` in `env.glm53`
+for why 3 beats the 7 upstream ships — briefly: fewer draft positions sweep far
+fewer distinct experts, *and* the drafter is materially more accurate at the
+positions it does propose, because block diffusion denoises them jointly.
 
 **On KV pool cost, be precise about which claim is which.** The drafter's five
 sliding-window layers do slot-share the MLA tensors the way GLM's mamba layers
@@ -260,16 +271,41 @@ implied read rate         211.0 GB/s per node   (77.3% of 273)
 sm                         94% on both ranks
 ```
 
-**77% of theoretical bandwidth with the SMs at 94%** — the sweep is real and
-close to saturating the part. The remaining ~23% is what eager mode and 58
-scattered expert reads per step cost; it is not idle time waiting on the fabric.
-That also bounds what any further kernel work could return: about a third, at
-most, and only if the expert reads could be made contiguous.
+**Do not score this against 273.** That is the datasheet number, and no LPDDR
+system attains its peak. `membw-glm53.py` measures what this part actually
+delivers with STREAM-style kernels:
 
-Note the implied rate is a lower bound — it charges weights only, not KV reads
-or activations, so true utilisation is higher still. And `mem%` from
-`nvidia-smi dmon` is useless on GB10: with no separate framebuffer the driver
-reports 0 regardless of load, which is why the script does not print it.
+```
+read (reduction)   231.5 GB/s
+copy (read+write)  190.5 GB/s
+attainable         231.5 GB/s   =  84.8% of the 273 datasheet
+```
+
+The missing 15% is refresh and read/write turnaround — normal, and not
+recoverable. Re-scored against the honest denominator:
+
+| | tok/s | step | weight sweep | fixed | % of datasheet | **% of attainable** |
+|---|---|---|---|---|---|---|
+| N=7 | 22.77 | 127.4 ms | 115.6 ms | 11.8 ms | 76.9% | **90.7%** |
+| N=3 | 26.70 | 99.2 ms | 80.4 ms | 18.8 ms | 68.7% | **81.0%** |
+
+So at N=7 decode was already at **91% of what the part can deliver** — there
+was no bandwidth headroom to find, and the apparent 23% gap was mostly the
+wrong denominator. The fall to 81% at N=3 is not a regression: shrinking the
+sweep makes the *fixed* per-step cost a larger fraction, so utilisation drops
+while throughput rises 30%.
+
+What is actually left is **~19 ms per step of non-sweep cost (19% of the
+step), worth at most ~1.23×** — attention, the TP2 all-reduce across the
+fabric, and eager-mode launch. That also retires the CUDA-graphs idea: graphs
+address only one slice of that 19 ms, and the fabric all-reduce is structural
+to running TP2 across two machines.
+
+Two measurement traps worth knowing. `mem%` from `nvidia-smi dmon` is useless
+on GB10 — with no separate framebuffer the driver reports 0 regardless of load,
+which is why the script does not print it. And run `membw-glm53.py` with small
+buffers while the engine is resident: at ~2.4 GB free, a full-size probe will
+OOM the engine, and on GB10 that wedges the node.
 
 ## What is deliberately not here
 
@@ -295,4 +331,5 @@ reports 0 regardless of load, which is why the script does not print it.
 | `overlay-dflash2/` | Upstream's DFlash2 overlay, vendored verbatim: the drafter model, the speculator, four anchored patches, and the KV-geometry simulation the build runs. |
 | `gate-glm53.py` | Production gates: deep decode cold/warm, concurrent prefills, vision, draft acceptance, health. |
 | `bench-glm53.py` | TTFT / per-stream / aggregate tok/s at chosen concurrency levels. |
-| `roofline-glm53.py` | What fraction of the 273 GB/s per node decode is actually pulling — the number that says whether a speculative win is real. |
+| `roofline-glm53.py` | Bytes swept per forward pass, achieved read rate, and a draft-depth sweep derived from the live per-position acceptance curve. |
+| `membw-glm53.py` | What memory bandwidth this GB10 *actually* attains, so the roofline has an honest denominator. Run it with small buffers — see the bandwidth section. |

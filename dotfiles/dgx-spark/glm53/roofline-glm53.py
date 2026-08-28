@@ -161,6 +161,66 @@ def metrics(host, port):
     return out
 
 
+def per_position_acceptance(host, port):
+    """Marginal per-position draft acceptance, or None if not speculating.
+
+    These rates are MARGINAL, not conditional: mean acceptance length is
+    exactly 1 + sum(rates). Verified against three independent datasets --
+    without that fact the curve cannot be reasoned about at all.
+    """
+    try:
+        with urllib.request.urlopen(f"http://{host}:{port}/metrics", timeout=10) as r:
+            text = r.read().decode()
+    except Exception:
+        return None
+    # Exact metric names matter here. Every counter also has a `_created`
+    # sibling whose value is a Unix timestamp; matching on a prefix sweeps
+    # those in and produces a denominator of ~1.8e9, which silently renders
+    # every rate as 1.000.
+    acc = {}
+    drafts = 0.0
+    for line in text.splitlines():
+        try:
+            val = float(line.rsplit(None, 1)[1])
+        except (ValueError, IndexError):
+            continue
+        if line.startswith("vllm:spec_decode_num_accepted_tokens_per_pos_total"):
+            m = re.search(r'position="(\d+)"', line)
+            if m:
+                acc[int(m.group(1))] = acc.get(int(m.group(1)), 0.0) + val
+        elif line.startswith("vllm:spec_decode_num_drafts_total"):
+            drafts += val
+    if not acc or drafts <= 0:
+        return None
+    # num_drafts_total counts VERIFY STEPS, so accepted_at_position_k / steps
+    # is the marginal probability that position k was accepted.
+    return [acc[k] / drafts for k in sorted(acc)]
+
+
+def draft_depth_sweep(rates, dense, expert, n_experts, top_k, tp, seqs):
+    """Predicted relative throughput vs draft depth, from the measured curve.
+
+    The whole point: a verify step holding B positions does not touch top_k*B
+    experts, it touches n_experts * (1 - (1 - top_k/n_experts)^B) distinct
+    ones. That grows sublinearly but relentlessly, so deep speculation buys
+    tokens at a rising cost in bytes swept -- and on a bandwidth-bound part,
+    bytes are what set the clock. The optimum is wherever the marginal
+    position stops paying for the experts it drags in.
+    """
+    def per_rank(batch):
+        frac = 1.0 - (1.0 - top_k / n_experts) ** batch
+        return (dense + expert * frac) / tp, n_experts * frac
+
+    base_tok = 1.0 + sum(rates)
+    base_bytes, _ = per_rank(seqs * (len(rates) + 1))
+    rows = []
+    for n in range(1, len(rates) + 1):
+        tok = 1.0 + sum(rates[:n])
+        by, ex = per_rank(seqs * (n + 1))
+        rows.append((n, tok, ex, by, (tok / base_tok) * (base_bytes / by)))
+    return rows
+
+
 def generate(host, port, model, max_tokens, stop_flag):
     body = {
         "model": model,
@@ -273,6 +333,8 @@ def main():
     ap.add_argument("--max-tokens", type=int, default=400)
     ap.add_argument("--tp", type=int, default=2, help="tensor-parallel size; bytes are split this way")
     ap.add_argument("--analytic-only", action="store_true")
+    ap.add_argument("--seqs", type=int, default=1,
+                    help="concurrent sequences to model for the depth sweep")
     args = ap.parse_args()
 
     model_dir = args.model_dir
@@ -413,6 +475,32 @@ def main():
     ceiling = GB10_BW_GBPS * 1e9 / per_rank * tokens_per_step
     print(f"  roofline at this acceptance: {ceiling:.1f} tok/s"
           f"   (we are at {decode_rate / ceiling * 100:.0f}% of it)")
+
+    # --- what draft depth should we actually be running? ---
+    rates = per_position_acceptance(args.host, args.port)
+    if rates and len(rates) > 1:
+        print()
+        print(f"--- draft depth (measured curve, at {args.seqs} concurrent seq"
+              f"{'s' if args.seqs != 1 else ''}) ---")
+        print(f"  per-position accepted: "
+              + " ".join(f"{r:.3f}" for r in rates))
+        rows = draft_depth_sweep(
+            rates, an["buckets"]["dense"] / gib, an["buckets"]["routed_expert"] / gib,
+            n_experts, top_k, args.tp, args.seqs,
+        )
+        print(f"  {'N':>2} {'tok/step':>9} {'experts':>8} {'GiB/rank':>9} {'rel tok/s':>10}")
+        best = max(rows, key=lambda r: r[4])
+        for n, tok, ex, by, rel in rows:
+            mark = ""
+            if n == len(rates):
+                mark = "  <- running"
+            if n == best[0]:
+                mark += "  <- predicted best"
+            print(f"  {n:>2} {tok:>9.3f} {ex:>8.1f} {by:>9.2f} {rel:>9.2f}x{mark}")
+        if best[0] != len(rates):
+            print(f"\n  Set DFLASH2_NUM_TOKENS={best[0]} for a predicted"
+                  f" {(best[4] - 1) * 100:+.0f}% -- deep speculation buys tokens"
+                  f" at a rising cost in bytes swept, and bytes set the clock here.")
     print()
     print("Reading it: a busy sm% alongside an implied rate well under 273 GB/s")
     print("means the sweep is real but scattered -- eager mode plus 58 separate")
