@@ -1,0 +1,16 @@
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+
+# fp8 KV cache for the FA2 NoPE sparse-MLA path on SM12x. FlashInfer's
+# "FP8 kv_data_type requires SM90" guard hides a shared-memory over-request:
+# the fa2 fp8 branch forces CTA_TILE_KV=32 (a Hopper 228KB-smem assumption),
+# which on GB10's ~101KB opt-in max asks for 117,312B and fails at
+# cudaFuncSetAttribute before the kernel ever launches. Cap the tile instead of
+# forcing it, and relax the gate to major 12.
+#
+# This is what makes the whole config fit: fp8 roughly doubles KV tokens per
+# GiB, which is the headroom the MTP draft head needs.
+LABEL org.local.glm53.stage="v8-fp8-kv"
+
+COPY patches/patch_v8_fp8_kv.py /tmp/patch.py
+RUN python3 /tmp/patch.py && rm /tmp/patch.py

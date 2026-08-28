@@ -1,0 +1,76 @@
+"""Route GLM-5.3's NoPE MLA onto the SM90 sparse backend, extended to SM121.
+
+The day-0 image's only capability-12 sparse-MLA backend is
+FLASHINFER_MLA_SPARSE_SM120, whose packed fp8_ds_mla cache layout hard-requires
+DeepSeek's pe_dim=64. GLM-5.3-Flash is NoPE (qk_rope_head_dim=0), so it dies in
+warmup with "pe_dim must be 64 for fp8_ds_mla".
+
+The SM90 NoPE backend (FlashInfer BatchMLAPagedAttentionWrapper) supports kpe=0
+and its FA2 path is correct on SM121 with GLM's real shape. Extend it to
+capability 12, pick FA2 off-Hopper, and scope the FlashInfer>=0.6.18 feature
+gate to the fp8-cache path it actually protects.
+
+Every replacement is guarded on an exact match count: if the base image moves,
+this refuses loudly rather than silently producing a half-patched runtime.
+"""
+
+from pathlib import Path
+
+base = Path("/usr/local/lib/python3.12/dist-packages/vllm")
+
+p = base / "platforms/cuda.py"
+s = p.read_text()
+old = """        elif device_capability.major == 12:
+            return [
+                AttentionBackendEnum.TRITON_MLA,
+                AttentionBackendEnum.FLASHINFER_MLA_SPARSE_SM120,
+            ]"""
+new = """        elif device_capability.major == 12:
+            return [
+                AttentionBackendEnum.TRITON_MLA,
+                AttentionBackendEnum.FLASHINFER_MLA_SPARSE_SM90,
+                AttentionBackendEnum.FLASHINFER_MLA_SPARSE_SM120,
+            ]"""
+if s.count(old) != 1:
+    raise SystemExit("unexpected cuda.py capability-12 MLA candidate list; refusing to patch")
+p.write_text(s.replace(old, new))
+
+p = base / "v1/attention/backends/mla/flashinfer_mla_sparse_sm90.py"
+s = p.read_text()
+
+old = (
+    "    def supports_compute_capability(cls, capability: DeviceCapability) -> bool:\n"
+    "        return capability.major == 9\n"
+)
+new = (
+    "    def supports_compute_capability(cls, capability: DeviceCapability) -> bool:\n"
+    "        return capability.major in (9, 12)\n"
+)
+if s.count(old) != 1:
+    raise SystemExit("unexpected sm90 capability gate; refusing to patch")
+s = s.replace(old, new)
+
+old = '            backend="fa3",\n'
+new = '            backend=("fa3" if torch.cuda.get_device_capability()[0] == 9 else "fa2"),\n'
+if s.count(old) != 1:
+    raise SystemExit("unexpected sm90 wrapper backend literal; refusing to patch")
+s = s.replace(old, new)
+
+old = """        if not has_flashinfer_sm90_nope_mla():
+            return (
+                "FLASHINFER_MLA_SPARSE_SM90 requires FlashInfer with SM90 "
+                "MLA support (ckv_scale_arr in "
+                "BatchMLAPagedAttentionWrapper.run, FlashInfer >= 0.6.18)"
+            )"""
+new = """        if kv_cache_dtype in ("fp8", "fp8_e4m3") and not has_flashinfer_sm90_nope_mla():
+            return (
+                "FLASHINFER_MLA_SPARSE_SM90 fp8 KV requires FlashInfer with "
+                "SM90 MLA support (ckv_scale_arr in "
+                "BatchMLAPagedAttentionWrapper.run, FlashInfer >= 0.6.18)"
+            )"""
+if s.count(old) != 1:
+    raise SystemExit("unexpected sm90 flashinfer version gate; refusing to patch")
+s = s.replace(old, new)
+
+p.write_text(s)
+print("sm121 NoPE MLA patches applied")

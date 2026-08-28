@@ -12,6 +12,12 @@
 set -uo pipefail
 
 HOST="${VLLM_HOST:-192.168.50.157}"
+# Speculative depth in use -- 7 for DFlash2 (block_size 8 minus the target's own
+# token), or MTP_NUM_TOKENS under SPEC_METHOD=mtp. The acceptance PERCENTAGE
+# below is independent of this, but "accepted per round" is not -- it was
+# hardcoded to 5 back when MTP was fixed at 5, and silently reported ~1.7x too
+# high once N changed to 3.
+SPEC_N="${SPEC_N:-${MTP_N:-7}}"
 PORT="${VLLM_PORT:-8888}"
 KEYS='generation_tokens_total|prompt_tokens_total|prompt_tokens_cached_total|request_decode_time_seconds_sum|request_prefill_time_seconds_sum|request_prompt_tokens_sum|request_generation_tokens_sum|request_prompt_tokens_count|inter_token_latency_seconds_sum|inter_token_latency_seconds_count|spec_decode_num_draft_tokens_total|spec_decode_num_accepted_tokens_total'
 
@@ -25,7 +31,7 @@ scrape() {
 # Renders one set of totals. Called with deltas for the diff form, which is why
 # it takes values on stdin rather than scraping itself.
 report() {
-    awk '
+    awk -v spec_n="$SPEC_N" '
     { v[$1] = $2 }
     END {
         n      = v["vllm:request_prompt_tokens_count"]
@@ -57,8 +63,14 @@ report() {
         printf "prefix cache hit    : %.1f%%\n", (ptot>0 ? cached/ptot*100 : 0)
         printf "fresh prefill rate  : %.0f tok/s\n", (pre>0 ? fresh/pre : 0)
         print  ""
-        printf "MTP acceptance      : %.1f%%\n", (draft>0 ? acc/draft*100 : 0)
-        printf "accepted per draft  : %.2f\n",   (draft>0 ? acc/(draft/5) : 0)
+        printf "draft acceptance    : %.1f%%\n", (draft>0 ? acc/draft*100 : 0)
+        printf "accepted per round  : %.2f  (N=%d)\n", (draft>0 ? acc/(draft/spec_n) : 0), spec_n
+        # Tokens emitted per verify step, including the one token the target
+        # itself always produces. This is the figure upstream quotes for DFlash2
+        # health (4-5.8 is good; pinned near 1.0-1.5 means the drafter is being
+        # fed wrong features and is degrading SILENTLY -- it does not crash).
+        # No apostrophes in here: the awk program is single-quoted.
+        printf "acceptance length   : %.2f\n", (draft>0 ? acc/(draft/spec_n) + 1 : 0)
     }'
 }
 

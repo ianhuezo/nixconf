@@ -1,0 +1,26 @@
+[Unit]
+Description=Serve the selected model on the DGX Spark pair
+Documentation=https://github.com/tonyd2wild/GLM-5.3-Flash-NVFP4-262K-2x-DGX-Spark
+# Docker must be up, and the fabric must be addressable before the head can
+# reach the worker. model-select.sh boot additionally waits for the worker's
+# sshd, since the two nodes power on independently after the idle monitor.
+After=network-online.target docker.service
+Wants=network-online.target
+Requires=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+User=ian
+Group=ian
+Environment=HOME=/home/ian
+ExecStart=/home/ian/dspark-recipe/model-select.sh boot
+# A cold TP2 boot is ~16 minutes: ~12 loading 184 GiB of weights across both
+# ranks, ~2.5 for warmup JIT. The stock 90s timeout would kill it every time.
+TimeoutStartSec=2700
+# No Restart= on purpose. If the boot fails, the watchdog timer retries with a
+# full both-ranks teardown; a bare systemd restart would race the same stale
+# rendezvous that made Docker's restart policy useless here.
+
+[Install]
+WantedBy=multi-user.target

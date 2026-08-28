@@ -1,0 +1,17 @@
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+
+# Enable the native SM12x FP4 MoE kernel (b12x) for SwiGLU models by applying
+# the swiglu_limit clamp on the silu path, plumbing the value through vLLM's
+# wrapper, and allowing the oracle to select it. See
+# patches/patch_v12_b12x_swiglu_clamp.py for the reference semantics this
+# reproduces and why the stock exclusion was correct without it.
+#
+# This stage only makes b12x SELECTABLE. It is still opt-in via
+# MOE_BACKEND=flashinfer_b12x, and must be validated with moe-compare.py
+# against a marlin reference before use -- a wrong FP4 MoE kernel returns
+# fluent wrong text rather than crashing.
+LABEL org.local.glm53.stage="v12-b12x-swiglu-clamp"
+
+COPY patches/patch_v12_b12x_swiglu_clamp.py /tmp/patch.py
+RUN python3 /tmp/patch.py && rm /tmp/patch.py

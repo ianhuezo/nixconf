@@ -1,0 +1,12 @@
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+
+# The FlashInfer nightly also bumps nvidia-cutlass-dsl into a mixed
+# 4.7.0/4.6.2 state, which ICEs the CuTeDSL warmup (cute-to-nvvm internal
+# compiler error at ~91% of weight load). Restore the 4.6.2 family the base
+# image was built and qualified with; the FA2 MLA path does not use cutlass-dsl.
+LABEL org.local.glm53.stage="v5-cutlass-dsl-4.6.2"
+
+RUN pip install -q nvidia-cutlass-dsl==4.6.2 \
+    && pip show nvidia-cutlass-dsl | grep -q "Version: 4.6.2" \
+    && echo DSL-RESTORED

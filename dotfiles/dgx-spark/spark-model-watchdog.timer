@@ -1,0 +1,15 @@
+[Unit]
+Description=Probe the served model every minute
+Documentation=man:systemd.timer(5)
+
+[Timer]
+# One minute after boot is far too early to mean anything -- a cold load takes
+# ~16 -- but the watchdog no-ops while .switching exists, so early ticks are
+# harmless and it starts guarding the moment the load finishes.
+OnBootSec=2min
+OnUnitActiveSec=1min
+AccuracySec=10s
+Unit=spark-model-watchdog.service
+
+[Install]
+WantedBy=timers.target

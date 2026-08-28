@@ -1,0 +1,8 @@
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+
+# THROWAWAY diagnostic layer. Never ship this as the production tag.
+LABEL org.local.glm53.stage="dbg-moe-prefix"
+
+COPY patches/patch_dbg_moe_prefix.py /tmp/patch.py
+RUN python3 /tmp/patch.py && rm /tmp/patch.py

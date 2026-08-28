@@ -1,0 +1,10 @@
+ARG BASE_IMAGE=vllm/vllm-openai:glm53-flash-arm64-cu130
+FROM ${BASE_IMAGE}
+
+# GLM-5.3-Flash (glm5_next, NoPE MLA: qk_rope_head_dim=0) on DGX Spark SM121.
+# Routes the model onto the SM90 sparse-MLA backend extended to capability 12;
+# see patches/patch_v1_nope_mla.py for the full rationale.
+LABEL org.local.glm53.stage="v1-nope-mla"
+
+COPY patches/patch_v1_nope_mla.py /tmp/patch.py
+RUN python3 /tmp/patch.py && rm /tmp/patch.py

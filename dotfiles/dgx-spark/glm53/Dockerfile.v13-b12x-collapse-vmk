@@ -1,0 +1,11 @@
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+
+# Delegate _collapse_to_vmk in FlashInfer's SM12x MoE kernels. They borrow
+# _partition_fragment_SFA/SFB from the dense GEMM kernel but omit this helper
+# from the borrow list, so b12x dies with AttributeError at model init.
+# No-op numerically for NVFP4. See patches/patch_v13_b12x_collapse_to_vmk.py.
+LABEL org.local.glm53.stage="v13-b12x-collapse-vmk"
+
+COPY patches/patch_v13_b12x_collapse_to_vmk.py /tmp/patch.py
+RUN python3 /tmp/patch.py && rm /tmp/patch.py

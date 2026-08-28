@@ -1,0 +1,14 @@
+[Unit]
+Description=Probe the served model and recover both ranks if the engine died
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+User=ian
+Group=ian
+Environment=HOME=/home/ian
+ExecStart=/home/ian/dspark-recipe/spark-model-watchdog.sh
+# Recovery is a full relaunch: teardown of both ranks, memory ritual, ~16
+# minute reload. Must be allowed to finish.
+TimeoutStartSec=2700

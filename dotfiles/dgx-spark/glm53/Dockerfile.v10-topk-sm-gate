@@ -1,0 +1,10 @@
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+
+# THE critical SM121 fix: persistent_topk hard-crashes any decode past ~24K
+# context. Deterministic, unrelated to memory, and it masquerades as an OOM.
+# See patches/patch_v10_topk_sm_gate.py for the full mechanism and receipts.
+LABEL org.local.glm53.stage="v10-persistent-topk-sm-gate"
+
+COPY patches/patch_v10_topk_sm_gate.py /tmp/patch.py
+RUN python3 /tmp/patch.py && rm /tmp/patch.py

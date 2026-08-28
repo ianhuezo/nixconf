@@ -23,7 +23,34 @@ for host in "$NODE1" "$NODE2"; do
         scp -q "$DIR/spark-idle-monitor.sh" "$DIR/spark-idle-monitor.service" \
             "$DIR/spark-idle-monitor.timer" "$DIR/install-idle-monitor.sh" \
             "$host:~/dspark-recipe/"
-        ssh "$host" 'chmod +x ~/dspark-recipe/patch-runtime.sh ~/dspark-recipe/lock-gpu-clock.sh ~/dspark-recipe/install-gpu-clock-service.sh ~/dspark-recipe/install-idle-monitor.sh ~/dspark-recipe/spark-idle-monitor.sh'
+        # GB10 memory ritual. Install once per node with
+        # sudo ~/dspark-recipe/install-drop-caches.sh
+        scp -q "$DIR/spark-drop-caches" "$DIR/install-drop-caches.sh" \
+            "$host:~/dspark-recipe/"
+        ssh "$host" 'chmod +x ~/dspark-recipe/patch-runtime.sh ~/dspark-recipe/lock-gpu-clock.sh ~/dspark-recipe/install-gpu-clock-service.sh ~/dspark-recipe/install-idle-monitor.sh ~/dspark-recipe/spark-idle-monitor.sh ~/dspark-recipe/install-drop-caches.sh'
+
+        # GLM-5.3-Flash lives in its own subdirectory so that `docker compose`
+        # derives a distinct project name from it. Two compose files sharing a
+        # directory would share the project, and then stopping one model would
+        # be indistinguishable from stopping the other.
+        ssh "$host" 'mkdir -p ~/dspark-recipe/glm53/patches'
+        scp -q "$DIR/glm53/env.glm53" "$host:~/dspark-recipe/glm53/.env.glm53"
+        scp -q "$DIR/glm53/docker-compose.glm53.yml" \
+            "$DIR/glm53/build-glm53-runtime.sh" \
+            "$DIR/glm53/fetch-glm53-weights.sh" \
+            "$DIR/glm53/start-glm53.sh" "$DIR/glm53/stop-glm53.sh" \
+            "$DIR/glm53/bench-glm53.py" "$DIR/glm53/gate-glm53.py" \
+            "$DIR/glm53/moe-compare.py" \
+            "$DIR"/glm53/Dockerfile.* "$host:~/dspark-recipe/glm53/"
+        scp -q "$DIR"/glm53/patches/*.py "$host:~/dspark-recipe/glm53/patches/"
+        # DFlash2 overlay: source files, not just patch scripts, so the v14
+        # build context is complete on whichever node builds.
+        ssh "$host" 'mkdir -p ~/dspark-recipe/glm53/overlay-dflash2/dflash2'
+        scp -q "$DIR"/glm53/overlay-dflash2/*.py "$DIR"/glm53/overlay-dflash2/*.md \
+            "$host:~/dspark-recipe/glm53/overlay-dflash2/"
+        scp -q "$DIR"/glm53/overlay-dflash2/dflash2/*.py \
+            "$host:~/dspark-recipe/glm53/overlay-dflash2/dflash2/"
+        ssh "$host" 'chmod +x ~/dspark-recipe/glm53/*.sh'
     else
         echo "    (no ~/dspark-recipe yet, skipping .env.dspark)"
     fi
@@ -31,6 +58,15 @@ done
 
 echo "==> rewriting worker node-specific values on $NODE2"
 ssh "$NODE2" "sed -i 's/^NODE_RANK=0/NODE_RANK=1/; s/^HEADLESS=\$/HEADLESS=1/' \
-    ~/dspark-recipe/.env.dspark 2>/dev/null || true"
+    ~/dspark-recipe/.env.dspark ~/dspark-recipe/glm53/.env.glm53 2>/dev/null || true"
+
+# The selector orchestrates both ranks over ssh from the head; on the worker it
+# would try to drive the head as its own worker.
+echo "==> installing model-select + boot/watchdog units on the head ($NODE1)"
+scp -q "$DIR/model-select.sh" "$DIR/spark-model-watchdog.sh" \
+    "$DIR/spark-model.service" "$DIR/spark-model-watchdog.service" \
+    "$DIR/spark-model-watchdog.timer" "$DIR/install-model-service.sh" \
+    "$NODE1:~/dspark-recipe/"
+ssh "$NODE1" 'chmod +x ~/dspark-recipe/model-select.sh ~/dspark-recipe/spark-model-watchdog.sh ~/dspark-recipe/install-model-service.sh'
 
 echo "==> done"

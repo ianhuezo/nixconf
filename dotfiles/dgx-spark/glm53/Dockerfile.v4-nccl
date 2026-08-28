@@ -1,0 +1,14 @@
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+
+# The FlashInfer nightly in v3 silently downgrades nvidia-nccl-cu13
+# 2.30.7 -> 2.29.7, which fails ncclCommInitRank with "internal error" on the
+# Spark RoCE fabric. Restore the version this cluster is qualified on.
+#
+# The `pip show | grep` is the point of this layer: it turns a silent
+# re-downgrade by some future transitive dependency into a build failure.
+LABEL org.local.glm53.stage="v4-nccl-2.30.7"
+
+RUN pip install -q nvidia-nccl-cu13==2.30.7 \
+    && pip show nvidia-nccl-cu13 | grep -q "Version: 2.30.7" \
+    && echo NCCL-RESTORED

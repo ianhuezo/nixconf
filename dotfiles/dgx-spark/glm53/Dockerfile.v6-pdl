@@ -1,0 +1,9 @@
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+
+# Gate Programmatic Dependent Launch off on SM12x; it races on the Triton
+# kernels carrying KDA recurrent state. See patches/patch_v6_pdl.py.
+LABEL org.local.glm53.stage="v6-pdl-gate"
+
+COPY patches/patch_v6_pdl.py /tmp/patch.py
+RUN python3 /tmp/patch.py && rm /tmp/patch.py

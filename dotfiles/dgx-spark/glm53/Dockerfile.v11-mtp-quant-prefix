@@ -1,0 +1,11 @@
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+
+# Map the MTP draft model's "model.layers.N" prefix onto the checkpoint's
+# "model.language_model.layers.N" quant-config targets, so its experts resolve
+# to their MXFP8 group instead of unquantized. This is what makes MTP usable at
+# all on this quant. See patches/patch_v11_mtp_quant_prefix.py.
+LABEL org.local.glm53.stage="v11-mtp-quant-prefix"
+
+COPY patches/patch_v11_mtp_quant_prefix.py /tmp/patch.py
+RUN python3 /tmp/patch.py && rm /tmp/patch.py

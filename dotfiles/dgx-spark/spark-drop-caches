@@ -1,0 +1,22 @@
+#!/bin/sh
+# The GB10 memory ritual. Run as root before launching a large model.
+#
+# GB10's GPU has no framebuffer: GPU memory IS system RAM, and NVRM allocates it
+# with __GFP_RETRY_MAYFAIL (plus __GFP_COMP for 2MB chunks). That is bounded
+# reclaim -- it never forces page-cache eviction, and it fails outright on
+# fragmentation. After buffered-I/O loading of ~186 GiB of weights the page
+# cache owns the balance, and the KV slab is then refused wherever MemFree ran
+# out. The wall is emergent, not configured; there is no knob to raise.
+#
+# So: evict the cache and compact, to hand the driver genuinely free, contiguous
+# pages. NVIDIA KB 5776 and 5728 sanction exactly this remedy and document the
+# misleading free-memory reporting that hides the problem.
+#
+# Deliberately takes NO arguments: it is invoked through a NOPASSWD sudoers rule
+# scoped to this exact path, so it must not be able to do anything else.
+set -e
+sync
+echo 3 > /proc/sys/vm/drop_caches
+# Compaction is the half people skip. Reclaim alone frees pages; it does not
+# make them contiguous, and the 2MB-chunk path fails on fragmentation.
+echo 1 > /proc/sys/vm/compact_memory 2>/dev/null || true

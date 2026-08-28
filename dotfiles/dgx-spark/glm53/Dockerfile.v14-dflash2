@@ -1,0 +1,55 @@
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+
+# DFlash2 block-diffusion speculative decoding for GLM-5.3-Flash.
+#
+# Vendored verbatim from tonyd2wild/GLM-5.3-Flash-NVFP4-DFlash2-2x-DGX-Spark
+# @ 9642d4f, overlay-dflash2/. Upstream measures 2.15x single-stream decode
+# over MTP-4 at 74.1% draft acceptance, and -- the part that matters most here
+# -- the drafter costs ~0 KV pool, because its 5 sliding-window layers
+# slot-share the MLA tensors the way GLM's own mamba layers do. MTP cost us
+# roughly half the pool (1,943,396 -> 1,093,333 tokens); this costs a handful
+# of block ids per request.
+#
+# Four patches, all anchored string edits that ast.parse their result and die
+# loudly on drift:
+#   patch_registry_and_select   port of vLLM PR #52816 (DFlash2 selector)
+#   patch_glm_aux_capture       target side: SupportsEagle3 on GLM5Next plus
+#                               hidden-state capture at the 5 tap layers, with
+#                               the mHC contraction GLM needs
+#   patch_kv_page_lcm2          documented no-op, kept so the chain matches
+#                               upstream's build order
+#   patch_glm5_drafter_group    the hard one: keeps GLM on its custom KV
+#                               grouping fast path with a drafter attached.
+#                               The generic uniform-page path provably cannot
+#                               serve this model.
+#
+# Stacking note: this rides on OUR v13, not upstream's v8. Verified by
+# dry-running all four scripts against a copy of v13's dist-packages -- every
+# anchor matched exactly once (24 edits total). Our v10-v13 touch
+# sparse_attn_indexer_kpool.py, modelopt.py and the FlashInfer b12x kernels;
+# this stage touches kv_cache_utils.py, glm5next/nvidia/model.py, the spec
+# decode tree, registry.py, config/vllm.py and logits_processor.py. Disjoint.
+LABEL org.local.glm53.stage="v14-dflash2"
+
+ARG VLLM=/usr/local/lib/python3.12/dist-packages/vllm
+
+COPY overlay-dflash2/qwen3_dflash2.py ${VLLM}/model_executor/models/qwen3_dflash2.py
+COPY overlay-dflash2/dflash2/ ${VLLM}/v1/worker/gpu/spec_decode/dflash2/
+COPY overlay-dflash2/patch_registry_and_select.py \
+     overlay-dflash2/patch_glm_aux_capture.py \
+     overlay-dflash2/patch_kv_page_lcm2.py \
+     overlay-dflash2/patch_glm5_drafter_group.py \
+     overlay-dflash2/sim_glm5_drafter.py \
+     /tmp/dflash2/
+
+RUN set -e; \
+    python3 /tmp/dflash2/patch_registry_and_select.py; \
+    python3 /tmp/dflash2/patch_glm_aux_capture.py; \
+    python3 /tmp/dflash2/patch_kv_page_lcm2.py; \
+    python3 /tmp/dflash2/patch_glm5_drafter_group.py; \
+    python3 -c "from vllm.model_executor.models.registry import ModelRegistry; \
+assert 'DFlash2DraftModel' in ModelRegistry.get_supported_archs(); \
+print('v14: DFlash2DraftModel registered')"; \
+    python3 /tmp/dflash2/sim_glm5_drafter.py; \
+    rm -rf /tmp/dflash2

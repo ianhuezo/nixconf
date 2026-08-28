@@ -7,12 +7,14 @@ import "modules/bar"
 import "modules/dashboard"
 import "modules/workspace_preview"
 import "modules/screenshots"
+import "modules/weather"
 
 ShellRoot {
     Bar {}
     Dashboard {}
     PreviewPopup {}
     Screenshots {}
+    Weather {}
 
     // Initialize ConfigManager service
     QtObject {

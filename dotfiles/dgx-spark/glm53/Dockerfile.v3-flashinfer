@@ -1,0 +1,23 @@
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+
+# FlashInfer 0.6.17's FA2 MLA kernel produces NaN for 64-256-row batches on
+# SM121 (bisected on-GPU: 1-6 and 512+ rows are clean, 64/128/256 are not, and
+# normal prompts land exactly in that kill zone). The 0.6.18 nightly fixes it
+# and is also the version whose SM90 NoPE MLA support is official.
+#
+# Remove the 0.6.17 AOT jit-cache so no stale prebuilt kernels load against the
+# new python package; everything JIT-compiles for 12.1a instead.
+#
+# The pinned nightly build is deliberate, not incidental: it is the exact
+# version this stack was validated against. Stages v4 and v5 exist purely to
+# undo the transitive damage this install does.
+LABEL org.local.glm53.stage="v3-flashinfer-0.6.18"
+
+ARG FLASHINFER_VERSION=0.6.18.dev20260819
+RUN pip install -q --pre \
+      flashinfer-python==${FLASHINFER_VERSION} \
+      flashinfer-cubin==${FLASHINFER_VERSION} \
+      --extra-index-url https://flashinfer.ai/whl/nightly/ \
+    && pip uninstall -q -y flashinfer-jit-cache \
+    && python3 -c "import flashinfer; print('flashinfer', flashinfer.__version__)"

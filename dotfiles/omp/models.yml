@@ -1,3 +1,7 @@
+# The Spark pair holds exactly one model at a time (~93-100 GiB per rank), so
+# only one of the dgx-spark* provider families below answers at any moment.
+# Switch the cluster with `model-select.sh` on node1, then point modelRoles at
+# the matching family here. Same baseUrl either way -- both serve on :8888.
 providers:
   dgx-spark:
     baseUrl: http://192.168.50.157:8888/v1
@@ -35,6 +39,57 @@ providers:
           cacheRead: 0
           cacheWrite: 0
         contextWindow: 131072
+        maxTokens: 16384
+
+  # GLM-5.3-Flash: 320B total / 18B active, served at fp8 KV with MTP-5.
+  #
+  # 200000 is the server's --max-model-len, not a client-side preference: vLLM
+  # rejects anything longer outright. It is also what sets concurrency, since
+  # the KV pool divides by it. At the measured 848,717-token pool that is 4.24x,
+  # so four full-length sessions are guaranteed -- hence task.maxConcurrency 4,
+  # while the server's --max-num-seqs 5 lets a fifth in whenever the resident
+  # contexts are short. Raising this without raising it on the server just
+  # produces rejected requests; raising it on both costs concurrency one-for-one.
+  dgx-spark-glm:
+    baseUrl: http://192.168.50.157:8888/v1
+    api: openai-completions
+    auth: none
+
+    models:
+      - id: glm-5.3-flash
+        name: GLM-5.3-Flash NVFP4 (local, 2x GX10)
+        api: openai-completions
+        reasoning: true
+        # Natively multimodal, and served with a vision tower — so while GLM is
+        # the resident model this can also cover the vision role locally rather
+        # than reaching for the MacBook. Server-side limit is 8 images and 1
+        # video per request (MM_LIMIT_IMAGE / MM_LIMIT_VIDEO).
+        input: [text, image]
+        cost:
+          input: 0
+          output: 0
+          cacheRead: 0
+          cacheWrite: 0
+        contextWindow: 200000
+        maxTokens: 32768
+
+  dgx-spark-glm-worker:
+    baseUrl: http://192.168.50.157:8888/v1
+    api: openai-completions
+    auth: none
+
+    models:
+      - id: glm-5.3-flash
+        name: GLM-5.3-Flash (subagent budget)
+        api: openai-completions
+        reasoning: true
+        input: [text, image]
+        cost:
+          input: 0
+          output: 0
+          cacheRead: 0
+          cacheWrite: 0
+        contextWindow: 200000
         maxTokens: 16384
 
   macbook-vision:
