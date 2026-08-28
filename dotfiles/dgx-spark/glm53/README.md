@@ -144,6 +144,54 @@ slower than with no drafter at all. Three things prove the wiring, and
   `vllm-stats.sh` reports acceptance length, which should sit well above 1.0.
   Gated at 37.4% / 3.61 across the full gate suite on this deployment.
 
+### Why our acceptance is below upstream's, and what is ruled out
+
+Upstream's headline is 46.9 tok/s at 74.1% acceptance. That is a hand-picked
+warm single-stream best case; his own repeatable harness
+(`docs/BENCH-C1-C6-DFLASH2.md`, six code/reasoning prompts, temp 1.0/top-p 0.95)
+reports **C1 = 35.1 tok/s at 0.525**. Running those exact prompts at those exact
+settings here gives **20.93 tok/s at 0.381**.
+
+The gap is entirely acceptance, not engine speed — decomposing his 46.9 gives
+7.58 target forward passes/s against our 8.09, so **our sweep is 6.7% faster**.
+
+vLLM's per-position rates are MARGINAL, not conditional: mean acceptance length
+is exactly `1 + sum(per_position)`, verified against all three datasets below.
+
+| position | 1 | 2 | 3 | 4 | 5 | 6 | 7 | acc.len |
+|---|---|---|---|---|---|---|---|---|
+| ours, code (fp8 drafter KV) | 0.735 | 0.521 | 0.325 | 0.239 | 0.137 | 0.103 | 0.085 | 3.15 |
+| ours, structured (fp8 drafter KV) | 0.971 | 0.900 | 0.857 | 0.843 | 0.800 | 0.757 | 0.714 | 6.84 |
+| upstream, code (**bf16** drafter KV) | 0.770 | 0.640 | 0.590 | 0.520 | 0.460 | 0.390 | 0.360 | 4.90 |
+
+What this rules out:
+
+- **The target-side glue.** Position 1 matches upstream (0.735 vs 0.770). A wrong
+  aux-layer tap or a wrong mHC contraction would tank position 1 first.
+- **The candidate selector.** On structured output our curve is nearly flat
+  (0.971 → 0.714), so the selector demonstrably holds a coherent path when the
+  drafter has signal. Its three weights (`predecessor_codebook`,
+  `successor_codebook`, `hidden_projection.weight`) are present in the
+  checkpoint and the module names match exactly.
+- **The quant.** Both NVFP4 checkpoints quantize *only* the routed experts;
+  attention, shared experts, dense MLP, lm_head and embed stay bf16 in each. The
+  sole difference is layer 45's experts (MXFP8 here, NVFP4 there) — the MTP head,
+  which DFlash2 never runs.
+- **Thinking.** `chat_template_kwargs: {"enable_thinking": false}` genuinely
+  works on this checkpoint (reasoning 1291 chars → 0), so the regime table above
+  is labelled correctly.
+
+What remains: the flat upstream curve is published for the lane where the
+drafter's KV is explicitly kept **bf16** (`--kv-cache-dtype-skip-layers
+sliding_window` — "the drafter's KV must stay bf16"). Ours is fp8, because
+`--kv-cache-dtype fp8_e4m3` applies to its five sliding-window layers too.
+
+Testing that needs a patch first: `patch_glm5_drafter_group.py` returns None if
+any drafter spec carries `page_size_padded`, and the skip-quant branch stamps
+exactly that. Upstream hit this and describes the fix ("strip the inherited
+padding before any geometry math") in the NVFP4-KV lane notes, but did not ship
+it in the overlay.
+
 **Thinking stays on.** Upstream's launcher passes
 `--default-chat-template-kwargs '{"enable_thinking": false}'`; his own deploy
 report then documents why that is wrong for agent harnesses — with thinking
