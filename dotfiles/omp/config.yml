@@ -2,10 +2,10 @@ providers:
   webSearchOrder: 
     []
 modelRoles: 
-  task: dgx-spark-worker/deepseek-v4-flash-dspark
-  smol: dgx-spark-worker/deepseek-v4-flash-dspark:low
-  slow: dgx-spark/deepseek-v4-flash-dspark:max
-  vision: macbook-vision/mlx-community/Qwen3.8-27B-8bit
+  task: dgx-spark-glm-worker/glm-5.3-flash
+  smol: dgx-spark-glm-worker/glm-5.3-flash:low
+  slow: dgx-spark-glm/glm-5.3-flash:max
+  vision: dgx-spark-glm/glm-5.3-flash
   default: openai-codex/gpt-5.6-sol
 temperature: 1
 topP: 0.95
@@ -19,11 +19,11 @@ task:
     designer: "off"
   disabledAgents: 
     []
-  maxConcurrency: 4
+  maxConcurrency: 5
   maxRecursionDepth: 1
   enableEffort: true
   maxEffort: max
-  softRequestBudget: 24
+  softRequestBudget: 250
   softRequestBudgetNotice: true
 defaultThinkingLevel: auto
 codexResets: 

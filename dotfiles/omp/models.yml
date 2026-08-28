@@ -41,15 +41,17 @@ providers:
         contextWindow: 131072
         maxTokens: 16384
 
-  # GLM-5.3-Flash: 320B total / 18B active, served at fp8 KV with MTP-5.
+  # GLM-5.3-Flash: 320B total / 18B active, fp8 KV, MTP disabled (this quant's
+  # MXFP8 MTP experts are rejected by moe_backend=marlin -- see env.glm53).
   #
   # 200000 is the server's --max-model-len, not a client-side preference: vLLM
-  # rejects anything longer outright. It is also what sets concurrency, since
-  # the KV pool divides by it. At the measured 848,717-token pool that is 4.24x,
-  # so four full-length sessions are guaranteed -- hence task.maxConcurrency 4,
-  # while the server's --max-num-seqs 5 lets a fifth in whenever the resident
-  # contexts are short. Raising this without raising it on the server just
-  # produces rejected requests; raising it on both costs concurrency one-for-one.
+  # rejects anything longer outright.
+  #
+  # MEASURED on this pair (2026-08-27, MTP off, gmu 0.90): KV pool 1,943,396
+  # tokens = 9.72x at 200K. Five concurrent full-length sessions need 1.0M --
+  # 51% of the pool -- so maxConcurrency 5 at full context has ~2x headroom and
+  # needs no context compromise. Measured throughput at c5: 52.4 tok/s
+  # aggregate, ~11.1 per stream; single-stream is 14.6.
   dgx-spark-glm:
     baseUrl: http://192.168.50.157:8888/v1
     api: openai-completions
@@ -71,6 +73,18 @@ providers:
           cacheRead: 0
           cacheWrite: 0
         contextWindow: 200000
+        # 32768. Do NOT "optimise" this down from the output-length histogram.
+        #
+        # 84% of requests finish under 500 tokens, which makes a low cap look
+        # free -- but those are file reads, tool calls and one-line edits. The
+        # 10-20K tail is where the actual deliverables live: a full-file QML
+        # rewrite is 600-1000 lines, i.e. 8-12K tokens of code before any
+        # reasoning. Measured on this pair: 3 of 114 requests landed in the
+        # 10-20K bucket, none above 20K, and every one of them was real work.
+        #
+        # Truncating those is the worst available outcome -- you wait ten
+        # minutes and receive unparseable output. The model self-terminates well
+        # before 32768, so this is a safety net that never binds, not a budget.
         maxTokens: 32768
 
   dgx-spark-glm-worker:
@@ -90,7 +104,19 @@ providers:
           cacheRead: 0
           cacheWrite: 0
         contextWindow: 200000
-        maxTokens: 16384
+        # 32768, same as the main role. Do NOT "optimise" this down from the output-length histogram.
+        #
+        # 84% of requests finish under 500 tokens, which makes a low cap look
+        # free -- but those are file reads, tool calls and one-line edits. The
+        # 10-20K tail is where the actual deliverables live: a full-file QML
+        # rewrite is 600-1000 lines, i.e. 8-12K tokens of code before any
+        # reasoning. Measured on this pair: 3 of 114 requests landed in the
+        # 10-20K bucket, none above 20K, and every one of them was real work.
+        #
+        # Truncating those is the worst available outcome -- you wait ten
+        # minutes and receive unparseable output. The model self-terminates well
+        # before 32768, so this is a safety net that never binds, not a budget.
+        maxTokens: 32768
 
   macbook-vision:
     baseUrl: http://192.168.50.134:8080/v1
