@@ -149,11 +149,12 @@ PanelWindow {
             rightMargin: 12
             topMargin: 4
         }
-        spacing: 10
+        spacing: 4
 
         WeatherIcon {
             width: 116 * root.profile.scale
             height: width
+            kind: root.weather.weatherKind
             isNight: root.weather.isNight
             opacity: root.weather.hasData ? 0.95 : 0.45
 
@@ -166,7 +167,6 @@ PanelWindow {
         }
 
         Text {
-            topPadding: 8
             width: parent.width
             text: root.weather.temperature + "°"
             color: root.textMain

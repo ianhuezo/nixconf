@@ -10,6 +10,10 @@ Item {
     property string kind: "clear"
     property bool isNight: false
     property real phase: 0
+    // Unbounded loop counter; `phase` is cycles % 1. Continuous motions
+    // (drift, rotation, twinkle) key off `cycles` so nothing jumps when the
+    // fall-cycle loop wraps.
+    property real cycles: 0
 
     readonly property color cloudColor: Color.palette.base05
     readonly property color sunColor: Color.palette.base09
@@ -65,9 +69,9 @@ Item {
     // Fog bands: y, half-width, thickness, drift speed, drift amplitude,
     // phase offset, peak alpha.
     readonly property var fogBands: [
-        { y: 88, w: 30, h: 9, speed: 0.50, amp: 5, off: 0.0, a: 0.34 },
-        { y: 102, w: 24, h: 8, speed: 0.85, amp: 7, off: 2.1, a: 0.27 },
-        { y: 115, w: 18, h: 7, speed: 1.20, amp: 6, off: 4.4, a: 0.21 }
+        { y: 80, w: 30, h: 9, speed: 0.50, amp: 5, off: 0.0, a: 0.34 },
+        { y: 93, w: 24, h: 8, speed: 0.85, amp: 7, off: 2.1, a: 0.27 },
+        { y: 105, w: 18, h: 7, speed: 1.20, amp: 6, off: 4.4, a: 0.21 }
     ]
 
     function withAlpha(color, alpha) {
@@ -157,7 +161,7 @@ Item {
     // shade: 0 (airy) .. 0.6 (storm-dark). Drift speed/offset differ per
     // layer so stacked clouds never move in lockstep.
     function drawCloudLayer(ctx, cx, cy, s, alpha, driftSpeed, driftOffset, shade) {
-        const drift = Math.sin(root.phase * Math.PI * 2 * driftSpeed + driftOffset) * 2.6;
+        const drift = Math.sin(root.cycles * Math.PI * 2 * driftSpeed + driftOffset) * 2.6;
         const x0 = cx + drift;
 
         // Halo behind night or storm-dark clouds so they separate from the
@@ -238,13 +242,13 @@ Item {
         // Slowly rotating crown; each ray breathes on its own frequency.
         ctx.save();
         ctx.translate(x, y);
-        ctx.rotate(root.phase * Math.PI * 2 * 0.06);
+        ctx.rotate(root.cycles * Math.PI * 2 * 0.06);
         ctx.strokeStyle = root.sunColor;
         ctx.lineCap = "round";
         ctx.lineWidth = 2.6 * s;
         for (let i = 0; i < 8; i++) {
             const angle = i * Math.PI / 4;
-            const beat = Math.sin(root.phase * Math.PI * 2 * (0.8 + i * 0.17) + i * 2.3);
+            const beat = Math.sin(root.cycles * Math.PI * 2 * (0.8 + i * 0.17) + i * 2.3);
             const inner = (21 + beat * 1.4) * s;
             const outer = (29 + beat * 3.4) * s;
             ctx.globalAlpha = 0.55 + 0.35 * (beat * 0.5 + 0.5);
@@ -289,7 +293,7 @@ Item {
     // partly-cloudy nights.
     function drawMoon(ctx, x, y, s, starSide) {
         const side = starSide === undefined ? 1 : starSide;
-        const bob = Math.sin(root.phase * Math.PI * 2) * 2;
+        const bob = Math.sin(root.cycles * Math.PI * 2) * 2;
 
         // Twinkling stars first; they sit behind the halo wash and any cloud.
         const stars = [
@@ -302,8 +306,8 @@ Item {
         ctx.scale(s, s);
         for (let i = 0; i < stars.length; i++) {
             const st = stars[i];
-            const twinkle = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(root.phase * Math.PI * 2 * st.freq + st.off));
-            root.drawSparkle(ctx, side * st.x, st.y, st.r, twinkle, root.phase * Math.PI * 0.25 * (i + 1));
+            const twinkle = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(root.cycles * Math.PI * 2 * st.freq + st.off));
+            root.drawSparkle(ctx, side * st.x, st.y, st.r, twinkle, root.cycles * Math.PI * 0.25 * (i + 1));
         }
         ctx.restore();
 
@@ -348,19 +352,21 @@ Item {
 
     // --- precipitation --------------------------------------------------------
 
-    function drawRain(ctx, heavy) {
+    // count: optional cap on particles, so layered kinds (sleet) can thin
+    // each contributor instead of stacking full-density bands.
+    function drawRain(ctx, heavy, count) {
         const drops = heavy ? root.rainHeavy : root.rainLight;
+        const n = count === undefined ? drops.length : Math.min(count, drops.length);
         ctx.strokeStyle = root.rainColor;
         ctx.lineCap = "round";
         ctx.lineWidth = heavy ? 2.3 : 2;
-        for (let i = 0; i < drops.length; i++) {
+        for (let i = 0; i < n; i++) {
             const d = drops[i];
             const p = (root.phase * d.v + d.o) % 1;
-            const y = 74 + p * 38;
+            const y = 73 + p * 26;
             const x = d.x + Math.sin(p * Math.PI * 2 + d.o * 9) * 0.8;
             const slant = d.l * 0.34;
             ctx.globalAlpha = d.a * (0.15 + 0.85 * Math.sin(p * Math.PI));
-            ctx.beginPath();
             ctx.moveTo(x + slant * 0.35, y);
             ctx.lineTo(x - slant * 0.65, y + d.l);
             ctx.stroke();
@@ -368,19 +374,19 @@ Item {
         ctx.globalAlpha = 1;
     }
 
-    function drawSnow(ctx) {
-        for (let i = 0; i < root.snowFlakes.length; i++) {
+    function drawSnow(ctx, count) {
+        const n = count === undefined ? root.snowFlakes.length : Math.min(count, root.snowFlakes.length);
+        for (let i = 0; i < n; i++) {
             const f = root.snowFlakes[i];
             const p = (root.phase * f.v + f.o) % 1;
             const x = f.x + Math.sin(p * Math.PI * 2 * 1.3 + f.o * 7) * f.w;
-            const y = 76 + p * 40;
+            const y = 76 + p * 26;
             const a = f.a * (0.3 + 0.7 * Math.sin(p * Math.PI));
 
             if (i === 2) {
-                // The largest flake resolves into a slowly turning crystal.
                 ctx.globalAlpha = 1;
                 root.drawGlow(ctx, x, y, f.r * 2.4, root.snowColor, a * 0.2);
-                root.drawSparkle(ctx, x, y, f.r * 2.1, a * 0.9, root.phase * Math.PI * 2 * 0.2);
+                root.drawSparkle(ctx, x, y, f.r * 2.1, a * 0.9, root.cycles * Math.PI * 2 * 0.2);
             } else {
                 ctx.globalAlpha = 1;
                 root.drawGlow(ctx, x, y, f.r * 2.2, root.snowColor, a * 0.16);
@@ -394,14 +400,40 @@ Item {
         ctx.globalAlpha = 1;
     }
 
+    // Ice pellets for freezing rain: small glinting beads falling with the
+    // rain, tinted by the rain color so they read as frozen, not snowy.
+    readonly property var icePellets: [
+        { x: 45, o: 0.15, r: 2.2, v: 1.10 },
+        { x: 63, o: 0.55, r: 2.6, v: 0.90 },
+        { x: 81, o: 0.35, r: 2.0, v: 1.25 },
+        { x: 93, o: 0.75, r: 2.4, v: 0.80 }
+    ]
+
+    function drawIce(ctx) {
+        for (let i = 0; i < root.icePellets.length; i++) {
+            const f = root.icePellets[i];
+            const p = (root.phase * f.v + f.o) % 1;
+            const x = f.x + Math.sin(p * Math.PI * 2 + f.o * 5) * 1.5;
+            const y = 76 + p * 26;
+            const a = 0.9 * (0.3 + 0.7 * Math.sin(p * Math.PI));
+            root.drawGlow(ctx, x, y, f.r * 2.2, root.rainColor, a * 0.25);
+            ctx.globalAlpha = a;
+            ctx.fillStyle = root.rainColor;
+            ctx.beginPath();
+            ctx.arc(x, y, f.r, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+    }
+
     // --- storm ----------------------------------------------------------------
 
     // Irregular-ish strike schedule: the phase loop is split into three
     // slots; each slot gets a deterministic pseudo-random start, width and
     // intensity, so strikes land at uneven times with restrike flicker.
     function flashState() {
-        const idx = Math.floor(root.phase * 3);
-        const local = root.phase * 3 - idx;
+        const idx = Math.floor(root.cycles * 3);
+        const local = root.cycles * 3 - idx;
         const seed = Math.abs(Math.sin(idx * 91.7 + 3.7));
         if (seed < 0.3)
             return { v: 0, t: 0 };
@@ -425,15 +457,15 @@ Item {
     function traceBolt(ctx) {
         ctx.beginPath();
         ctx.moveTo(58, 70);
-        ctx.lineTo(67, 84);
-        ctx.lineTo(61, 87);
-        ctx.lineTo(70, 101);
-        ctx.lineTo(64, 103);
-        ctx.lineTo(71, 117);
-        ctx.moveTo(61, 87);
-        ctx.lineTo(52, 94);
-        ctx.moveTo(70, 101);
-        ctx.lineTo(79, 108);
+        ctx.lineTo(67, 80);
+        ctx.lineTo(61, 82);
+        ctx.lineTo(70, 92);
+        ctx.lineTo(64, 94);
+        ctx.lineTo(71, 104);
+        ctx.moveTo(61, 82);
+        ctx.lineTo(52, 88);
+        ctx.moveTo(70, 92);
+        ctx.lineTo(79, 98);
     }
 
     function drawLightning(ctx) {
@@ -443,13 +475,11 @@ Item {
 
         // Faint scene flash around the bolt.
         ctx.globalAlpha = 1;
-        root.drawGlow(ctx, 64, 84, 52, Color.palette.base07, flash.v * 0.07);
-
+        root.drawGlow(ctx, 64, 87, 46, Color.palette.base07, flash.v * 0.07);
         // Bolt grows top-down through the first part of the strike.
         ctx.save();
         ctx.beginPath();
-        ctx.rect(40, 66, 50, 54 * Math.min(1, flash.t / 0.38));
-        ctx.clip();
+        ctx.rect(40, 66, 50, 40 * Math.min(1, flash.t / 0.38));
         ctx.lineCap = "round";
         ctx.lineJoin = "round";
 
@@ -474,8 +504,8 @@ Item {
     function drawFog(ctx) {
         for (let i = 0; i < root.fogBands.length; i++) {
             const b = root.fogBands[i];
-            const drift = Math.sin(root.phase * Math.PI * 2 * b.speed + b.off) * b.amp;
-            const breathe = b.a * (0.85 + 0.15 * Math.sin(root.phase * Math.PI * 2 * b.speed * 1.3 + b.off));
+            const drift = Math.sin(root.cycles * Math.PI * 2 * b.speed + b.off) * b.amp;
+            const breathe = b.a * (0.85 + 0.15 * Math.sin(root.cycles * Math.PI * 2 * b.speed * 1.3 + b.off));
             const x0 = 64 - b.w + drift;
             const x1 = 64 + b.w + drift;
             const g = ctx.createLinearGradient(x0, 0, x1, 0);
@@ -506,44 +536,61 @@ Item {
             ctx.scale(sx, sy);
 
             if (root.kind === "clear") {
+                // Sun and moon are scaled up to match the visual mass of
+                // the cloud compositions (~92 units wide), so every kind
+                // fills the icon box uniformly.
                 if (root.isNight)
-                    root.drawMoon(ctx, 64, 60, 1);
+                    root.drawMoon(ctx, 64, 62, 1.35);
                 else
-                    root.drawSun(ctx, 64, 60, 1);
+                    root.drawSun(ctx, 64, 62, 1.35);
                 return;
             }
 
             if (root.kind === "partlyCloudy") {
                 if (root.isNight)
-                    root.drawMoon(ctx, 42, 40, 0.7, -1);
+                    root.drawMoon(ctx, 40, 48, 0.9, -1);
                 else
-                    root.drawSun(ctx, 42, 40, 0.7);
-                root.drawCloudLayer(ctx, 80, 66, 0.78, 1, 0.5, 1.2, 0.35);
+                    root.drawSun(ctx, 40, 48, 0.9);
+                root.drawCloudLayer(ctx, 80, 76, 0.78, 1, 0.5, 1.2, 0.35);
                 return;
             }
 
             if (root.kind === "fog") {
-                root.drawCloudLayer(ctx, 64, 46, 0.85, 0.9, 0.4, 0, 0.35);
+                root.drawCloudLayer(ctx, 64, 52, 0.95, 0.9, 0.4, 0, 0.35);
                 root.drawFog(ctx);
                 return;
             }
 
             if (root.kind === "cloudy") {
-                root.drawCloudLayer(ctx, 40, 36, 0.55, 0.55, 0.45, 2.6, 0.30);
-                root.drawCloudLayer(ctx, 64, 58, 1, 1, 0.3, 0, 0.38);
+                root.drawCloudLayer(ctx, 40, 46, 0.55, 0.55, 0.45, 2.6, 0.30);
+                root.drawCloudLayer(ctx, 64, 68, 1, 1, 0.3, 0, 0.38);
                 return;
             }
 
-            // rain / snow / storm share the stacked cloud base
+            // rain / snow / storm / sleet / freezingRain / thunderSnow all
+            // share the stacked cloud base; precipitation layers on top.
+            const dark = root.kind === "storm" || root.kind === "thunderSnow";
             root.drawCloudLayer(ctx, 38, 34, 0.5, 0.5, 0.5, 2.2, 0.30);
-            root.drawCloudLayer(ctx, 64, 52, 1, 1, 0.32, 0, root.kind === "storm" ? 0.55 : 0.40);
+            root.drawCloudLayer(ctx, 64, 52, 1, 1, 0.32, 0, dark ? 0.55 : 0.40);
 
             if (root.kind === "storm") {
                 root.drawCloudLayer(ctx, 66, 62, 0.8, 0.9, 0.22, 3.3, 0.50);
                 root.drawRain(ctx, true);
                 root.drawLightning(ctx);
+            } else if (root.kind === "thunderSnow") {
+                root.drawCloudLayer(ctx, 66, 62, 0.8, 0.9, 0.22, 3.3, 0.50);
+                root.drawSnow(ctx, 5);
+                root.drawLightning(ctx);
             } else if (root.kind === "snow") {
                 root.drawSnow(ctx);
+            } else if (root.kind === "sleet") {
+                // Mixed wintry precipitation: thinned rain and snow bands
+                // interleaved under one cloud.
+                root.drawRain(ctx, false, 5);
+                root.drawSnow(ctx, 5);
+            } else if (root.kind === "freezingRain") {
+                root.drawRain(ctx, false, 6);
+                root.drawIce(ctx);
             } else {
                 root.drawRain(ctx, false);
             }
@@ -555,7 +602,8 @@ Item {
         running: root.visible
         repeat: true
         onTriggered: {
-            root.phase = (root.phase + 0.0128) % 1;
+            root.cycles += 0.0128;
+            root.phase = root.cycles % 1;
             canvas.requestPaint();
         }
     }
