@@ -3,7 +3,8 @@
 #
 #   model-select.sh                 # interactive menu
 #   model-select.sh deepseek        # switch to DeepSeek V4 Flash
-#   model-select.sh glm53           # switch to GLM-5.3-Flash
+#   model-select.sh glm53exl3       # switch to GLM-5.3-Flash EXL3 (current)
+#   model-select.sh glm53           # switch to GLM-5.3-Flash NVFP4 (superseded)
 #   model-select.sh status          # what is up right now
 #   model-select.sh stop            # stop everything, serve nothing
 #   model-select.sh boot            # start whatever was last selected (systemd)
@@ -29,10 +30,19 @@ STATE_FILE="${STATE_FILE:-$RECIPE_DIR/.active-model}"
 LOCK_FILE="${LOCK_FILE:-$RECIPE_DIR/.switching}"
 WORKER_WAIT="${WORKER_WAIT:-300}"
 
-# name|label|project|start script|stop script|served model name
+# name|label|selector|start script|stop script|served model name
+#
+# The selector says how to FIND a model's containers, because they are not all
+# launched the same way. DeepSeek and the NVFP4 GLM come up through `docker
+# compose`, so they carry a project label; the EXL3 GLM comes up through
+# upstream's plain `docker run`, which carries no label at all -- only a fixed
+# container name. Tagging the row rather than special-casing the lookup keeps
+# upstream's launcher unpatched, which matters because install.sh reinstalls it
+# from the repo on every run and would clobber any edit.
 MODELS=(
-  "deepseek|DeepSeek V4 Flash 0731|dspark-recipe|$RECIPE_DIR/start-deepseek-v4-flash-dspark.sh|$RECIPE_DIR/stop-deepseek-v4-flash-dspark.sh|deepseek-v4-flash-dspark"
-  "glm53|GLM-5.3-Flash NVFP4|glm53|$RECIPE_DIR/glm53/start-glm53.sh|$RECIPE_DIR/glm53/stop-glm53.sh|glm-5.3-flash"
+  "deepseek|DeepSeek V4 Flash 0731|compose:dspark-recipe|$RECIPE_DIR/start-deepseek-v4-flash-dspark.sh|$RECIPE_DIR/stop-deepseek-v4-flash-dspark.sh|deepseek-v4-flash-dspark"
+  "glm53|GLM-5.3-Flash NVFP4|compose:glm53|$RECIPE_DIR/glm53/start-glm53.sh|$RECIPE_DIR/glm53/stop-glm53.sh|glm-5.3-flash"
+  "glm53exl3|GLM-5.3-Flash EXL3 4bpw + DFlash2|name:vllm_glm53|$RECIPE_DIR/glm53-exl3/start-glm53-exl3.sh|$RECIPE_DIR/glm53-exl3/stop-glm53-exl3.sh|glm-5.3-flash"
 )
 
 field() {
@@ -45,15 +55,27 @@ field() {
   return 1
 }
 
-names()   { local row; for row in "${MODELS[@]}"; do printf '%s\n' "${row%%|*}"; done; }
-label()   { field "$1" 2; }
-project() { field "$1" 3; }
-starter() { field "$1" 4; }
-stopper() { field "$1" 5; }
-served()  { field "$1" 6; }
+names()    { local row; for row in "${MODELS[@]}"; do printf '%s\n' "${row%%|*}"; done; }
+label()    { field "$1" 2; }
+selector() { field "$1" 3; }
+starter()  { field "$1" 4; }
+stopper()  { field "$1" 5; }
+served()   { field "$1" 6; }
+
+# Turn a table selector into a `docker ps --filter` expression. Bare values are
+# read as compose projects so an un-migrated selector still behaves.
+# name= is a regex match, hence the anchors: without them `name=vllm_glm53`
+# would also match a stray `vllm_glm53_old`.
+filter_of() {
+  case "$1" in
+    name:*)    printf 'name=^%s$' "${1#name:}" ;;
+    compose:*) printf 'label=com.docker.compose.project=%s' "${1#compose:}" ;;
+    *)         printf 'label=com.docker.compose.project=%s' "$1" ;;
+  esac
+}
 
 containers_of() {
-  docker ps -aq --filter "label=com.docker.compose.project=$1" 2>/dev/null
+  docker ps -aq --filter "$(filter_of "$1")" 2>/dev/null
 }
 
 selected_model() { [ -f "$STATE_FILE" ] && cat "$STATE_FILE" || true; }
@@ -63,7 +85,7 @@ selected_model() { [ -f "$STATE_FILE" ] && cat "$STATE_FILE" || true; }
 running_model() {
   local name
   for name in $(names); do
-    if [ -n "$(containers_of "$(project "$name")")" ]; then
+    if [ -n "$(containers_of "$(selector "$name")")" ]; then
       printf '%s\n' "$name"; return 0
     fi
   done
@@ -85,11 +107,12 @@ engine_healthy() {
 # compose file is vendored from upstream and still says unless-stopped; rather
 # than fork it, neutralise the policy after the fact on both ranks.
 disarm_restart() {
-  local proj="$1" ids
-  ids="$(containers_of "$proj")"
+  local sel="$1" ids filter
+  filter="$(filter_of "$sel")"
+  ids="$(containers_of "$sel")"
   [ -n "$ids" ] && docker update --restart=no $ids >/dev/null 2>&1 || true
   ssh "${WORKER_SSH:-169.254.54.207}" \
-    "ids=\$(docker ps -aq --filter label=com.docker.compose.project=$proj 2>/dev/null); \
+    "ids=\$(docker ps -aq --filter '$filter' 2>/dev/null); \
      [ -n \"\$ids\" ] && docker update --restart=no \$ids >/dev/null 2>&1 || true" 2>/dev/null || true
 }
 
@@ -109,7 +132,7 @@ status() {
     echo "running  : nothing"
   else
     printf 'running  : %s -- ' "$run"
-    docker ps -a --filter "label=com.docker.compose.project=$(project "$run")" \
+    docker ps -a --filter "$(filter_of "$(selector "$run")")" \
       --format '{{.Names}} [{{.Status}}]' | paste -sd', ' -
   fi
   [ -e "$LOCK_FILE" ] && echo "         (a switch/load is in progress)"
@@ -128,7 +151,7 @@ status() {
 stop_all() {
   local name script
   for name in $(names); do
-    [ -n "$(containers_of "$(project "$name")")" ] || continue
+    [ -n "$(containers_of "$(selector "$name")")" ] || continue
     script="$(stopper "$name")"
     echo "==> stopping $name"
     if [ -x "$script" ]; then
@@ -137,7 +160,7 @@ stop_all() {
       echo "    $script missing; falling back to a direct container stop" >&2
       # Word splitting is the point: containers_of returns one id per line.
       # shellcheck disable=SC2046
-      docker rm -f $(containers_of "$(project "$name")") >/dev/null 2>&1 || true
+      docker rm -f $(containers_of "$(selector "$name")") >/dev/null 2>&1 || true
     fi
   done
 }
@@ -167,7 +190,7 @@ launch() {
   trap 'rm -f "$LOCK_FILE"' RETURN
   echo "==> starting $target ($(label "$target"))"
   "$script"
-  disarm_restart "$(project "$target")"
+  disarm_restart "$(selector "$target")"
 }
 
 switch_to() {

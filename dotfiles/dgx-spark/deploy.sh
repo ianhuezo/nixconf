@@ -69,4 +69,20 @@ scp -q "$DIR/model-select.sh" "$DIR/spark-model-watchdog.sh" \
     "$NODE1:~/dspark-recipe/"
 ssh "$NODE1" 'chmod +x ~/dspark-recipe/model-select.sh ~/dspark-recipe/spark-model-watchdog.sh ~/dspark-recipe/install-model-service.sh'
 
+# GLM-5.3-Flash EXL3. Head only, and only these three files: the stack itself
+# is upstream's (Entrpi/glm-5.3-flash-exl3-2x-spark, cloned to ~ on the head),
+# and its install.sh owns the per-box launcher and ~/.glm53-serve.env on BOTH
+# boxes. What is ours is the topology .env it reads, and the two wrappers that
+# give model-select.sh a both-ranks start/stop it can call.
+echo "==> installing GLM-5.3 EXL3 wrappers + .env on the head ($NODE1)"
+ssh "$NODE1" 'mkdir -p ~/dspark-recipe/glm53-exl3'
+scp -q "$DIR/glm53-exl3/start-glm53-exl3.sh" "$DIR/glm53-exl3/stop-glm53-exl3.sh" \
+    "$NODE1:~/dspark-recipe/glm53-exl3/"
+ssh "$NODE1" 'chmod +x ~/dspark-recipe/glm53-exl3/*.sh'
+if ssh "$NODE1" '[ -d ~/glm-5.3-flash-exl3-2x-spark ]'; then
+    scp -q "$DIR/glm53-exl3/env.exl3" "$NODE1:~/glm-5.3-flash-exl3-2x-spark/.env"
+else
+    echo "    (no ~/glm-5.3-flash-exl3-2x-spark yet; clone it and re-run to place .env)"
+fi
+
 echo "==> done"

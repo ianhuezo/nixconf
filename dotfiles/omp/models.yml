@@ -41,17 +41,34 @@ providers:
         contextWindow: 131072
         maxTokens: 16384
 
-  # GLM-5.3-Flash: 320B total / 18B active, fp8 KV, MTP disabled (this quant's
-  # MXFP8 MTP experts are rejected by moe_backend=marlin -- see env.glm53).
+  # GLM-5.3-Flash: 320B total / 18B active, now served from the EXL3/TR3 4bpw
+  # quant with the DFlash2 block-diffusion drafter (Entrpi recipe), replacing
+  # the NVFP4 build. fp8_e4m3 KV, CUDA graphs, no MTP -- DFlash2 beats it.
   #
-  # 200000 is the server's --max-model-len, not a client-side preference: vLLM
-  # rejects anything longer outright.
+  # 358400 is the server's --max-model-len, not a client-side preference: vLLM
+  # rejects anything longer outright. It is 1.8x the NVFP4 stack's 200000.
   #
-  # MEASURED on this pair (2026-08-27, MTP off, gmu 0.90): KV pool 1,943,396
-  # tokens = 9.72x at 200K. Five concurrent full-length sessions need 1.0M --
-  # 51% of the pool -- so maxConcurrency 5 at full context has ~2x headroom and
-  # needs no context compromise. Measured throughput at c5: 52.4 tok/s
-  # aggregate, ~11.1 per stream; single-stream is 14.6.
+  # Why 358400 and not the recipe's 524288 default: concurrency is exactly
+  # pool/context, so context is *spent* out of a fixed KV budget. 524288 buys
+  # only 2.74 concurrent full-length banks, under the c3 floor this deployment
+  # needs. Upstream's documented 358400 profile holds a 1,275,306-token pool =
+  # 3.56 banks, and the server runs --max-num-seqs 5, so c3-c5 is guaranteed at
+  # *declared* full length and not merely in expectation.
+  #
+  # In practice there is far more room than 3.56 suggests: real traffic on this
+  # pair averages ~88K-token prompts (measured, n=545), where the pool seats
+  # about fourteen sessions. The binding limit at that size is the 5 sequence
+  # slots, not the pool -- which is the intended shape.
+  #
+  # Both roles therefore share one number now. The earlier split, capping
+  # subagents to keep a fan-out inside the pool, was solving a problem the
+  # 358400 profile removes.
+  #
+  # Thinking is OFF at the serving layer on this stack
+  # (--default-chat-template-kwargs '{"enable_thinking": false}'), so
+  # `reasoning: true` only takes effect for requests that ask for it
+  # explicitly. Flipping the default means patching upstream's launcher, and
+  # install.sh rewrites that file on every run.
   dgx-spark-glm:
     baseUrl: http://192.168.50.157:8888/v1
     api: openai-completions
@@ -59,7 +76,7 @@ providers:
 
     models:
       - id: glm-5.3-flash
-        name: GLM-5.3-Flash NVFP4 (local, 2x GX10)
+        name: GLM-5.3-Flash EXL3 4bpw + DFlash2 (local, 2x GX10)
         api: openai-completions
         reasoning: true
         # Natively multimodal, and served with a vision tower — so while GLM is
@@ -72,7 +89,7 @@ providers:
           output: 0
           cacheRead: 0
           cacheWrite: 0
-        contextWindow: 200000
+        contextWindow: 358400
         # 32768. Do NOT "optimise" this down from the output-length histogram.
         #
         # 84% of requests finish under 500 tokens, which makes a low cap look
@@ -94,7 +111,7 @@ providers:
 
     models:
       - id: glm-5.3-flash
-        name: GLM-5.3-Flash (subagent budget)
+        name: GLM-5.3-Flash EXL3 (subagent budget)
         api: openai-completions
         reasoning: true
         input: [text, image]
@@ -103,7 +120,7 @@ providers:
           output: 0
           cacheRead: 0
           cacheWrite: 0
-        contextWindow: 200000
+        contextWindow: 358400
         # 32768, same as the main role. Do NOT "optimise" this down from the output-length histogram.
         #
         # 84% of requests finish under 500 tokens, which makes a low cap look
