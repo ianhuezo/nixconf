@@ -282,10 +282,15 @@ Item {
                 spacing: root.barSpacing
 
                 Repeater {
-                    model: root.cavaValues
+                    // Static pool keyed by index. Binding the array itself as
+                    // the model destroyed and recreated every delegate each
+                    // frame, which also kept the height Behavior from ever
+                    // animating.
+                    model: root.cavaValues.length
                     delegate: Rectangle {
+                        required property int index
                         width: bars.slotWidth
-                        height: Math.min(root.mirrored ? bars.height / 2 : bars.height, Math.max(2, modelData * root.sensitivity))
+                        height: Math.min(root.mirrored ? bars.height / 2 : bars.height, Math.max(2, (root.cavaValues[index] || 0) * root.sensitivity))
                         color: root.visualizerColor
                         radius: root.barRadius
                         topLeftRadius: root.barRadius
@@ -312,10 +317,11 @@ Item {
                 spacing: root.barSpacing
 
                 Repeater {
-                    model: root.cavaValues
+                    model: root.cavaValues.length
                     delegate: Rectangle {
+                        required property int index
                         width: bars.slotWidth
-                        height: Math.min(bars.height / 2, Math.max(2, modelData * root.sensitivity))
+                        height: Math.min(bars.height / 2, Math.max(2, (root.cavaValues[index] || 0) * root.sensitivity))
                         color: root.visualizerColor
                         radius: root.barRadius
                         topLeftRadius: root.mirrored ? 0 : root.barRadius

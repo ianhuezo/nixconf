@@ -1,5 +1,4 @@
 #!/bin/sh
-# Disable output buffering with `stdbuf -oL`
-stdbuf -oL cava -p ~/.config/cava_conf/cava.conf | while read -r line; do
-  echo "$line" # Stream raw values (space-separated)
-done
+# Line-buffered so quickshell's SplitParser sees each frame as it's produced.
+# exec drops the relay shell: cava becomes the direct child of the Process.
+exec stdbuf -oL cava -p "$HOME/.config/cava_conf/cava.conf"

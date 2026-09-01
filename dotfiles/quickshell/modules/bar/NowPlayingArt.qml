@@ -187,13 +187,14 @@ Item {
             }
         }
 
-        NumberAnimation on phase {
-            from: 0
-            to: 360
-            duration: 2500
-            loops: Animation.Infinite
-            easing.type: Easing.Linear
-            running: true  // Always running for smooth continuous loop
+        // Traveling glow, stepped at ~30fps instead of every vsync (240Hz on
+        // the primary monitor), and paused entirely while the glow is faded
+        // out. Same 144 deg/s sweep as the old always-running animation.
+        Timer {
+            interval: 33
+            running: root.borderOpacity > 0
+            repeat: true
+            onTriggered: borderCanvas.phase = (borderCanvas.phase + 360 * interval / 2500) % 360
         }
 
         onPhaseChanged: requestPaint()
