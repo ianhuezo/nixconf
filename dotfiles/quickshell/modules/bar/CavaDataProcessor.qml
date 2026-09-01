@@ -8,7 +8,7 @@ Process {
     command: [scriptLocation]
     running: true
     property var lastValues: []
-    property string smoothingMode: "normal" // "adaptive", "responsive", "fluid", "normal"
+    property string smoothingMode: "fluid" // "adaptive", "responsive", "fluid", "normal"
     signal newData(var processedValues)
 
     stdout: SplitParser {
@@ -19,14 +19,15 @@ Process {
                 return Math.min(40, Math.max(0, isNaN(num) ? 0 : num));
             });
 
+            // Only pad a short read up to the established width. Clamping to it
+            // outright would pin the bar count to whatever the first frame
+            // happened to be, so a cava bar count change never took effect.
             const targetLength = processor.lastValues.length || newValues.length;
-            while (newValues.length < targetLength)
-                newValues.push(0);
-            if (newValues.length > targetLength)
-                newValues.length = targetLength;
+            if (newValues.length < targetLength)
+                while (newValues.length < targetLength)
+                    newValues.push(0);
 
-            // Adaptive smoothing based on mode
-            const smoothed = processor.lastValues.length === 0 ? newValues : processor.lastValues.map((old, i) => {
+            const smoothed = processor.lastValues.length !== newValues.length ? newValues : processor.lastValues.map((old, i) => {
                 const newVal = newValues[i] || 0;
 
                 switch (processor.smoothingMode) {

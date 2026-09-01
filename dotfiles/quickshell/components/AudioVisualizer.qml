@@ -18,6 +18,41 @@ Item {
 
     // Wave-specific properties
     property int lineWidth: 1
+    // Catmull-Rom tension. 1.0 is the standard spline; lower tightens the curve
+    // toward straight segments.
+    property real waveTension: 1.0
+    // Blend of each bin with its two neighbours before drawing, 0 = raw bins.
+    property real waveSmoothing: 0.1
+    // The reference level the wave is normalized against, tracked with a fast
+    // attack and slow release. Normalizing against the current frame's max
+    // rescales the whole wave every frame, which reads as breathing rather
+    // than as the music getting louder and quieter.
+    property real waveLevelAttack: 0.1
+    property real waveLevelRelease: 0.02
+    property real waveMinLevel: 15
+    // Headroom above the tracked level before a sample reaches full height, so
+    // topping out stays an event rather than the steady state.
+    property real waveHeadroom: 1.45
+    // How hard the frame's overall loudness is compressed, below 1. This lifts
+    // quiet passages and damps loud ones over time.
+    property real waveGamma: 0.42
+    // How hard the shape across frequency is compressed, kept much closer to 1
+    // than waveGamma. Compressing the spectrum as hard as the loudness levels
+    // the bands against each other and the bass, mids and treble stop being
+    // tellable apart; lower this to lift quiet bands at the cost of that.
+    property real waveSpectralExponent: 0.85
+    // Subtracted from every bin before scaling, so the noise that cava reports
+    // during silence stays on the baseline instead of being amplified by the
+    // exponents along with everything else.
+    property real waveNoiseFloor: 1.0
+    // Emphasis on the vocal band, applied before the wave is normalized so the
+    // boost changes what dominates rather than just scaling everything. Centre
+    // and width are fractions across the spectrum; cava's bins are log-spaced,
+    // so with its 50Hz-10kHz default range 0.58 sits around 1kHz and the width
+    // covers roughly 300Hz-3.5kHz, where voices carry.
+    property real waveVoiceGain: 1.8
+    property real waveVoiceCenter: 0.58
+    property real waveVoiceWidth: 0.22
 
     // Bar-specific properties
     property int barWidth: 6
@@ -125,21 +160,87 @@ Item {
             id: wave
             anchors.fill: parent
 
+            property real level: root.waveMinLevel
+
+            // Blends each bin with its neighbours so the curve follows the
+            // spectrum envelope rather than the per-bin noise.
+            function envelope(values) {
+                const n = values.length;
+                const k = root.waveSmoothing;
+                const out = new Array(n);
+                for (let i = 0; i < n; i++) {
+                    const prev = values[Math.max(0, i - 1)];
+                    const next = values[Math.min(n - 1, i + 1)];
+                    out[i] = (1 - k) * values[i] + k * 0.5 * (prev + next);
+                }
+                return out;
+            }
+
+            // Traces a closed shape from the baseline through the samples as a
+            // Catmull-Rom spline. Tangents follow the neighbouring samples, so
+            // peaks stay pointed and the curve flows between them instead of
+            // flattening out at every data point.
+            function tracePath(ctx, heights, baseY, amplitude, dir) {
+                const n = heights.length;
+                const stepX = width / (n - 1);
+                const lo = dir < 0 ? baseY - amplitude : baseY;
+                const hi = dir < 0 ? baseY : baseY + amplitude;
+
+                const at = i => baseY + dir * amplitude * heights[Math.max(0, Math.min(n - 1, i))];
+                const clamp = v => Math.max(lo, Math.min(hi, v));
+                const t = root.waveTension / 6;
+
+                ctx.beginPath();
+                ctx.moveTo(0, baseY);
+                ctx.lineTo(0, at(0));
+
+                for (let i = 0; i < n - 1; i++) {
+                    const x0 = i * stepX;
+                    const x1 = x0 + stepX;
+                    const y0 = at(i);
+                    const y1 = at(i + 1);
+                    ctx.bezierCurveTo(x0 + 2 * stepX * t, clamp(y0 + (y1 - at(i - 1)) * t), x1 - 2 * stepX * t, clamp(y1 - (at(i + 2) - y0) * t), x1, y1);
+                }
+
+                ctx.lineTo(width, baseY);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+            }
+
             onPaint: {
                 const ctx = getContext("2d");
                 ctx.clearRect(0, 0, width, height);
                 if (root.cavaValues.length < 2)
                     return;
 
-                // 1. Define minimum vertical scale to ensure 2px height
-                const minMaxValue = 15;
-                const rawMax = Math.max(...root.cavaValues);
-                const maxValue = Math.max(minMaxValue, rawMax);
+                const points = envelope(root.cavaValues);
+                const n = points.length;
+                const attack = root.waveLevelAttack;
+                const release = root.waveLevelRelease;
 
-                // 2. Calculate dimensions
-                const drawHeight = root.mirrored ? height / 2 : height;
-                const stepX = width / (root.cavaValues.length - 1);
-                const baseY = root.mirrored ? drawHeight : height;
+                const signal = new Array(n);
+                const boost = root.waveVoiceGain - 1;
+                let peak = 0;
+                for (let i = 0; i < n; i++) {
+                    const offset = (n > 1 ? i / (n - 1) : 0) - root.waveVoiceCenter;
+                    const emphasis = 1 + boost * Math.exp(-0.5 * Math.pow(offset / root.waveVoiceWidth, 2));
+                    signal[i] = Math.max(0, points[i] * root.sensitivity - root.waveNoiseFloor) * emphasis;
+                    peak = Math.max(peak, signal[i]);
+                }
+
+                wave.level = Math.max(root.waveMinLevel, wave.level + (peak - wave.level) * (peak > wave.level ? attack : release));
+
+                // How tall the frame gets is a question about loudness; how the
+                // wave is shaped across it is a question about the spectrum.
+                // Compressing them separately keeps quiet passages visible
+                // without levelling the bands into one flat slab.
+                const loudness = Math.pow(Math.min(1, peak / (wave.level * root.waveHeadroom)), root.waveGamma);
+                const heights = new Array(n);
+                for (let i = 0; i < n; i++)
+                    heights[i] = peak > 0 ? loudness * Math.pow(signal[i] / peak, root.waveSpectralExponent) : 0;
+
+                const baseY = root.mirrored ? height / 2 : height;
 
                 ctx.strokeStyle = root.visualizerColor;
                 ctx.lineWidth = root.lineWidth;
@@ -147,84 +248,18 @@ Item {
                 ctx.lineCap = 'round';
                 ctx.lineJoin = 'round';
 
-                // 3. Draw top wave (or full wave if not mirrored)
-                ctx.beginPath();
-                ctx.moveTo(0, baseY);
-
-                // Smooth transition at the start
-                const firstScaledValue = root.cavaValues[0] * root.sensitivity;
-                const firstY = baseY - (firstScaledValue / maxValue * (baseY - 2));
-                ctx.quadraticCurveTo(0, firstY, stepX * 0.5, baseY - ((root.cavaValues[0] * root.sensitivity + (root.cavaValues.length > 1 ? root.cavaValues[1] * root.sensitivity : root.cavaValues[0] * root.sensitivity)) / 2 / maxValue * (baseY - 2)));
-
-                for (let i = 0; i < root.cavaValues.length; i++) {
-                    const x = i * stepX;
-                    const scaledValue = root.cavaValues[i] * root.sensitivity;
-                    const y = baseY - (scaledValue / maxValue * (baseY - 2));
-                    if (i === 0) {
-                        continue; // Already handled above
-                    } else {
-                        const prevScaledValue = root.cavaValues[i - 1] * root.sensitivity;
-                        const prevY = baseY - (prevScaledValue / maxValue * (baseY - 2));
-                        const cp1x = x - stepX / 2;
-                        const cp1y = prevY;
-                        const cp2x = x - stepX / 2;
-                        const cp2y = y;
-                        ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y);
-                    }
-                }
-
-                // Smooth transition at the end
-                const lastScaledValue = root.cavaValues[root.cavaValues.length - 1] * root.sensitivity;
-                const lastY = baseY - (lastScaledValue / maxValue * (baseY - 2));
-                ctx.quadraticCurveTo(width, lastY, width, baseY);
-
-                ctx.closePath();
-                ctx.fill();
-                ctx.stroke();
-
-                // 4. Draw mirrored bottom wave if enabled
-                if (root.mirrored) {
-                    ctx.beginPath();
-                    ctx.moveTo(0, drawHeight);
-
-                    // Smooth transition at the start
-                    const firstScaledValueBottom = root.cavaValues[0] * root.sensitivity;
-                    const firstYBottom = drawHeight + (firstScaledValueBottom / maxValue * (drawHeight - 2));
-                    ctx.quadraticCurveTo(0, firstYBottom, stepX * 0.5, drawHeight + ((root.cavaValues[0] * root.sensitivity + (root.cavaValues.length > 1 ? root.cavaValues[1] * root.sensitivity : root.cavaValues[0] * root.sensitivity)) / 2 / maxValue * (drawHeight - 2)));
-
-                    for (let i = 0; i < root.cavaValues.length; i++) {
-                        const x = i * stepX;
-                        const scaledValue = root.cavaValues[i] * root.sensitivity;
-                        const y = drawHeight + (scaledValue / maxValue * (drawHeight - 2));
-                        if (i === 0) {
-                            continue; // Already handled above
-                        } else {
-                            const prevScaledValue = root.cavaValues[i - 1] * root.sensitivity;
-                            const prevY = drawHeight + (prevScaledValue / maxValue * (drawHeight - 2));
-                            const cp1x = x - stepX / 2;
-                            const cp1y = prevY;
-                            const cp2x = x - stepX / 2;
-                            const cp2y = y;
-                            ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y);
-                        }
-                    }
-
-                    // Smooth transition at the end
-                    const lastScaledValueBottom = root.cavaValues[root.cavaValues.length - 1] * root.sensitivity;
-                    const lastYBottom = drawHeight + (lastScaledValueBottom / maxValue * (drawHeight - 2));
-                    ctx.quadraticCurveTo(width, lastYBottom, width, drawHeight);
-
-                    ctx.closePath();
-                    ctx.fill();
-                    ctx.stroke();
-                }
+                tracePath(ctx, heights, baseY, baseY - 2, -1);
+                if (root.mirrored)
+                    tracePath(ctx, heights, baseY, baseY - 2, 1);
             }
 
-            Timer {
-                interval: 16
-                running: true
-                repeat: true
-                onTriggered: wave.requestPaint()
+            Component.onCompleted: requestPaint()
+
+            Connections {
+                target: root
+                function onCavaValuesChanged() {
+                    wave.requestPaint();
+                }
             }
         }
     }
@@ -235,6 +270,11 @@ Item {
             id: bars
             anchors.fill: parent
 
+            // The bar count follows cava's, so size the bars to the pane rather
+            // than to a fixed width that only fits one particular count.
+            readonly property int count: root.cavaValues.length
+            readonly property real slotWidth: count > 0 ? Math.max(1, Math.min(root.barWidth, (width - (count - 1) * root.barSpacing) / count)) : root.barWidth
+
             Row {
                 id: topRow
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -244,7 +284,7 @@ Item {
                 Repeater {
                     model: root.cavaValues
                     delegate: Rectangle {
-                        width: root.barWidth
+                        width: bars.slotWidth
                         height: Math.min(root.mirrored ? bars.height / 2 : bars.height, Math.max(2, modelData * root.sensitivity))
                         color: root.visualizerColor
                         radius: root.barRadius
@@ -274,7 +314,7 @@ Item {
                 Repeater {
                     model: root.cavaValues
                     delegate: Rectangle {
-                        width: root.barWidth
+                        width: bars.slotWidth
                         height: Math.min(bars.height / 2, Math.max(2, modelData * root.sensitivity))
                         color: root.visualizerColor
                         radius: root.barRadius
