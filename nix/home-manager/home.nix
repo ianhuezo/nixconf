@@ -28,6 +28,7 @@ in
     ./modules/window-managers/hyprland
     ./modules/programs/rust
     ./modules/voice-clone
+    ./modules/ollama
   ];
 
   # Home Manager needs a bit of information about you and the paths it should
@@ -75,6 +76,11 @@ in
 
   modules.voice-clone = {
     enable = true;
+  };
+
+  modules.ollama = {
+    enable = true;
+    models = [ "qwen3.8:27b" ];
   };
 
   programs.vesktop = {

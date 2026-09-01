@@ -70,7 +70,26 @@
   networking.networkmanager.wifi.backend = "iwd";
   networking.networkmanager.enable = true;
   systemd.services.systemd-networkd.enable = false;
-  systemd.services.systemd-resolved.enable = false;
+
+  # Local DNS cache. Previously `systemd.services.systemd-resolved.enable =
+  # false`, which left every lookup crossing MoCA -> router -> dnsmasq with
+  # nothing in between. The router restarts dnsmasq on DHCPv6 renewal
+  # (stop_dnsmasq/start_dnsmasq in its syslog, alongside "failed to create
+  # listening socket for ::1"), and during that bounce DNS is simply dead --
+  # brief, recurring, and invisible to ping. Caching locally makes those
+  # restarts a non-event for names already looked up; fallbackDns covers the
+  # rest if the router stops answering entirely.
+  #
+  # The router stays the primary upstream, so LAN hostnames from its DHCP
+  # table still resolve.
+  services.resolved = {
+    enable = true;
+    dnssec = "false"; # validation adds latency and hard-fails on some ISP resolvers
+    fallbackDns = [
+      "1.1.1.1"
+      "8.8.8.8"
+    ];
+  };
   networking.hostName = "joyboy";
 
   nix.gc = {
@@ -111,13 +130,7 @@
     autoPrune.enable = true;
   };
 
-  #ollama support
-  services.ollama = {
-    enable = false;
-    # Optional: load models on startup
-    loadModels = [ "deepseek-r1:32b-qwen-distill-q8_0" ];
-    package = pkgs.ollama-cuda;
-  };
+  # ollama now runs as a per-user service; see nix/home-manager/home.nix.
 
   # Set your time zone.
   time.timeZone = "America/New_York";

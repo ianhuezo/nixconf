@@ -1,7 +1,7 @@
-providers: 
-  webSearchOrder: 
+providers:
+  webSearchOrder:
     []
-modelRoles: 
+modelRoles:
   task: dgx-spark-glm-worker/glm-5.3-flash
   smol: dgx-spark-glm-worker/glm-5.3-flash:low
   slow: dgx-spark-glm/glm-5.3-flash:max
@@ -10,14 +10,14 @@ modelRoles:
 temperature: 0
 topP: 1
 symbolPreset: nerd
-theme: 
+theme:
   dark: titanium
   light: titanium
-setupVersion: 1
-task: 
-  agentAdvisor: 
+setupVersion: 2
+task:
+  agentAdvisor:
     designer: "off"
-  disabledAgents: 
+  disabledAgents:
     []
   maxConcurrency: 5
   maxRecursionDepth: 1
@@ -26,5 +26,5 @@ task:
   softRequestBudget: 250
   softRequestBudgetNotice: true
 defaultThinkingLevel: auto
-codexResets: 
+codexResets:
   autoRedeem: "no"

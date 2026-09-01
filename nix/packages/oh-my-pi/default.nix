@@ -12,13 +12,13 @@
 }:
 stdenv.mkDerivation rec {
   pname = "oh-my-pi";
-  version = "17.3.5";
+  version = "18.0.11";
 
   # Upstream ships a bare Bun-compiled executable, not an archive, so this is
   # fetchurl rather than fetchzip as in pi-coding-agent.
   src = fetchurl {
     url = "https://github.com/can1357/oh-my-pi/releases/download/v${version}/omp-linux-x64";
-    hash = "sha256-YFtKijoTdImpHVnnAoxB86/yAWnzUpArQQifv9+KJTw=";
+    hash = "sha256-YFRGCynputXrp4M28pHhl5wvoKXNlvwtkq/WZsxoHSY=";
   };
 
   nativeBuildInputs = [
