@@ -151,7 +151,7 @@ in
           #mod key opens general applications
           "$mod, F, exec, firefox"
           "$mod, K, exec, kitty"
-          "$mod, S, exec, spotify --enable-features=UseOzonePlatform --ozone-platform=x11 --uri=%U"
+          "$mod, S, exec, spotify"
           "$mod, D, exec, vesktop --enable-features=UseOzonePlatform --ozone-platform=x11 --uri=%U"
           "$mod SHIFT, L, exec, hyprlock"
           "$mod SHIFT, S, exec, hyprshot -m region --output-folder /tmp/screenshots --filename \"screenshot_$(date +%Y%m%d_%H%M%S).png\""
