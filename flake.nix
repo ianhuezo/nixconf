@@ -54,7 +54,7 @@
         overlays = [
           (final: prev: {
             sass = final.dart-sass;
-            nodePackages = prev.nodePackages // {
+            nodePackages = {
               sass = final.dart-sass;
             };
           })

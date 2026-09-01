@@ -7,8 +7,8 @@
 with lib;
 let
   cfg = config.modules.zsh;
-  isLinux = pkgs.stdenv.isLinux;
-  isDarwin = pkgs.stdenv.isDarwin;
+  isLinux = pkgs.stdenv.hostPlatform.isLinux;
+  isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
   fastfetchConfigPath = ../../../../../dotfiles/fastfetch/fastfetch-config.jsonc;
 in
 {

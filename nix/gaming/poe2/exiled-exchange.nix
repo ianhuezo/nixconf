@@ -5,7 +5,8 @@
   appimageTools,
   makeWrapper,
   electron,
-  xorg,
+  libxtst,
+  libxt,
 }:
 #basically based off of nezia's PR but for poe2 stuff
 stdenv.mkDerivation rec {
@@ -15,7 +16,7 @@ stdenv.mkDerivation rec {
     url = "https://github.com/Kvan7/Exiled-Exchange-2/releases/download/v${version}/Exiled-Exchange-2-${version}.AppImage";
     hash = "sha256-LNXiVZvPIrPbrmpiS4g+iBGi0+Jn2lott8fsy+uJnfw="; # Update this hash
   };
-  appimageContents = appimageTools.extractType2 {
+  appimageContents = appimageTools.extract {
     inherit pname src version;
   };
   dontUnpack = true;
@@ -38,8 +39,8 @@ stdenv.mkDerivation rec {
     --add-flags "--enable-features=UseOzonePlatform --ozone-platform=x11" \
     --prefix LD_LIBRARY_PATH : "${
       lib.makeLibraryPath [
-        xorg.libXtst
-        xorg.libXt
+        libxtst
+        libxt
       ]
     }"
   '';

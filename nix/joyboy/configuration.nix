@@ -84,11 +84,13 @@
   # table still resolve.
   services.resolved = {
     enable = true;
-    dnssec = "false"; # validation adds latency and hard-fails on some ISP resolvers
-    fallbackDns = [
-      "1.1.1.1"
-      "8.8.8.8"
-    ];
+    settings.Resolve = {
+      DNSSEC = "false"; # validation adds latency and hard-fails on some ISP resolvers
+      FallbackDNS = [
+        "1.1.1.1"
+        "8.8.8.8"
+      ];
+    };
   };
   networking.hostName = "joyboy";
 
@@ -397,7 +399,7 @@
     networkmanagerapplet
     git
     zsh
-    nixfmt-rfc-style
+    nixfmt
     home-manager
     # webcord  # Temporarily disabled - build failing
     gnumake
@@ -421,7 +423,7 @@
     jq
     prettier
     gimp
-    nixfmt-rfc-style
+    nixfmt
     pulseaudio
     ffmpeg
     (python3.withPackages (

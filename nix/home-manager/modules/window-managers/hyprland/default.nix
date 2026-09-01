@@ -9,6 +9,20 @@
 with lib;
 let
   cfg = config.modules.hyprland;
+  # upstream flake.nix uses deprecated xorg.libX11; same drv, silences the warning
+  hexecutePkg = inputs.hexecute.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (
+    oldAttrs: {
+      buildInputs = with pkgs; [
+        wayland
+        wayland-protocols
+        libxkbcommon
+        libGL
+        libGLU
+        mesa
+        libx11
+      ];
+    }
+  );
   leftMonitor = "DP-1";
   rightMonitor = "HDMI-A-1";
   quickshellPath = "/etc/nixos/dotfiles/quickshell/shell.qml";
@@ -50,7 +64,7 @@ in
     home.packages = [
       inputs.hyprland-qtutils.packages.${pkgs.stdenv.hostPlatform.system}.default
       inputs.swww.packages.${pkgs.stdenv.hostPlatform.system}.swww
-      inputs.hexecute.packages.${pkgs.stdenv.hostPlatform.system}.default
+      hexecutePkg
       pkgs.slurp
       pkgs.grim
     ];
@@ -229,6 +243,7 @@ in
         };
       };
     };
+    wayland.windowManager.hyprland.configType = "hyprlang";
     wayland.windowManager.hyprland.systemd.variables = [ "--all" ];
     #hyprland plugins
     wayland.windowManager.hyprland.plugins = [
@@ -236,6 +251,7 @@ in
     ];
     qt.platformTheme = "gtk";
     home.pointerCursor = {
+      enable = true;
       gtk.enable = true;
       package = pkgs.bibata-cursors;
       name = "Bibata-Modern-Classic";

@@ -5,7 +5,8 @@
   appimageTools,
   makeWrapper,
   electron,
-  xorg,
+  libxtst,
+  libxt,
 }:
 
 stdenv.mkDerivation rec {
@@ -17,7 +18,7 @@ stdenv.mkDerivation rec {
     hash = "sha256-n7xweAHNYQSDQMxZpHEf60PZk62ydwMsW9a7k3QeU1E=";
   };
 
-  appimageContents = appimageTools.extractType2 {
+  appimageContents = appimageTools.extract {
     inherit pname src version;
   };
 
@@ -46,8 +47,8 @@ stdenv.mkDerivation rec {
     --add-flags $out/share/awakened-poe-trade/resources/app.asar \
     --prefix LD_LIBRARY_PATH : "${
       lib.makeLibraryPath [
-        xorg.libXtst
-        xorg.libXt
+        libxtst
+        libxt
       ]
     }"
   '';

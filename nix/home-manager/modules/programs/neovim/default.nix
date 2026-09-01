@@ -70,6 +70,7 @@ in
     ];
     programs.nixvim = {
       enable = true;
+      nixpkgs.pkgs = pkgs;
       globals.mapleader = " ";
       opts = {
         number = true; # Show line numbers

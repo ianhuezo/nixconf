@@ -8,7 +8,7 @@
 with lib;
 let
   cfg = config.modules.quickshell;
-  isLinux = pkgs.stdenv.isLinux;
+  isLinux = pkgs.stdenv.hostPlatform.isLinux;
   quickshellPath = /etc/nixos/dotfiles/quickshell;
   hasQuickshell = inputs ? quickshell && inputs.quickshell ? packages.${pkgs.stdenv.hostPlatform.system};
 in

@@ -45,6 +45,7 @@
 
   fileSystems."/home/ianh/nvme2" = {
     device = "/mnt/storage";
+    fsType = "none";
     options = [ "bind" ];
   };
 
