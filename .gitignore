@@ -1,3 +1,4 @@
 nix/devShells/preview/build/*
 __pycache__/
 graphify-out/
+.omp
