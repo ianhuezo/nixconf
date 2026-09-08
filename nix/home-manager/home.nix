@@ -6,7 +6,6 @@
 }:
 let
   nix-colors = import inputs.nix-colors { };
-  agsPath = /etc/nixos/dotfiles/ags;
   cavaPath = /etc/nixos/dotfiles/cava;
   scriptsPath = /etc/nixos/dotfiles/scripts;
   vesktopThemePath = /etc/nixos/dotfiles/vesktop/themes;
@@ -130,7 +129,6 @@ in
     inputs.hyprland-qtutils.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 
-  home.file.".config/ags".source = config.lib.file.mkOutOfStoreSymlink agsPath;
   home.file.".config/custom_scripts".source = config.lib.file.mkOutOfStoreSymlink scriptsPath;
   home.file.".config/cava_conf".source = config.lib.file.mkOutOfStoreSymlink cavaPath;
   home.file.".config/vesktop/themes".source = config.lib.file.mkOutOfStoreSymlink vesktopThemePath;
