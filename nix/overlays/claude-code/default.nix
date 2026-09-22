@@ -1,11 +1,11 @@
 self: super: {
   claude-code = super.stdenv.mkDerivation rec {
     pname = "claude-code";
-    version = "2.1.220";
+    version = "2.1.280";
 
     src = super.fetchzip {
       url = "https://registry.npmjs.org/@anthropic-ai/claude-code-linux-x64/-/claude-code-linux-x64-${version}.tgz";
-      hash = "sha256-2D+o94sWreWdAiwpKEF0PGUjQXJRDpA62t3PaZKxsZo=";
+      hash = "sha256-zgSCqbBtTeYOy9X7tBdFnhuAO8zgiAG57W3qcXy5cwk=";
     };
 
     nativeBuildInputs = with super; [
