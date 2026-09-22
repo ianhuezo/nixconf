@@ -44,6 +44,10 @@ let
     echo "Extracting to $compat_dir..."
     tar -xf "$tarball_name" -C "$compat_dir/"
 
+    # make steam directory if it does not exist
+    mkdir -p ~/.steam/root/compatibilitytools.d
+    tar -xf $tarball_name -C ~/.steam/root/compatibilitytools.d/
+
     echo "DWProton $latest_version has been installed successfully!"
     echo "Restart Steam to see the new compatibility tool."
   '';

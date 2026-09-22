@@ -28,6 +28,7 @@ in
     ./modules/programs/rust
     ./modules/voice-clone
     ./modules/ollama
+    ./modules/stocks
   ];
 
   # Home Manager needs a bit of information about you and the paths it should
@@ -80,6 +81,10 @@ in
   modules.ollama = {
     enable = true;
     models = [ "qwen3.8:27b" ];
+  };
+
+  modules.stocks = {
+    enable = true;
   };
 
   programs.vesktop = {

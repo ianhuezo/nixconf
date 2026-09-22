@@ -18,6 +18,7 @@
     ./modules
     ../gaming/proton-ge.nix
     ../gaming/dwproton.nix
+    ../gaming/proton-wineland.nix
     ../hardware/dualsense-edge.nix
   ];
 
