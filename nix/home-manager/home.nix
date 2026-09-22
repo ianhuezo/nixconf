@@ -26,6 +26,7 @@ in
     ./modules/quickshell
     ./modules/window-managers/hyprland
     ./modules/programs/rust
+    ./modules/programs/git
     ./modules/voice-clone
     ./modules/ollama
     ./modules/stocks
@@ -71,6 +72,10 @@ in
   };
 
   modules.rust = {
+    enable = true;
+  };
+
+  modules.git = {
     enable = true;
   };
 
@@ -127,6 +132,7 @@ in
     bash
     spotify
     gh
+    tea
     typescript
     typescript-language-server
     syncplay

@@ -433,6 +433,7 @@
         eyed3
         pillow
         reportlab
+        uv
       ]
     ))
     nodejs
