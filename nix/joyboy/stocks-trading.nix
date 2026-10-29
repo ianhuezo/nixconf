@@ -15,9 +15,14 @@
 # missed close run is worthless later (the sleeve would just no-op or abort).
 #
 # All use `nix develop` for the correct Python environment.
+#
+# `liveEnabled` masks both live units (ranker and blend_sleeve); staging is
+# unaffected. Flip it to true and rebuild to resume live trading.
 { config, pkgs, ... }:
 
 let
+  liveEnabled = false;
+
   liveMaster = "configs/portfolio_master.yaml";
   stagingMaster = "configs/portfolio_master_staging.yaml";
   sleeveConfig = "configs/blend_sleeve.yaml";
@@ -102,7 +107,7 @@ in
     env = "live";
     master = liveMaster;
     extraAfter = [ "stocks-trading-staging.service" ];
-  };
+  } // { enable = liveEnabled; };
 
   systemd.timers.stocks-trading-staging = mkTradingTimer {
     description = "Daily Stock Trading Bot Timer - Staging (Weekdays, 09:50 ± 25min ET)";
@@ -112,7 +117,7 @@ in
   systemd.timers.stocks-trading-live = mkTradingTimer {
     description = "Daily Stock Trading Bot Timer - Live (Weekdays, 10:30 ± 25min ET)";
     onCalendar = "Mon..Fri *-*-* 10:30:00";
-  };
+  } // { enable = liveEnabled; };
 
   systemd.services.stocks-blend-sleeve-staging = mkSleeveService {
     env = "staging";
@@ -120,7 +125,7 @@ in
   systemd.services.stocks-blend-sleeve-live = mkSleeveService {
     env = "live";
     extraAfter = [ "stocks-blend-sleeve-staging.service" ];
-  };
+  } // { enable = liveEnabled; };
 
   systemd.timers.stocks-blend-sleeve-staging = mkSleeveTimer {
     description = "EOD blend_sleeve Timer - Staging (Weekdays, 15:33 ± 2min ET)";
@@ -129,5 +134,5 @@ in
   systemd.timers.stocks-blend-sleeve-live = mkSleeveTimer {
     description = "EOD blend_sleeve Timer - Live (Weekdays, 15:36 ± 2min ET)";
     onCalendar = "Mon..Fri *-*-* 15:36:00";
-  };
+  } // { enable = liveEnabled; };
 }

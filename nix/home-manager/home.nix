@@ -1,6 +1,7 @@
 {
   inputs,
   config,
+  lib,
   pkgs,
   ...
 }:
@@ -108,10 +109,16 @@ in
     };
   };
 
-  home.file.".syncplay/syncplay.ini".text = ''
-    [client_settings]
-    mediaplayer = VLC
-    vlc_path = ${pkgs.vlc}/bin/vlc
+  home.activation.syncplayPlayerPath = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    cfg="${config.xdg.configHome}/syncplay.ini"
+    if [ -f "$cfg" ] && grep -q '^playerpath' "$cfg"; then
+      run ${pkgs.gnused}/bin/sed -i 's|^playerpath = .*|playerpath = ${pkgs.vlc}/bin/vlc|' "$cfg"
+    elif [ ! -e "$cfg" ]; then
+      run install -m644 ${pkgs.writeText "syncplay.ini" ''
+        [client_settings]
+        playerpath = ${pkgs.vlc}/bin/vlc
+      ''} "$cfg"
+    fi
   '';
 
   # This value determines the Home Manager release that your config.home.ration is

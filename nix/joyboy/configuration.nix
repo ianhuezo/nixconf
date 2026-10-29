@@ -15,6 +15,7 @@
     ./hardware-configuration.nix
     ./stocks-trading.nix
     ./stocks-devshell.nix
+    ./crunk-devshell.nix
     ./modules
     ../gaming/proton-ge.nix
     ../gaming/dwproton.nix
@@ -260,6 +261,14 @@
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
+    wireplumber.extraConfig."51-disable-dualsense-audio" = {
+      "monitor.alsa.rules" = [
+        {
+          matches = [ { "device.name" = "~alsa_card.usb-Sony_Interactive_Entertainment_DualSense.*"; } ];
+          actions.update-props."device.disabled" = true;
+        }
+      ];
+    };
     extraConfig.pipewire."99-virtual-mic" = {
       "context.modules" = [
         # Virtual Microphone Output (where your script sends audio)
