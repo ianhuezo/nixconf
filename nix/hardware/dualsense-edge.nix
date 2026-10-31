@@ -20,7 +20,7 @@
         KERNEL=="event*", KERNELS=="*054C:0DF2*", ENV{ID_INPUT_JOYSTICK}="1"
 
         # Disable touchpad on DualSense Edge
-        ACTION=="add|change", ATTRS{name}=="DualSense Edge Wireless Controller Touchpad", ENV{LIBINPUT_IGNORE_DEVICE}="1"
+        ACTION=="add|change", KERNEL=="event*", ATTRS{name}=="*DualSense*Touchpad", ENV{LIBINPUT_IGNORE_DEVICE}="1"
       '';
     })
   ];
