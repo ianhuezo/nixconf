@@ -15,6 +15,8 @@ Rectangle {
     property string trackTitle: ""
     signal toggleVisualization
     signal toggleMusicDownloader
+    signal toggleMediaControls
+    readonly property string artSource: playingArt.currentSource
     anchors.fill: parent
     color: barColor
     width: 166
@@ -81,7 +83,7 @@ Rectangle {
             }
             MouseArea {
                 anchors.fill: playingArt
-                onClicked: event => {}
+                onClicked: container.toggleMediaControls()
             }
         }
         Item {

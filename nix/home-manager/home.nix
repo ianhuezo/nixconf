@@ -8,6 +8,7 @@
 let
   nix-colors = import inputs.nix-colors { };
   cavaPath = /etc/nixos/dotfiles/cava;
+  quickshellConfPath = /etc/nixos/dotfiles/quickshell_conf;
   scriptsPath = /etc/nixos/dotfiles/scripts;
   vesktopThemePath = /etc/nixos/dotfiles/vesktop/themes;
   ompConfigPath = /etc/nixos/dotfiles/omp/config.yml;
@@ -149,6 +150,7 @@ in
 
   home.file.".config/custom_scripts".source = config.lib.file.mkOutOfStoreSymlink scriptsPath;
   home.file.".config/cava_conf".source = config.lib.file.mkOutOfStoreSymlink cavaPath;
+  home.file.".config/quickshell_conf".source = config.lib.file.mkOutOfStoreSymlink quickshellConfPath;
   home.file.".config/vesktop/themes".source = config.lib.file.mkOutOfStoreSymlink vesktopThemePath;
   home.file.".omp/agent/config.yml" = {
     source = config.lib.file.mkOutOfStoreSymlink ompConfigPath;

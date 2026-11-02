@@ -87,6 +87,27 @@ PanelWindow {
         }
     }
 
+    onIsActiveChanged: if (!isActive) mediaControls.open = false
+
+    Connections {
+        target: AppearanceConfig
+        function onDefaultVisualizerModeChanged() {
+            panel.visualizerMode = AppearanceConfig.defaultVisualizerMode;
+        }
+    }
+
+    MediaControls {
+        id: mediaControls
+        anchorItem: centerSection
+        barWindow: panel
+        visualizerMode: panel.visualizerMode
+        fallbackArt: centerContent.artSource
+        onVisualizerModeSelected: mode => {
+            panel.visualizerMode = mode;
+            ShellConf.set("visualizer", "mode", mode);
+        }
+    }
+
     // Main container with offset margins
     Item {
         id: container
@@ -256,10 +277,11 @@ PanelWindow {
                     waveColor: panel.widgetMainColor
                     isSectionedBar: panel.isSectionedBar
                     onToggleVisualization: {
-                        const modes = ["chroma", "piano", "synth", "wave", "bars", "title"];
+                        const modes = AppearanceConfig.visualizerModes;
                         const idx = modes.indexOf(panel.visualizerMode);
                         panel.visualizerMode = modes[(idx + 1) % modes.length];
                     }
+                    onToggleMediaControls: mediaControls.open = !mediaControls.open
                 }
             }
 

@@ -117,6 +117,14 @@ Singleton {
         readonly property list<real> panelExit: [0.7, 0.0, 0.84, 0.0, 1.0, 1.0]
     }
 
-    // "chroma", "piano", "synth", "wave", "bars" or "title"
-    readonly property string defaultVisualizerMode: "wave"
+    readonly property var visualizerModes: ["chroma", "piano", "synth", "wave", "bars", "title"]
+    readonly property string defaultVisualizerMode: {
+        const mode = ShellConf.get("visualizer", "mode", "wave");
+        return visualizerModes.includes(mode) ? mode : "wave";
+    }
+
+    readonly property QtObject mediaWidget: QtObject {
+        readonly property real widthScale: ShellConf.get("media_widget", "width_scale", 1.25)
+        readonly property real heightRatio: ShellConf.get("media_widget", "height_ratio", 1.618)
+    }
 }

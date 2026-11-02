@@ -15,6 +15,8 @@ ClippingRectangle {
     property bool isSectionedBar: false
 
     signal toggleVisualization()
+    signal toggleMediaControls()
+    readonly property string artSource: visualizer.artSource
 
     // Lets the bar size its pane to the content instead of a fixed width
     implicitWidth: visualizer.implicitWidth
@@ -28,5 +30,6 @@ ClippingRectangle {
         waveColor: centerSection.waveColor
         barColor: "transparent"
         onToggleVisualization: centerSection.toggleVisualization()
+        onToggleMediaControls: centerSection.toggleMediaControls()
     }
 }
