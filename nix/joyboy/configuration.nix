@@ -459,6 +459,7 @@
     (callPackage ../packages/graphify { })
     (callPackage ../packages/pi-coding-agent { })
     (callPackage ../packages/oh-my-pi { })
+    (callPackage ../packages/note-spectrum { })
     rclone
     yq-go
     ddcutil

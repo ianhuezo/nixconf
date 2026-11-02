@@ -256,7 +256,7 @@ PanelWindow {
                     waveColor: panel.widgetMainColor
                     isSectionedBar: panel.isSectionedBar
                     onToggleVisualization: {
-                        const modes = ["wave", "bars", "title"];
+                        const modes = ["chroma", "piano", "synth", "wave", "bars", "title"];
                         const idx = modes.indexOf(panel.visualizerMode);
                         panel.visualizerMode = modes[(idx + 1) % modes.length];
                     }

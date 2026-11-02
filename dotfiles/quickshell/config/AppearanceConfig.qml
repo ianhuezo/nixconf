@@ -116,4 +116,7 @@ Singleton {
         readonly property list<real> panelEnter: [0.16, 1.0, 0.3, 1.0, 1.0, 1.0]
         readonly property list<real> panelExit: [0.7, 0.0, 0.84, 0.0, 1.0, 1.0]
     }
+
+    // "chroma", "piano", "synth", "wave", "bars" or "title"
+    readonly property string defaultVisualizerMode: "wave"
 }

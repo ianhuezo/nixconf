@@ -1,0 +1,11 @@
+[package]
+name = "note-spectrum"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rustfft = "6"
+
+[profile.release]
+lto = true
+codegen-units = 1

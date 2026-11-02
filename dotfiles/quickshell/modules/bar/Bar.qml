@@ -10,7 +10,7 @@ Item {
     id: bar
     property var active: true
     property var cavaValues: []
-    property string visualizerMode: "wave"
+    property string visualizerMode: AppearanceConfig.defaultVisualizerMode
     property var barOffsetX: 10 // New horizontal offset property
     property var verticalPadding: 8// Padding for top and bottom of the inner bar
     property real originalHeight: bar.implicitHeight

@@ -6,76 +6,129 @@ import qs.config
 Item {
     id: root
 
-    // Common properties
     property var cavaValues: []
     property color visualizerColor: 'white'
     property bool mirrored: true
     property real sensitivity: 1.0
 
-    // Mode selection: "wave", "bars", or "title"
-    property string mode: "wave"
-    property var modes: ["wave", "bars", "title"]
+    property string mode: AppearanceConfig.defaultVisualizerMode
+    property var modes: ["chroma", "piano", "synth", "wave", "bars", "title"]
 
-    // Wave-specific properties
-    property int lineWidth: 1
-    // Catmull-Rom tension. 1.0 is the standard spline; lower tightens the curve
-    // toward straight segments.
-    property real waveTension: 1.0
-    // Blend of each bin with its two neighbours before drawing, 0 = raw bins.
     property real waveSmoothing: 0.1
-    // The reference level the wave is normalized against, tracked with a fast
-    // attack and slow release. Normalizing against the current frame's max
-    // rescales the whole wave every frame, which reads as breathing rather
-    // than as the music getting louder and quieter.
     property real waveLevelAttack: 0.1
     property real waveLevelRelease: 0.02
     property real waveMinLevel: 15
-    // Headroom above the tracked level before a sample reaches full height, so
-    // topping out stays an event rather than the steady state.
     property real waveHeadroom: 1.45
-    // How hard the frame's overall loudness is compressed, below 1. This lifts
-    // quiet passages and damps loud ones over time.
     property real waveGamma: 0.42
-    // How hard the shape across frequency is compressed, kept much closer to 1
-    // than waveGamma. Compressing the spectrum as hard as the loudness levels
-    // the bands against each other and the bass, mids and treble stop being
-    // tellable apart; lower this to lift quiet bands at the cost of that.
     property real waveSpectralExponent: 0.85
-    // Subtracted from every bin before scaling, so the noise that cava reports
-    // during silence stays on the baseline instead of being amplified by the
-    // exponents along with everything else.
     property real waveNoiseFloor: 1.0
-    // Emphasis on the vocal band, applied before the wave is normalized so the
-    // boost changes what dominates rather than just scaling everything. Centre
-    // and width are fractions across the spectrum; cava's bins are log-spaced,
-    // so with its 50Hz-10kHz default range 0.58 sits around 1kHz and the width
-    // covers roughly 300Hz-3.5kHz, where voices carry.
     property real waveVoiceGain: 1.8
     property real waveVoiceCenter: 0.58
     property real waveVoiceWidth: 0.22
 
-    // Bar-specific properties
+    property var chromaValues: []
+    property var noteValues: []
+    property real noteLevelAttack: 0.3
+    property real noteLevelRelease: 0.01
+    property real noteMinLevelDb: -50
+    property real noteHeadroomDb: 6
+    property real noteLoudnessRangeDb: 30
+    property real noteFloorQuantile: 0.3
+    property real noteMinSpanDb: 6
+    property real noteShapeExponent: 1.5
+    property real noteRise: 0.42
+    property real noteFall: 0.18
+
+    property int synthVoices: 4
+    property real synthBaseCycles: 2
+    property real synthScrollSpeed: 0.12 // widths per second
+    property real synthLineWidth: 1.5
+    property real synthFillOpacity: 0.3
+    property real synthAttack: 0.5
+    property real synthRelease: 0.15
+    property real synthVoiceHold: 0.5
+    property real synthVoiceCurve: 0.5
+    property real synthPeakAttack: 0.15
+    property real synthPeakRelease: 0.03
+    property real synthHeadroomDb: 0
+
     property int barWidth: 6
     property int barSpacing: 2
     property int barRadius: 2
 
-    // Title-specific properties
     property string title: ""
     property int titlePauseDuration: 1500
     property real titleScrollPixelsPerSecond: 18
     property int titleScrollMinDuration: 4500
-    // Symmetric ease with cp1y/cp2y pulled inward from {0,1}. Pure {0,1} on the
-    // y-axis pins the velocity to 0 at the endpoints, which produces a long
-    // crawl into the stop and forces the middle to peak high (1.82x avg) to
-    // make up the area. Pulling to {0.1, 0.9} drops the middle peak to ~1.5x
-    // and roughly doubles the velocity near t=1, so the text stops decisively.
     readonly property var titleScrollCurve: [0.4, 0.1, 0.6, 0.9, 1, 1]
+
+    function waveHeights(values, trackedLevel) {
+        const n = values.length;
+        if (n < 2)
+            return {
+                heights: [],
+                level: trackedLevel
+            };
+
+        const k = root.waveSmoothing;
+        const boost = root.waveVoiceGain - 1;
+        const signal = new Array(n);
+        let peak = 0;
+        for (let i = 0; i < n; i++) {
+            const point = (1 - k) * values[i] + k * 0.5 * (values[Math.max(0, i - 1)] + values[Math.min(n - 1, i + 1)]);
+            const offset = i / (n - 1) - root.waveVoiceCenter;
+            const emphasis = 1 + boost * Math.exp(-0.5 * Math.pow(offset / root.waveVoiceWidth, 2));
+            signal[i] = Math.max(0, point * root.sensitivity - root.waveNoiseFloor) * emphasis;
+            peak = Math.max(peak, signal[i]);
+        }
+
+        const rate = peak > trackedLevel ? root.waveLevelAttack : root.waveLevelRelease;
+        const level = Math.max(root.waveMinLevel, trackedLevel + (peak - trackedLevel) * rate);
+
+        const loudness = Math.pow(Math.min(1, peak / (level * root.waveHeadroom)), root.waveGamma);
+        return {
+            heights: signal.map(v => peak > 0 ? loudness * Math.pow(v / peak, root.waveSpectralExponent) : 0),
+            level: level
+        };
+    }
+
+    function noteHeights(levels, trackedLevel, headroomDb = root.noteHeadroomDb) {
+        if (levels.length < 2)
+            return {
+                heights: [],
+                level: trackedLevel
+            };
+
+        const peak = Math.max(...levels);
+        const rate = peak > trackedLevel ? root.noteLevelAttack : root.noteLevelRelease;
+        const level = Math.max(root.noteMinLevelDb, trackedLevel + (peak - trackedLevel) * rate);
+        const unit = v => Math.max(0, Math.min(1, v));
+        const loudness = unit((peak - level - headroomDb) / root.noteLoudnessRangeDb + 1);
+        const sorted = levels.slice().sort((a, b) => a - b);
+        const floor = Math.min(sorted[Math.round(root.noteFloorQuantile * (sorted.length - 1))], peak - root.noteMinSpanDb);
+        const heights = levels.map(db => loudness * Math.pow(unit((db - floor) / (peak - floor)), root.noteShapeExponent));
+        return {
+            heights: heights,
+            level: level
+        };
+    }
+
+    function easeHeights(previous, next) {
+        if (previous.length !== next.length)
+            return next;
+        return next.map((h, i) => previous[i] + (h - previous[i]) * (h > previous[i] ? root.noteRise : root.noteFall));
+    }
 
     Loader {
         id: visualizerLoader
         anchors.fill: parent
         sourceComponent: {
             switch (root.mode) {
+            case "chroma":
+            case "piano":
+                return noteWaveComponent;
+            case "synth":
+                return synthComponent;
             case "wave":
                 return waveComponent;
             case "bars":
@@ -93,16 +146,11 @@ Item {
             anchors.fill: parent
             clip: true
 
-            // text x = start - delta; increasing delta scrolls left, revealing
-            // the right side of the text. Capped at maxDelta so the right side
-            // never retracts past `end`.
             property real start: 0
             property real end: width
             property real delta: 0
             property real maxDelta: Math.max(0, titleText.implicitWidth - (end - start))
             property bool needsScroll: titleText.implicitWidth > (end - start) && root.title.length > 0
-            // Constant px/sec keeps long titles from feeling rushed; min duration
-            // prevents flashes for tiny overflows.
             property int scrollDuration: Math.max(root.titleScrollMinDuration, Math.round(maxDelta / root.titleScrollPixelsPerSecond * 1000))
 
             Text {
@@ -155,110 +203,173 @@ Item {
     }
 
     Component {
-        id: waveComponent
+        id: noteWaveComponent
+        WaveCanvas {
+            id: noteWave
+            anchors.fill: parent
+            color: root.visualizerColor
+            mirrored: root.mirrored
+            shape: root.mode === "chroma" ? "bells" : "spline"
+
+            property real level: root.noteMinLevelDb
+            readonly property var levels: root.mode === "chroma" ? root.chromaValues : root.noteValues
+
+            onLevelsChanged: {
+                const frame = root.noteHeights(noteWave.levels, noteWave.level);
+                noteWave.level = frame.level;
+                noteWave.heights = root.easeHeights(noteWave.heights, frame.heights);
+            }
+        }
+    }
+
+    Component {
+        id: synthComponent
         Canvas {
-            id: wave
+            id: synth
             anchors.fill: parent
 
-            property real level: root.waveMinLevel
+            readonly property int foldedNotes: 24
+            property real level: root.noteMinLevelDb
+            property var amplitudes: new Array(foldedNotes).fill(0)
+            property real drawnPeak: 0
+            property var shown: []
+            property var held: []
+            property real startTime: Date.now()
+            property var points: []
 
-            // Blends each bin with its neighbours so the curve follows the
-            // spectrum envelope rather than the per-bin noise.
-            function envelope(values) {
-                const n = values.length;
-                const k = root.waveSmoothing;
-                const out = new Array(n);
-                for (let i = 0; i < n; i++) {
-                    const prev = values[Math.max(0, i - 1)];
-                    const next = values[Math.min(n - 1, i + 1)];
-                    out[i] = (1 - k) * values[i] + k * 0.5 * (prev + next);
+            function voices(heights, held) {
+                const peaks = [];
+                for (let i = 0; i < heights.length; i++) {
+                    const h = heights[i];
+                    if (h > 0 && h >= (heights[i - 1] || 0) && h >= (heights[i + 1] || 0))
+                        peaks.push(i);
                 }
-                return out;
+                peaks.sort((a, b) => heights[b] - heights[a]);
+
+                const picked = peaks.filter(i => held.includes(i)).slice(0, root.synthVoices);
+                for (const i of peaks) {
+                    if (picked.includes(i))
+                        continue;
+                    if (picked.length < root.synthVoices) {
+                        picked.push(i);
+                        continue;
+                    }
+                    const weakest = picked.reduce((w, j) => heights[j] < heights[w] ? j : w);
+                    if (heights[i] > heights[weakest] * (1 + root.synthVoiceHold))
+                        picked[picked.indexOf(weakest)] = i;
+                }
+                return picked;
             }
 
-            // Traces a closed shape from the baseline through the samples as a
-            // Catmull-Rom spline. Tangents follow the neighbouring samples, so
-            // peaks stay pointed and the curve flows between them instead of
-            // flattening out at every data point.
-            function tracePath(ctx, heights, baseY, amplitude, dir) {
-                const n = heights.length;
-                const stepX = width / (n - 1);
-                const lo = dir < 0 ? baseY - amplitude : baseY;
-                const hi = dir < 0 ? baseY : baseY + amplitude;
-
-                const at = i => baseY + dir * amplitude * heights[Math.max(0, Math.min(n - 1, i))];
-                const clamp = v => Math.max(lo, Math.min(hi, v));
-                const t = root.waveTension / 6;
-
-                ctx.beginPath();
-                ctx.moveTo(0, baseY);
-                ctx.lineTo(0, at(0));
-
-                for (let i = 0; i < n - 1; i++) {
-                    const x0 = i * stepX;
-                    const x1 = x0 + stepX;
-                    const y0 = at(i);
-                    const y1 = at(i + 1);
-                    ctx.bezierCurveTo(x0 + 2 * stepX * t, clamp(y0 + (y1 - at(i - 1)) * t), x1 - 2 * stepX * t, clamp(y1 - (at(i + 2) - y0) * t), x1, y1);
+            function refresh() {
+                if (root.noteValues.length < 2) {
+                    synth.points = [];
+                    return;
                 }
 
-                ctx.lineTo(width, baseY);
-                ctx.closePath();
-                ctx.fill();
-                ctx.stroke();
+                const frame = root.noteHeights(root.noteValues, synth.level, root.synthHeadroomDb);
+                synth.level = frame.level;
+                const heights = root.easeHeights(synth.shown, frame.heights);
+                synth.shown = heights;
+                synth.held = synth.voices(heights, synth.held);
+
+                const targets = new Array(synth.foldedNotes).fill(0);
+                for (const i of synth.held) {
+                    const k = i % synth.foldedNotes;
+                    targets[k] = Math.max(targets[k], Math.pow(heights[i], root.synthVoiceCurve));
+                }
+
+                const amps = synth.amplitudes.map((a, k) => a + (targets[k] - a) * (targets[k] > a ? root.synthAttack : root.synthRelease));
+                synth.amplitudes = amps;
+
+                const active = [];
+                let loudest = 0;
+                for (let k = 0; k < synth.foldedNotes; k++) {
+                    loudest = Math.max(loudest, amps[k]);
+                    if (amps[k] > 0.001)
+                        active.push({
+                            amp: amps[k],
+                            cycles: root.synthBaseCycles * Math.pow(2, k / 12)
+                        });
+                }
+
+                const shift = root.synthScrollSpeed * (Date.now() - synth.startTime) / 1000;
+                const raw = [];
+                let peak = 0;
+                for (let x = 0; x <= width; x++) {
+                    const u = x / width - shift;
+                    let y = 0;
+                    for (const v of active)
+                        y += v.amp * Math.sin(2 * Math.PI * v.cycles * u);
+                    raw.push(y);
+                    peak = Math.max(peak, Math.abs(y));
+                }
+
+                const tracked = synth.drawnPeak + (peak - synth.drawnPeak) * (peak > synth.drawnPeak ? root.synthPeakAttack : root.synthPeakRelease);
+                synth.drawnPeak = tracked;
+                const gain = peak > 0.001 ? Math.min(loudest / tracked, 1 / peak) : 0;
+                synth.points = raw.map(y => y * gain);
             }
 
             onPaint: {
                 const ctx = getContext("2d");
                 ctx.clearRect(0, 0, width, height);
-                if (root.cavaValues.length < 2)
+                if (synth.points.length < 2)
                     return;
 
-                const points = envelope(root.cavaValues);
-                const n = points.length;
-                const attack = root.waveLevelAttack;
-                const release = root.waveLevelRelease;
+                const baseY = height / 2;
+                const amplitude = baseY - 2;
+                ctx.beginPath();
+                ctx.moveTo(0, baseY);
+                synth.points.forEach((y, x) => ctx.lineTo(x, baseY - amplitude * y));
 
-                const signal = new Array(n);
-                const boost = root.waveVoiceGain - 1;
-                let peak = 0;
-                for (let i = 0; i < n; i++) {
-                    const offset = (n > 1 ? i / (n - 1) : 0) - root.waveVoiceCenter;
-                    const emphasis = 1 + boost * Math.exp(-0.5 * Math.pow(offset / root.waveVoiceWidth, 2));
-                    signal[i] = Math.max(0, points[i] * root.sensitivity - root.waveNoiseFloor) * emphasis;
-                    peak = Math.max(peak, signal[i]);
-                }
-
-                wave.level = Math.max(root.waveMinLevel, wave.level + (peak - wave.level) * (peak > wave.level ? attack : release));
-
-                // How tall the frame gets is a question about loudness; how the
-                // wave is shaped across it is a question about the spectrum.
-                // Compressing them separately keeps quiet passages visible
-                // without levelling the bands into one flat slab.
-                const loudness = Math.pow(Math.min(1, peak / (wave.level * root.waveHeadroom)), root.waveGamma);
-                const heights = new Array(n);
-                for (let i = 0; i < n; i++)
-                    heights[i] = peak > 0 ? loudness * Math.pow(signal[i] / peak, root.waveSpectralExponent) : 0;
-
-                const baseY = root.mirrored ? height / 2 : height;
-
+                ctx.lineWidth = root.synthLineWidth;
                 ctx.strokeStyle = root.visualizerColor;
-                ctx.lineWidth = root.lineWidth;
-                ctx.fillStyle = root.visualizerColor;
                 ctx.lineCap = 'round';
                 ctx.lineJoin = 'round';
+                ctx.stroke();
 
-                tracePath(ctx, heights, baseY, baseY - 2, -1);
-                if (root.mirrored)
-                    tracePath(ctx, heights, baseY, baseY - 2, 1);
+                ctx.lineTo(width, baseY);
+                ctx.closePath();
+                ctx.globalAlpha = root.synthFillOpacity;
+                ctx.fillStyle = root.visualizerColor;
+                ctx.fill();
+                ctx.globalAlpha = 1;
             }
 
-            Component.onCompleted: requestPaint()
+            onPointsChanged: requestPaint()
+
+            Connections {
+                target: root
+                function onNoteValuesChanged() {
+                    synth.refresh();
+                }
+            }
+        }
+    }
+
+    Component {
+        id: waveComponent
+        WaveCanvas {
+            id: wave
+            anchors.fill: parent
+            color: root.visualizerColor
+            mirrored: root.mirrored
+
+            property real level: root.waveMinLevel
+
+            function refresh() {
+                const frame = root.waveHeights(root.cavaValues, wave.level);
+                wave.level = frame.level;
+                wave.heights = frame.heights;
+            }
+
+            Component.onCompleted: refresh()
 
             Connections {
                 target: root
                 function onCavaValuesChanged() {
-                    wave.requestPaint();
+                    wave.refresh();
                 }
             }
         }
@@ -270,8 +381,6 @@ Item {
             id: bars
             anchors.fill: parent
 
-            // The bar count follows cava's, so size the bars to the pane rather
-            // than to a fixed width that only fits one particular count.
             readonly property int count: root.cavaValues.length
             readonly property real slotWidth: count > 0 ? Math.max(1, Math.min(root.barWidth, (width - (count - 1) * root.barSpacing) / count)) : root.barWidth
 
@@ -282,11 +391,7 @@ Item {
                 spacing: root.barSpacing
 
                 Repeater {
-                    // Static pool keyed by index. Binding the array itself as
-                    // the model destroyed and recreated every delegate each
-                    // frame, which also kept the height Behavior from ever
-                    // animating.
-                    model: root.cavaValues.length
+                    model: root.cavaValues.length // a count, so delegates persist across frames
                     delegate: Rectangle {
                         required property int index
                         width: bars.slotWidth

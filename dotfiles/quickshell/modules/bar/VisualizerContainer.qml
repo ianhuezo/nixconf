@@ -2,11 +2,14 @@ import QtQuick
 import QtQuick.Window
 import Quickshell.Services.Mpris
 import qs.components
+import qs.config
 
 Rectangle {
     id: container
     property var cavaValues: []
-    property string mode: "wave"
+    property var chromaValues: []
+    property var noteValues: []
+    property string mode: AppearanceConfig.defaultVisualizerMode
     property color waveColor: 'white'
     property color barColor: 'black'
     property string trackTitle: ""
@@ -47,6 +50,14 @@ Rectangle {
         }
     }
 
+    NoteSpectrumProcessor {
+        running: ["chroma", "piano", "synth"].includes(container.mode)
+        onNewData: (chroma, notes) => {
+            container.chromaValues = chroma;
+            container.noteValues = notes;
+        }
+    }
+
     // Lets the bar size its pane to the content instead of a fixed width
     implicitWidth: contentRow.implicitWidth
 
@@ -82,6 +93,8 @@ Rectangle {
                 id: visualizer
                 anchors.fill: parent
                 cavaValues: container.cavaValues
+                chromaValues: container.chromaValues
+                noteValues: container.noteValues
                 visualizerColor: container.waveColor
                 mode: container.mode
                 title: container.trackTitle
