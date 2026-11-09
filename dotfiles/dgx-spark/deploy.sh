@@ -85,4 +85,9 @@ else
     echo "    (no ~/glm-5.3-flash-exl3-2x-spark yet; clone it and re-run to place .env)"
 fi
 
+echo "==> installing DeepSeek-V4.1 wrappers on the head ($NODE1)"
+ssh "$NODE1" 'mkdir -p ~/dspark-recipe/dsv41'
+scp -q "$DIR/dsv41/start-dsv41.sh" "$DIR/dsv41/stop-dsv41.sh" "$DIR/dsv41/fetch-engram.sh" "$NODE1:~/dspark-recipe/dsv41/"
+ssh "$NODE1" 'chmod +x ~/dspark-recipe/dsv41/*.sh'
+
 echo "==> done"

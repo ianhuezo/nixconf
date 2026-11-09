@@ -30,7 +30,7 @@ PopupWindow {
     readonly property bool fullControl: player !== null && !isBrowser
     readonly property real trackLength: player?.lengthSupported ? player.length : 0
     readonly property bool canSeek: fullControl && player.canSeek && trackLength > 0
-    readonly property real progress: seekPreview >= 0 ? seekPreview : trackLength > 0 ? Math.min(1, (player?.position ?? 0) / trackLength) : 0
+    readonly property real progress: seekPreview >= 0 ? seekPreview : trackLength > 0 ? currentPosition() / trackLength : 0
     readonly property string artSource: player?.trackArtUrl || (player?.identity === "Spotify" ? fallbackArt : "")
 
     function choosePlayer() {
@@ -63,6 +63,20 @@ PopupWindow {
 
     function seekFraction(x, width) {
         return Math.max(0, Math.min(1, x / width));
+    }
+
+    function currentPosition() {
+        const position = player?.position ?? 0;
+        return trackLength > 0 && position > trackLength ? position % trackLength : position;
+    }
+
+    function seekTo(fraction) {
+        const target = fraction * trackLength;
+        const trackId = player.metadata["mpris:trackid"];
+        if (typeof trackId === "string" && !/^\/(\w+(\/\w+)*)?$/.test(trackId))
+            player.seek(target - currentPosition());
+        else
+            player.position = target;
     }
 
     anchor.item: anchorItem
@@ -133,6 +147,22 @@ PopupWindow {
         interval: 500
         repeat: true
         onTriggered: root.player.positionChanged()
+    }
+
+    Timer {
+        id: seekHold
+        interval: 1000
+        onTriggered: root.seekPreview = -1
+    }
+
+    Connections {
+        target: root.player
+        function onPositionChanged() {
+            if (seekHold.running && Math.abs(root.currentPosition() - root.seekPreview * root.trackLength) < 1) {
+                seekHold.stop();
+                root.seekPreview = -1;
+            }
+        }
     }
 
     HyprlandFocusGrab {
@@ -275,13 +305,14 @@ PopupWindow {
                     sourceSize.height: height * 2
                     fillMode: Image.PreserveAspectCrop
                     asynchronous: true
+                    retainWhileLoading: true
                     smooth: true
                     mipmap: true
                 }
 
                 Text {
                     anchors.centerIn: parent
-                    visible: artImage.status !== Image.Ready
+                    visible: artImage.status === Image.Null || artImage.status === Image.Error
                     text: "♪"
                     color: Color.palette.base04
                     font.pixelSize: 22
@@ -356,14 +387,17 @@ PopupWindow {
                         enabled: root.canSeek
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onPressed: mouse => root.seekPreview = root.seekFraction(mouse.x, width)
+                        onPressed: mouse => {
+                            seekHold.stop();
+                            root.seekPreview = root.seekFraction(mouse.x, width);
+                        }
                         onPositionChanged: mouse => {
                             if (pressed)
                                 root.seekPreview = root.seekFraction(mouse.x, width);
                         }
                         onReleased: {
-                            root.player.position = root.seekPreview * root.trackLength;
-                            root.seekPreview = -1;
+                            root.seekTo(root.seekPreview);
+                            seekHold.restart();
                         }
                         onCanceled: root.seekPreview = -1
                     }

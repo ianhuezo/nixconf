@@ -1,4 +1,5 @@
 import Quickshell
+import Quickshell.Hyprland
 import Quickshell.Io
 import Quickshell.Wayland
 import QtQuick
@@ -13,6 +14,7 @@ PanelWindow {
     id: root
 
     required property var weather
+    readonly property bool desktopVisible: (Hyprland.monitorFor(screen)?.activeWorkspace?.toplevels.values.length ?? 0) === 0
 
     // --- wallpaper-aware profiles -------------------------------------------
     // Keyed by substring of the wallpaper file basename reported by swww.
@@ -156,6 +158,7 @@ PanelWindow {
             height: width
             kind: root.weather.weatherKind
             isNight: root.weather.isNight
+            animate: root.desktopVisible
             opacity: root.weather.hasData ? 0.95 : 0.45
 
             Behavior on opacity {

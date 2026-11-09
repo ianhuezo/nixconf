@@ -1,21 +1,30 @@
 pragma Singleton
 
 import Quickshell
+import Quickshell.Io
 import QtQuick
-import qs.components
 
 Singleton {
-    property real ram: poller.value
+    id: root
 
-    property MetricPoller poller: MetricPoller {
-        command: "echo \"scale=2; $(cat /proc/meminfo | awk '/MemAvailable/ {print $2}') / $(cat /proc/meminfo | awk '/MemTotal/ {print $2}')\" | bc"
-        pollInterval: 1000
-        parseFunction: (data) => {
-            const number = parseFloat(data);
-            if (isNaN(number)) {
-                return 0;
-            }
-            return Math.round(100 - number * 100);
+    property real ram: 0
+
+    property FileView meminfo: FileView {
+        id: meminfoFile
+        path: "/proc/meminfo"
+        onLoaded: {
+            const text = meminfoFile.text();
+            const total = Number(text.match(/MemTotal:\s+(\d+)/)?.[1]);
+            const available = Number(text.match(/MemAvailable:\s+(\d+)/)?.[1]);
+            if (total > 0 && !isNaN(available))
+                root.ram = Math.round(100 - available / total * 100);
         }
+    }
+
+    property Timer timer: Timer {
+        interval: 1000
+        running: true
+        repeat: true
+        onTriggered: meminfoFile.reload()
     }
 }

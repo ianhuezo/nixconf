@@ -2,8 +2,9 @@
 # Choose which model the Spark pair serves. Runs on node1 (the head).
 #
 #   model-select.sh                 # interactive menu
+#   model-select.sh dsv41           # switch to DeepSeek V4.1 Flash 1017 EXL3 (current)
 #   model-select.sh deepseek        # switch to DeepSeek V4 Flash
-#   model-select.sh glm53exl3       # switch to GLM-5.3-Flash EXL3 (current)
+#   model-select.sh glm53exl3       # switch to GLM-5.3-Flash EXL3
 #   model-select.sh glm53           # switch to GLM-5.3-Flash NVFP4 (superseded)
 #   model-select.sh status          # what is up right now
 #   model-select.sh stop            # stop everything, serve nothing
@@ -43,6 +44,7 @@ MODELS=(
   "deepseek|DeepSeek V4 Flash 0731|compose:dspark-recipe|$RECIPE_DIR/start-deepseek-v4-flash-dspark.sh|$RECIPE_DIR/stop-deepseek-v4-flash-dspark.sh|deepseek-v4-flash-dspark"
   "glm53|GLM-5.3-Flash NVFP4|compose:glm53|$RECIPE_DIR/glm53/start-glm53.sh|$RECIPE_DIR/glm53/stop-glm53.sh|glm-5.3-flash"
   "glm53exl3|GLM-5.3-Flash EXL3 4bpw + DFlash2|name:vllm_glm53|$RECIPE_DIR/glm53-exl3/start-glm53-exl3.sh|$RECIPE_DIR/glm53-exl3/stop-glm53-exl3.sh|glm-5.3-flash"
+  "dsv41|DeepSeek V4.1 Flash 1017 EXL3 2.75bpw|name:dsv41-serve|$RECIPE_DIR/dsv41/start-dsv41.sh|$RECIPE_DIR/dsv41/stop-dsv41.sh|DeepSeek-V4.1-Flash-1017-EXL3-Spark-TP2"
 )
 
 field() {

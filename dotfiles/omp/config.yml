@@ -2,12 +2,12 @@ providers:
   webSearchOrder:
     []
 modelRoles:
-  task: dgx-spark-glm-worker/glm-5.3-flash
-  smol: dgx-spark-glm-worker/glm-5.3-flash:low
-  slow: dgx-spark-glm/glm-5.3-flash:max
-  vision: dgx-spark-glm/glm-5.3-flash
-  default: dgx-spark-glm/glm-5.3-flash
-temperature: 0
+  task: dgx-spark-dsv41-worker/DeepSeek-V4.1-Flash-1017-EXL3-Spark-TP2
+  smol: dgx-spark-dsv41-worker/DeepSeek-V4.1-Flash-1017-EXL3-Spark-TP2:low
+  slow: dgx-spark-dsv41/DeepSeek-V4.1-Flash-1017-EXL3-Spark-TP2:max
+  vision: dgx-spark-dsv41/DeepSeek-V4.1-Flash-1017-EXL3-Spark-TP2
+  default: dgx-spark-dsv41/DeepSeek-V4.1-Flash-1017-EXL3-Spark-TP2
+temperature: 0.4
 topP: 1
 symbolPreset: nerd
 theme:

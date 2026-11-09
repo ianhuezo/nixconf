@@ -9,7 +9,7 @@ Canvas {
     property bool mirrored: true
     property int lineWidth: 1
     property real edgeGlow: 2
-    property real edgeGlowOpacity: 0.45
+    property real edgeGlowOpacity: 0.09
     property real tension: 1.0
     property real bellWidth: 0.6
 
@@ -37,8 +37,7 @@ Canvas {
 
         ctx.lineTo(width, baseY);
         ctx.closePath();
-        ctx.fill();
-        ctx.stroke();
+        paintPath(ctx);
     }
 
     function traceBells(ctx, baseY, amplitude, dir) {
@@ -61,6 +60,18 @@ Canvas {
         }
         ctx.lineTo(width, baseY);
         ctx.closePath();
+        paintPath(ctx);
+    }
+
+    function paintPath(ctx) {
+        const c = root.color;
+        ctx.strokeStyle = Qt.rgba(c.r, c.g, c.b, root.edgeGlowOpacity);
+        ctx.lineWidth = root.lineWidth + root.edgeGlow * 2;
+        ctx.stroke();
+        ctx.lineWidth = root.lineWidth + root.edgeGlow;
+        ctx.stroke();
+        ctx.strokeStyle = c;
+        ctx.lineWidth = root.lineWidth;
         ctx.fill();
         ctx.stroke();
     }
@@ -71,14 +82,9 @@ Canvas {
         if (heights.length < 2)
             return;
 
-        const c = root.color;
-        ctx.strokeStyle = c;
-        ctx.lineWidth = root.lineWidth;
-        ctx.fillStyle = c;
+        ctx.fillStyle = root.color;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
-        ctx.shadowColor = Qt.rgba(c.r, c.g, c.b, root.edgeGlowOpacity);
-        ctx.shadowBlur = root.edgeGlow;
 
         const trace = root.shape === "bells" ? traceBells : tracePath;
         const baseY = root.mirrored ? height / 2 : height;

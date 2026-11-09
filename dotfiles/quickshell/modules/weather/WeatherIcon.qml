@@ -9,6 +9,7 @@ Item {
 
     property string kind: "clear"
     property bool isNight: false
+    property bool animate: true
     property real phase: 0
     // Unbounded loop counter; `phase` is cycles % 1. Continuous motions
     // (drift, rotation, twinkle) key off `cycles` so nothing jumps when the
@@ -599,7 +600,7 @@ Item {
 
     Timer {
         interval: 80
-        running: root.visible
+        running: root.visible && root.animate
         repeat: true
         onTriggered: {
             root.cycles += 0.0128;

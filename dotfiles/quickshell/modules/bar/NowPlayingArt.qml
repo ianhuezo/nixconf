@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell.Services.Mpris
 import Quickshell.Io
 import QtQuick.Effects
+import QtQuick.Shapes
 import qs.services
 import qs.modules.music_popup
 
@@ -43,147 +44,67 @@ Item {
     }
 
     // Animated border that travels around the perimeter
-    Canvas {
-        id: borderCanvas
+    Shape {
+        id: borderGlow
         anchors.fill: parent
         z: 1
+        visible: root.borderOpacity > 0
+        opacity: root.borderOpacity
+        preferredRendererType: Shape.CurveRenderer
 
         property real phase: 0
         property color glowColor: Color.palette.base0C
+        readonly property real trail: 60 / (2 * (width + height))
 
-        onPaint: {
-            var ctx = getContext("2d");
-            ctx.clearRect(0, 0, width, height);
-
-            // Only draw if there's any opacity
-            if (root.borderOpacity <= 0) {
-                return;
-            }
-
-            var borderWidth = 3;
-            var imageRadius = 5; // The mask radius
-            var radius = imageRadius + 3; // Border radius = image radius + margin
-            var glowLength = 60; // Length of the glowing section in pixels
-
-            // Draw border around the inset image (outset border)
-            // The image has 3px margins, border goes around the outside of those margins
-            var w = width - borderWidth;
-            var h = height - borderWidth;
-            var offset = borderWidth / 2;
-            var offsetY = borderWidth / 2;
-
-            // Calculate perimeter including rounded corners
-            var straightW = w - 2 * radius;
-            var straightH = h - 2 * radius;
-            var cornerPerimeter = Math.PI * radius / 2; // Quarter circle
-            var perimeter = 2 * straightW + 2 * straightH + 4 * cornerPerimeter;
-
-            // Current position along perimeter based on phase
-            var currentPos = (phase / 360) * perimeter;
-
-            ctx.lineWidth = borderWidth;
-            ctx.lineCap = "round";
-
-            // Draw the glowing segment
-            for (var i = 0; i < glowLength; i++) {
-                var pos = (currentPos + i) % perimeter;
-
-                // Calculate opacity (fade from full to transparent)
-                var opacity = 1 - (i / glowLength);
-                opacity = opacity * opacity; // Ease out
-
-                // Multiply by borderOpacity for fade in/out
-                ctx.strokeStyle = Qt.rgba(glowColor.r, glowColor.g, glowColor.b, opacity * 0.9 * root.borderOpacity);
-
-                // Draw a small segment at this position
-                ctx.beginPath();
-                var segmentLength = 2;
-                drawRoundedRectSegment(ctx, pos, segmentLength, w, h, radius, offset, offsetY);
-                ctx.stroke();
-            }
+        function glowAt(fraction) {
+            return Qt.rgba(glowColor.r, glowColor.g, glowColor.b, 0.9 * fraction * fraction);
         }
 
-        onGlowColorChanged: requestPaint()
+        ShapePath {
+            strokeColor: "transparent"
+            fillRule: ShapePath.OddEvenFill
+            fillGradient: ConicalGradient {
+                centerX: borderGlow.width / 2
+                centerY: borderGlow.height / 2
+                angle: -borderGlow.phase
 
-        Connections {
-            target: root
-            function onBorderOpacityChanged() {
-                borderCanvas.requestPaint();
+                GradientStop {
+                    position: 0
+                    color: borderGlow.glowAt(0)
+                }
+                GradientStop {
+                    position: borderGlow.trail * 0.25
+                    color: borderGlow.glowAt(0.25)
+                }
+                GradientStop {
+                    position: borderGlow.trail * 0.5
+                    color: borderGlow.glowAt(0.5)
+                }
+                GradientStop {
+                    position: borderGlow.trail * 0.75
+                    color: borderGlow.glowAt(0.75)
+                }
+                GradientStop {
+                    position: borderGlow.trail
+                    color: borderGlow.glowAt(1)
+                }
+                GradientStop {
+                    position: borderGlow.trail + 0.001
+                    color: borderGlow.glowAt(0)
+                }
             }
-        }
 
-        function drawRoundedRectSegment(ctx, startPos, length, w, h, radius, offsetX, offsetY) {
-            var straightW = w - 2 * radius;
-            var straightH = h - 2 * radius;
-            var cornerPerimeter = Math.PI * radius / 2;
-
-            var pos = startPos;
-
-            // Top edge (excluding corners)
-            if (pos < straightW) {
-                ctx.moveTo(offsetX + radius + pos, offsetY);
-                ctx.lineTo(offsetX + radius + Math.min(pos + length, straightW), offsetY);
-                return;
+            PathRectangle {
+                width: borderGlow.width
+                height: borderGlow.height
+                radius: 9.5
             }
-            pos -= straightW;
-
-            // Top-right corner
-            if (pos < cornerPerimeter) {
-                var angle = -Math.PI / 2 + (pos / cornerPerimeter) * (Math.PI / 2);
-                var endAngle = -Math.PI / 2 + (Math.min(pos + length, cornerPerimeter) / cornerPerimeter) * (Math.PI / 2);
-                ctx.arc(offsetX + radius + straightW, offsetY + radius, radius, angle, endAngle, false);
-                return;
-            }
-            pos -= cornerPerimeter;
-
-            // Right edge
-            if (pos < straightH) {
-                ctx.moveTo(offsetX + w, offsetY + radius + pos);
-                ctx.lineTo(offsetX + w, offsetY + radius + Math.min(pos + length, straightH));
-                return;
-            }
-            pos -= straightH;
-
-            // Bottom-right corner
-            if (pos < cornerPerimeter) {
-                var angle = 0 + (pos / cornerPerimeter) * (Math.PI / 2);
-                var endAngle = 0 + (Math.min(pos + length, cornerPerimeter) / cornerPerimeter) * (Math.PI / 2);
-                ctx.arc(offsetX + radius + straightW, offsetY + radius + straightH, radius, angle, endAngle, false);
-                return;
-            }
-            pos -= cornerPerimeter;
-
-            // Bottom edge
-            if (pos < straightW) {
-                ctx.moveTo(offsetX + radius + straightW - pos, offsetY + h);
-                ctx.lineTo(offsetX + radius + straightW - Math.min(pos + length, straightW), offsetY + h);
-                return;
-            }
-            pos -= straightW;
-
-            // Bottom-left corner
-            if (pos < cornerPerimeter) {
-                var angle = Math.PI / 2 + (pos / cornerPerimeter) * (Math.PI / 2);
-                var endAngle = Math.PI / 2 + (Math.min(pos + length, cornerPerimeter) / cornerPerimeter) * (Math.PI / 2);
-                ctx.arc(offsetX + radius, offsetY + radius + straightH, radius, angle, endAngle, false);
-                return;
-            }
-            pos -= cornerPerimeter;
-
-            // Left edge
-            if (pos < straightH) {
-                ctx.moveTo(offsetX, offsetY + radius + straightH - pos);
-                ctx.lineTo(offsetX, offsetY + radius + straightH - Math.min(pos + length, straightH));
-                return;
-            }
-            pos -= straightH;
-
-            // Top-left corner
-            if (pos < cornerPerimeter) {
-                var angle = Math.PI + (pos / cornerPerimeter) * (Math.PI / 2);
-                var endAngle = Math.PI + (Math.min(pos + length, cornerPerimeter) / cornerPerimeter) * (Math.PI / 2);
-                ctx.arc(offsetX + radius, offsetY + radius, radius, angle, endAngle, false);
-                return;
+            PathRectangle {
+                x: 3
+                y: 3
+                width: borderGlow.width - 6
+                height: borderGlow.height - 6
+                radius: 6.5
             }
         }
 
@@ -194,10 +115,8 @@ Item {
             interval: 33
             running: root.borderOpacity > 0
             repeat: true
-            onTriggered: borderCanvas.phase = (borderCanvas.phase + 360 * interval / 2500) % 360
+            onTriggered: borderGlow.phase = (borderGlow.phase + 360 * interval / 2500) % 360
         }
-
-        onPhaseChanged: requestPaint()
     }
 
     Image {
@@ -211,6 +130,7 @@ Item {
         smooth: true
         antialiasing: true
         asynchronous: true
+        retainWhileLoading: true
         cache: true
         visible: true
         layer.enabled: true
@@ -314,7 +234,7 @@ Item {
         id: placeholder
         anchors.fill: artImage
         color: Color.palette.base03// Darker gray for better contrast
-        visible: artImage.status !== Image.Ready
+        visible: artImage.status === Image.Null || artImage.status === Image.Error
         // Music note icon as placeholder
         Text {
             anchors.centerIn: parent

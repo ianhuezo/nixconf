@@ -1,0 +1,46 @@
+--- a/src/main/main.ts
++++ b/src/main/main.ts
+@@ -20,6 +20,7 @@
+ import { Settings, State } from "./settings";
+ import { setAsDefaultProtocolClient } from "./utils/setAsDefaultProtocolClient";
+ import { isDeckGameMode } from "./utils/steamOS";
++import { registerYoutubeEmbedRefererHandler } from "./youtubeEmbeds";
+ 
+ console.log("Vesktop v" + app.getVersion());
+ 
+@@ -120,6 +121,7 @@
+ 
+         registerScreenShareHandler();
+         registerMediaPermissionsHandler();
++        registerYoutubeEmbedRefererHandler();
+ 
+         bootstrap();
+ 
+--- /dev/null
++++ b/src/main/youtubeEmbeds.ts
+@@ -0,0 +1,25 @@
++/*
++ * Vesktop, a desktop app aiming to give you a snappier Discord Experience
++ * Copyright (c) 2026 Vendicated and Vesktop contributors
++ * SPDX-License-Identifier: GPL-3.0-or-later
++ */
++
++import { session } from "electron";
++
++import { VencordSettings } from "./settings";
++
++export function registerYoutubeEmbedRefererHandler() {
++    session.defaultSession.webRequest.onBeforeSendHeaders(
++        { urls: ["https://www.youtube.com/embed/*", "https://www.youtube-nocookie.com/embed/*"] },
++        ({ resourceType, requestHeaders }, callback) => {
++            if (
++                resourceType === "subFrame" &&
++                VencordSettings.store.plugins?.FixYoutubeEmbeds?.enabled &&
++                /^https:\/\/([a-z]+\.)?discord\.com\//.test(requestHeaders.Referer ?? "")
++            )
++                requestHeaders.Referer = "https://www.google.com/";
++
++            callback({ requestHeaders });
++        }
++    );
++}

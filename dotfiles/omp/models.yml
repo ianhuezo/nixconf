@@ -135,6 +135,68 @@ providers:
         # before 32768, so this is a safety net that never binds, not a budget.
         maxTokens: 32768
 
+  dgx-spark-dsv41:
+    baseUrl: http://192.168.50.157:8888/v1
+    api: openai-completions
+    auth: none
+
+    models:
+      - id: DeepSeek-V4.1-Flash-1017-EXL3-Spark-TP2
+        name: DeepSeek V4.1 Flash 1017 EXL3 2.75bpw (local, 2x GX10)
+        api: openai-completions
+        reasoning: true
+        input: [text, image]
+        thinking:
+          mode: effort
+          efforts: [minimal, low, medium, high, xhigh, max]
+          effortMap:
+            minimal: low
+            low: low
+            medium: high
+            high: high
+            xhigh: xhigh
+            max: max
+        compat:
+          reasoningDisableMode: chat-template-thinking-false
+        cost:
+          input: 0
+          output: 0
+          cacheRead: 0
+          cacheWrite: 0
+        contextWindow: 262144
+        maxTokens: 65536
+
+  dgx-spark-dsv41-worker:
+    baseUrl: http://192.168.50.157:8888/v1
+    api: openai-completions
+    auth: none
+
+    models:
+      - id: DeepSeek-V4.1-Flash-1017-EXL3-Spark-TP2
+        name: DeepSeek V4.1 Flash 1017 EXL3 (subagent budget)
+        api: openai-completions
+        reasoning: true
+        input: [text, image]
+        thinking:
+          mode: effort
+          efforts: [minimal, low, medium, high, xhigh, max]
+          effortMap:
+            minimal: low
+            low: low
+            medium: high
+            high: high
+            xhigh: xhigh
+            max: max
+        compat:
+          reasoningDisableMode: chat-template-thinking-false
+        cost:
+          input: 0
+          output: 0
+          cacheRead: 0
+          cacheWrite: 0
+        contextWindow: 262144
+        maxTokens: 65536
+
   macbook-vision:
     baseUrl: http://192.168.50.134:8080/v1
     api: openai-completions

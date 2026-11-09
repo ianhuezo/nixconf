@@ -115,16 +115,14 @@ Rectangle {
                         ctx.fill();
                     }
                     
-                    NumberAnimation on flowOffset {
+                    Timer {
+                        interval: 33
                         running: true
-                        from: 0
-                        to: 1
-                        duration: 3000
-                        loops: Animation.Infinite
-                        easing.type: Easing.Linear
-                        onRunningChanged: flowCanvas.requestPaint()
+                        repeat: true
+                        triggeredOnStart: true
+                        onTriggered: flowCanvas.flowOffset = (flowCanvas.flowOffset + interval / 3000) % 1
                     }
-                    
+
                     onFlowOffsetChanged: requestPaint()
                 }
             }

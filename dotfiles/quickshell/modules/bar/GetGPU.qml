@@ -1,15 +1,32 @@
 pragma Singleton
 
 import Quickshell
+import Quickshell.Io
 import QtQuick
-import qs.components
 
 Singleton {
-    property real gpu: poller.value
+    id: root
 
-    property MetricPoller poller: MetricPoller {
-        command: "echo $(nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader,nounits)"
-        pollInterval: 1000
-        parseFunction: (data) => parseFloat(data)
+    property real gpu: 0
+
+    property Process process: Process {
+        id: smi
+        command: ["nvidia-smi", "--query-gpu=utilization.gpu", "--format=csv,noheader,nounits", "-lms", "1000"]
+        running: true
+
+        stdout: SplitParser {
+            onRead: data => {
+                const value = parseFloat(data);
+                if (!isNaN(value))
+                    root.gpu = value;
+            }
+        }
+
+        onExited: restart.start()
+    }
+
+    property Timer restart: Timer {
+        interval: 5000
+        onTriggered: smi.running = true
     }
 }
