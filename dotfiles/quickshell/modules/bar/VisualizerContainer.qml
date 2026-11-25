@@ -35,8 +35,8 @@ Rectangle {
     Component.onCompleted: refreshTrackTitle()
 
     Connections {
-        target: Mpris
-        function onPlayersChanged() {
+        target: Mpris.players
+        function onValuesChanged() {
             container.refreshTrackTitle();
         }
     }

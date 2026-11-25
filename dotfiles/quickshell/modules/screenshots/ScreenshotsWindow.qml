@@ -1,6 +1,7 @@
 import Quickshell
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Shapes
 import Quickshell.Io
 import Quickshell.Wayland
 import qs.config
@@ -10,17 +11,21 @@ import "root:/components"
 PanelWindow {
     id: root
 
+    required property var modelData
     required property bool isActive
     signal closeRequested
 
     readonly property int panelWidth: 360
-    readonly property int panelRightMargin: 8
     readonly property int topOffset: 70
+    property real reveal: 0
 
-    visible: isActive || slideX <= (panelWidth + panelRightMargin)
+    visible: isActive || reveal > 0
     color: "transparent"
-    implicitWidth: panelWidth + panelRightMargin
+    implicitWidth: panelWidth
     implicitHeight: 620
+    mask: Region {
+        item: contentWrapper
+    }
 
     anchors {
         top: true
@@ -90,16 +95,11 @@ PanelWindow {
     // ---- State ----
     property bool showAll: false
 
-    // ---- Slide animation ----
-    // slideX = 0: panel fully visible at right edge of screen
-    // slideX = panelWidth + panelRightMargin: content pushed outside surface (invisible)
-    property real slideX: panelWidth + panelRightMargin + 1
-
     NumberAnimation {
         id: enterAnim
         target: root
-        property: "slideX"
-        to: 0
+        property: "reveal"
+        to: 1
         duration: 500
         easing.type: Easing.Bezier
         easing.bezierCurve: AppearanceConfig.transitions.panelEnter
@@ -108,8 +108,8 @@ PanelWindow {
     NumberAnimation {
         id: exitAnim
         target: root
-        property: "slideX"
-        to: root.panelWidth + root.panelRightMargin + 2
+        property: "reveal"
+        to: 0
         duration: 300
         easing.type: Easing.OutCubic
     }
@@ -126,6 +126,7 @@ PanelWindow {
 
     onIsActiveChanged: {
         if (isActive) {
+            exitAnim.stop();
             enterAnim.start();
             showAll = false;
             fileLister.collectedPaths = [];
@@ -133,6 +134,7 @@ PanelWindow {
             contentWrapper.forceActiveFocus();
             autoCloseTimer.restart();
         } else {
+            enterAnim.stop();
             exitAnim.start();
             showAll = false;
             autoCloseTimer.stop();
@@ -142,9 +144,12 @@ PanelWindow {
     // ---- Content ----
     Item {
         id: contentWrapper
-        x: root.slideX
+
+        readonly property real r: AppearanceConfig.radius.lg
+
+        x: (1 - root.reveal) * width
         width: root.panelWidth
-        height: parent.height
+        height: panel.height + r * 2
         focus: true
 
         Keys.onEscapePressed: root.closeRequested()
@@ -159,14 +164,66 @@ PanelWindow {
             onEntered: root.resetAutoClose()
         }
 
-        Rectangle {
-            id: panel
-            anchors {
-                top: parent.top
-                right: parent.right
-                rightMargin: root.panelRightMargin
+        Shape {
+            anchors.fill: parent
+            preferredRendererType: Shape.CurveRenderer
+
+            ShapePath {
+                fillColor: Color.palette.base00
+                strokeColor: "transparent"
+                startX: contentWrapper.width
+                startY: 0
+
+                PathLine {
+                    x: contentWrapper.width
+                    y: contentWrapper.height
+                }
+                PathArc {
+                    x: contentWrapper.width - contentWrapper.r
+                    y: contentWrapper.height - contentWrapper.r
+                    radiusX: contentWrapper.r
+                    radiusY: contentWrapper.r
+                    direction: PathArc.Counterclockwise
+                }
+                PathLine {
+                    x: contentWrapper.r
+                    y: contentWrapper.height - contentWrapper.r
+                }
+                PathArc {
+                    x: 0
+                    y: contentWrapper.height - contentWrapper.r * 2
+                    radiusX: contentWrapper.r
+                    radiusY: contentWrapper.r
+                }
+                PathLine {
+                    x: 0
+                    y: contentWrapper.r * 2
+                }
+                PathArc {
+                    x: contentWrapper.r
+                    y: contentWrapper.r
+                    radiusX: contentWrapper.r
+                    radiusY: contentWrapper.r
+                }
+                PathLine {
+                    x: contentWrapper.width - contentWrapper.r
+                    y: contentWrapper.r
+                }
+                PathArc {
+                    x: contentWrapper.width
+                    y: 0
+                    radiusX: contentWrapper.r
+                    radiusY: contentWrapper.r
+                    direction: PathArc.Counterclockwise
+                }
             }
-            width: root.panelWidth - root.panelRightMargin
+        }
+
+        Item {
+            id: panel
+            y: contentWrapper.r
+            width: root.panelWidth
+            clip: true
 
             readonly property int headerH: 44
             readonly property int dividerH: 1
@@ -193,11 +250,6 @@ PanelWindow {
                 }
             }
 
-            color: Color.palette.base00
-            radius: AppearanceConfig.radius.lg
-            border.width: 1
-            border.color: Color.palette.base0C
-
             // Header
             Item {
                 id: headerRow
@@ -207,7 +259,7 @@ PanelWindow {
                     right: parent.right
                     topMargin: 4
                     leftMargin: 12
-                    rightMargin: 8
+                    rightMargin: 20
                 }
                 height: 40
 
@@ -222,14 +274,15 @@ PanelWindow {
 
                 Row {
                     anchors { right: parent.right; verticalCenter: parent.verticalCenter }
-                    spacing: 2
+                    spacing: 4
 
                     IconButton {
-                        iconText: "↺"
-                        iconSize: 15
-                        implicitHeight: 30
-                        implicitWidth: 30
+                        iconText: "󰑐"
+                        iconSize: 16
+                        implicitHeight: 32
+                        implicitWidth: 32
                         backgroundColor: "transparent"
+                        stateInactiveColor: "transparent"
                         onClicked: {
                             root.resetAutoClose();
                             fileLister.collectedPaths = [];
@@ -238,11 +291,12 @@ PanelWindow {
                     }
 
                     IconButton {
-                        iconText: "✕"
-                        iconSize: 13
-                        implicitHeight: 30
-                        implicitWidth: 30
+                        iconText: "󰅖"
+                        iconSize: 16
+                        implicitHeight: 32
+                        implicitWidth: 32
                         backgroundColor: "transparent"
+                        stateInactiveColor: "transparent"
                         onClicked: root.closeRequested()
                     }
                 }
@@ -259,7 +313,7 @@ PanelWindow {
                     rightMargin: 12
                 }
                 height: 1
-                color: Color.palette.base03
+                color: Color.palette.base02
             }
 
             // Collapsed: top 3 cards
@@ -271,8 +325,8 @@ PanelWindow {
                     left: parent.left
                     right: parent.right
                     topMargin: 8
-                    leftMargin: 8
-                    rightMargin: 8
+                    leftMargin: 12
+                    rightMargin: 12
                 }
                 spacing: 6
 
@@ -306,8 +360,8 @@ PanelWindow {
                     left: parent.left
                     right: parent.right
                     topMargin: 8
-                    leftMargin: 8
-                    rightMargin: 8
+                    leftMargin: 12
+                    rightMargin: 12
                 }
                 height: Math.min(expandedColumn.implicitHeight, panel.maxScrollH)
                 contentHeight: expandedColumn.implicitHeight
@@ -367,8 +421,8 @@ PanelWindow {
                     left: parent.left
                     right: parent.right
                     bottomMargin: 8
-                    leftMargin: 8
-                    rightMargin: 8
+                    leftMargin: 12
+                    rightMargin: 12
                 }
                 height: 32
                 radius: AppearanceConfig.radius.sm
@@ -378,14 +432,25 @@ PanelWindow {
                     ColorAnimation { duration: 150 }
                 }
 
-                Text {
+                Row {
                     anchors.centerIn: parent
-                    text: root.showAll
-                        ? "▲  Show less"
-                        : "▼  Show all  (" + screenshotModel.count + ")"
-                    color: Color.palette.base0C
-                    font.pixelSize: AppearanceConfig.font.size.sm
-                    font.family: AppearanceConfig.font.ui
+                    spacing: 6
+
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: root.showAll ? "󰅃" : "󰅀"
+                        color: Color.palette.base0C
+                        font.pixelSize: 16
+                        font.family: AppearanceConfig.font.mono
+                    }
+
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: root.showAll ? "Show less" : "Show all  (" + screenshotModel.count + ")"
+                        color: Color.palette.base0C
+                        font.pixelSize: AppearanceConfig.font.size.sm
+                        font.family: AppearanceConfig.font.ui
+                    }
                 }
 
                 MouseArea {

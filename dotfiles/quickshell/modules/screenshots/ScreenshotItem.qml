@@ -24,8 +24,6 @@ Rectangle {
     height: 76
     radius: AppearanceConfig.radius.md
     color: cardHover.containsMouse ? Color.palette.base02 : Color.palette.base01
-    border.width: 1
-    border.color: Color.palette.base03
 
     Behavior on color {
         ColorAnimation { duration: 150 }
@@ -75,9 +73,10 @@ Rectangle {
 
             Text {
                 anchors.centerIn: parent
-                text: "⎙"
+                text: "󰥶"
                 color: Color.palette.base04
                 font.pixelSize: 18
+                font.family: AppearanceConfig.font.mono
             }
         }
     }
@@ -123,20 +122,24 @@ Rectangle {
         spacing: 4
 
         IconButton {
-            iconText: "⎘"
-            iconSize: 15
+            iconText: "󰆏"
+            iconSize: 16
             implicitHeight: 32
             implicitWidth: 32
+            backgroundColor: "transparent"
+            stateInactiveColor: "transparent"
             tooltip: "Copy to clipboard"
             toolTipContainer: root
             onClicked: root.copyRequested(root.filePath)
         }
 
         IconButton {
-            iconText: "✕"
-            iconSize: 13
+            iconText: "󰩺"
+            iconSize: 16
             implicitHeight: 32
             implicitWidth: 32
+            backgroundColor: "transparent"
+            stateInactiveColor: "transparent"
             iconColor: Color.palette.base08
             tooltip: "Delete"
             toolTipContainer: root
