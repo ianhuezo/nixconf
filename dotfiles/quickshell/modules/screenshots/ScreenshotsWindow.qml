@@ -1,7 +1,6 @@
 import Quickshell
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Shapes
 import Quickshell.Io
 import Quickshell.Wayland
 import qs.config
@@ -22,7 +21,7 @@ PanelWindow {
     visible: isActive || reveal > 0
     color: "transparent"
     implicitWidth: panelWidth
-    implicitHeight: 620
+    implicitHeight: 640
     mask: Region {
         item: contentWrapper
     }
@@ -69,7 +68,11 @@ PanelWindow {
         }
 
         onStarted: collectedPaths = []
-        onExited: exitCode => screenshotModel.reload(collectedPaths)
+        onExited: exitCode => {
+            screenshotModel.reload(collectedPaths);
+            if (root.isActive && root.reveal === 0 && !enterAnim.running)
+                enterAnim.start();
+        }
     }
 
     Process {
@@ -126,8 +129,10 @@ PanelWindow {
 
     onIsActiveChanged: {
         if (isActive) {
-            exitAnim.stop();
-            enterAnim.start();
+            if (reveal > 0) {
+                exitAnim.stop();
+                enterAnim.start();
+            }
             showAll = false;
             fileLister.collectedPaths = [];
             fileLister.running = true;
@@ -142,14 +147,22 @@ PanelWindow {
     }
 
     // ---- Content ----
+    DrawerShape {
+        id: drawerShape
+        anchors.right: parent.right
+        edge: "right"
+        reveal: root.reveal
+        span: panel.height
+        depth: root.panelWidth
+        radius: AppearanceConfig.radius.lg
+        fillColor: Color.palette.base00
+    }
+
     Item {
         id: contentWrapper
-
-        readonly property real r: AppearanceConfig.radius.lg
-
         x: (1 - root.reveal) * width
         width: root.panelWidth
-        height: panel.height + r * 2
+        height: panel.height + drawerShape.reach * 2
         focus: true
 
         Keys.onEscapePressed: root.closeRequested()
@@ -164,64 +177,9 @@ PanelWindow {
             onEntered: root.resetAutoClose()
         }
 
-        Shape {
-            anchors.fill: parent
-            preferredRendererType: Shape.CurveRenderer
-
-            ShapePath {
-                fillColor: Color.palette.base00
-                strokeColor: "transparent"
-                startX: contentWrapper.width
-                startY: 0
-
-                PathLine {
-                    x: contentWrapper.width
-                    y: contentWrapper.height
-                }
-                PathArc {
-                    x: contentWrapper.width - contentWrapper.r
-                    y: contentWrapper.height - contentWrapper.r
-                    radiusX: contentWrapper.r
-                    radiusY: contentWrapper.r
-                    direction: PathArc.Counterclockwise
-                }
-                PathLine {
-                    x: contentWrapper.r
-                    y: contentWrapper.height - contentWrapper.r
-                }
-                PathArc {
-                    x: 0
-                    y: contentWrapper.height - contentWrapper.r * 2
-                    radiusX: contentWrapper.r
-                    radiusY: contentWrapper.r
-                }
-                PathLine {
-                    x: 0
-                    y: contentWrapper.r * 2
-                }
-                PathArc {
-                    x: contentWrapper.r
-                    y: contentWrapper.r
-                    radiusX: contentWrapper.r
-                    radiusY: contentWrapper.r
-                }
-                PathLine {
-                    x: contentWrapper.width - contentWrapper.r
-                    y: contentWrapper.r
-                }
-                PathArc {
-                    x: contentWrapper.width
-                    y: 0
-                    radiusX: contentWrapper.r
-                    radiusY: contentWrapper.r
-                    direction: PathArc.Counterclockwise
-                }
-            }
-        }
-
         Item {
             id: panel
-            y: contentWrapper.r
+            y: drawerShape.reach
             width: root.panelWidth
             clip: true
 
@@ -244,6 +202,7 @@ PanelWindow {
             }
 
             Behavior on height {
+                enabled: root.reveal > 0
                 NumberAnimation {
                     duration: 260
                     easing.type: Easing.InOutCubic

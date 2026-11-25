@@ -3,7 +3,7 @@ import Quickshell.Hyprland
 import Quickshell.Services.Mpris
 import Quickshell.Widgets
 import QtQuick
-import QtQuick.Shapes
+import qs.components
 import qs.config
 import qs.services
 
@@ -82,7 +82,7 @@ PopupWindow {
     anchor.item: anchorItem
     anchor.rect.x: (anchorItem.width - implicitWidth) / 2
     anchor.rect.y: anchorItem.height
-    implicitWidth: widgetWidth + cornerRadius * 2
+    implicitWidth: widgetWidth + drawerShape.reach * 2
     implicitHeight: widgetHeight
     color: "transparent"
     visible: open || reveal > 0
@@ -218,73 +218,26 @@ PopupWindow {
         }
     }
 
+    DrawerShape {
+        id: drawerShape
+        edge: "top"
+        reveal: root.reveal
+        span: root.widgetWidth
+        depth: root.widgetHeight
+        radius: root.cornerRadius
+        fillColor: Color.palette.base01
+    }
+
     Item {
         id: drawer
-
-        readonly property real r: root.cornerRadius
 
         y: -(1 - root.reveal) * height
         width: root.implicitWidth
         height: root.widgetHeight
 
-        Shape {
-            anchors.fill: parent
-            preferredRendererType: Shape.CurveRenderer
-
-            ShapePath {
-                fillColor: Color.palette.base01
-                strokeColor: "transparent"
-                startX: 0
-                startY: 0
-
-                PathLine {
-                    x: drawer.width
-                    y: 0
-                }
-                PathArc {
-                    x: drawer.width - drawer.r
-                    y: drawer.r
-                    radiusX: drawer.r
-                    radiusY: drawer.r
-                    direction: PathArc.Counterclockwise
-                }
-                PathLine {
-                    x: drawer.width - drawer.r
-                    y: drawer.height - drawer.r
-                }
-                PathArc {
-                    x: drawer.width - drawer.r * 2
-                    y: drawer.height
-                    radiusX: drawer.r
-                    radiusY: drawer.r
-                }
-                PathLine {
-                    x: drawer.r * 2
-                    y: drawer.height
-                }
-                PathArc {
-                    x: drawer.r
-                    y: drawer.height - drawer.r
-                    radiusX: drawer.r
-                    radiusY: drawer.r
-                }
-                PathLine {
-                    x: drawer.r
-                    y: drawer.r
-                }
-                PathArc {
-                    x: 0
-                    y: 0
-                    radiusX: drawer.r
-                    radiusY: drawer.r
-                    direction: PathArc.Counterclockwise
-                }
-            }
-        }
-
         Item {
             id: card
-            x: drawer.r
+            x: drawerShape.reach
             width: root.widgetWidth
             height: root.widgetHeight
 
